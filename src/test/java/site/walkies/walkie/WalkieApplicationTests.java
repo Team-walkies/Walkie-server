@@ -1,4 +1,4 @@
-package site.growthook.walkie;
+package site.walkies.walkie;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

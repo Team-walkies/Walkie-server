@@ -1,4 +1,4 @@
-package site.growthook.walkie;
+package site.walkies.walkie;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
