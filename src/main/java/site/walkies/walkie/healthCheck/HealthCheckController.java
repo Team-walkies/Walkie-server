@@ -1,4 +1,4 @@
-package site.growthook.walkie.healthCheck;
+package site.walkies.walkie.healthCheck;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
