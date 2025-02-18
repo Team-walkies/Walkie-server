@@ -1,0 +1,31 @@
+package site.walkies.walkie.domain.member.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import site.walkies.walkie.domain.character.entity.Character;
+import site.walkies.walkie.domain.egg.entity.Egg;
+
+@Entity
+@Table(name = "member")
+@Getter
+public class Member {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "nickname")
+    private String nickname;
+
+    @Column(name = "password")
+    private String password;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "leveling_egg_id")
+    private Egg levelingEgg;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "leveling_character_id")
+    private Character levelingCharacter;
+}
