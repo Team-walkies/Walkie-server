@@ -2,6 +2,7 @@ package site.walkies.walkie.domain.character.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import site.walkies.walkie.domain.member.entity.Member;
 
 @Entity
 @Table(name = "character")
@@ -25,7 +26,7 @@ public class Character {
     @Column(name = "picked")
     private Boolean picked;
 
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private Member member;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private Member owner;
 }
