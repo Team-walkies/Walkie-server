@@ -3,6 +3,8 @@ package site.walkies.walkie.domain.review.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import site.walkies.walkie.domain.character.entity.Character;
+import site.walkies.walkie.domain.member.entity.Member;
+import site.walkies.walkie.domain.spot.entity.Spot;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -45,13 +47,13 @@ public class Review {
     @Column(name = "delete_cd")
     private Boolean deleteCd;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private Member member;
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "spot_id", nullable = false)
-//    private Spot spot;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "spot_id", nullable = false)
+    private Spot spot;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "character_id", nullable = false)
