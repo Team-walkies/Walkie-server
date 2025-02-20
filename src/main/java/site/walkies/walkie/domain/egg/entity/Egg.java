@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.*;
 import lombok.*;
+import site.walkies.walkie.domain.character.entity.Character;
 import site.walkies.walkie.domain.member.entity.Member;
 
 import java.time.LocalDate;
@@ -37,6 +38,10 @@ public class Egg {
     private Boolean picked;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
-    private Member owner;
+    @JoinColumn(name = "character_id", nullable = false)
+    private Character character;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private Member user;
 }
