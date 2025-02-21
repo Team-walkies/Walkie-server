@@ -7,7 +7,7 @@ import site.walkies.walkie.domain.member.entity.Member;
 @Entity
 @Table(name = "character")
 @Getter
-public class Character {
+public class UserCharacter {
 
     @Id
     @Column(name = "id")
@@ -27,6 +27,18 @@ public class Character {
     private Boolean picked;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
-    private Member owner;
+    @JoinColumn(name = "user_id", nullable = false)
+    private Member user;
+
+    public UserCharacter(Integer rank, Integer type, Integer characterClass, Boolean picked, Member user) {
+        this.rank = rank;
+        this.type = type;
+        this.characterClass = characterClass;
+        this.picked = picked;
+        this.user = user;
+    }
+
+    public UserCharacter() {
+
+    }
 }
