@@ -2,7 +2,7 @@ package site.walkies.walkie.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import site.walkies.walkie.domain.character.entity.Character;
+import site.walkies.walkie.domain.character.entity.UserCharacter;
 import site.walkies.walkie.domain.egg.entity.Egg;
 
 @Entity
@@ -27,5 +27,5 @@ public class Member {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "leveling_character_id")
-    private Character levelingCharacter;
+    private UserCharacter levelingUserCharacter;
 }
