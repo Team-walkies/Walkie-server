@@ -7,7 +7,7 @@ import lombok.Getter;
 @Entity
 @Table(name = "character_born")
 @Getter
-public class CharacterBorn {
+public class UserCharacterBorn {
 
     @Id
     @Column(name = "id")
@@ -21,5 +21,14 @@ public class CharacterBorn {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "character_id", nullable = false)
-    private Character character;
+    private UserCharacter userCharacter;
+
+    public UserCharacterBorn() {
+
+    }
+    public UserCharacterBorn(LocalDate obtainedDate, String obtainedPosition, UserCharacter userCharacter) {
+        this.obtainedDate = obtainedDate;
+        this.obtainedPosition = obtainedPosition;
+        this.userCharacter = userCharacter;
+    }
 }

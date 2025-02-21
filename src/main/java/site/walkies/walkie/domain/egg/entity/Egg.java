@@ -4,7 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.*;
 import lombok.*;
-import site.walkies.walkie.domain.character.entity.Character;
+import site.walkies.walkie.domain.character.entity.UserCharacter;
 import site.walkies.walkie.domain.member.entity.Member;
 
 import java.time.LocalDate;
@@ -39,7 +39,7 @@ public class Egg {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "character_id", nullable = false)
-    private Character character;
+    private UserCharacter userCharacter;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

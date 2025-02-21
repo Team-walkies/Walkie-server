@@ -22,7 +22,7 @@ public class EggService {
         List<GetEggResponse> eggs = new ArrayList<>();
 
         for (Egg egg : repository.findAllByUserId(userId)) {
-            GetEggResponse getEggResponse = GetEggResponse.createGetEggResponse(egg.getId(),egg.getRank(),egg.getNeedStep(),egg.getNowStep(),egg.getCharacter().getId(),egg.getPicked());
+            GetEggResponse getEggResponse = GetEggResponse.createGetEggResponse(egg.getId(),egg.getRank(),egg.getNeedStep(),egg.getNowStep(),egg.getUserCharacter().getId(),egg.getPicked());
             eggs.add(getEggResponse);
         }
 

@@ -2,7 +2,7 @@ package site.walkies.walkie.domain.review.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import site.walkies.walkie.domain.character.entity.Character;
+import site.walkies.walkie.domain.character.entity.UserCharacter;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.spot.entity.Spot;
 
@@ -57,5 +57,5 @@ public class Review {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "character_id", nullable = false)
-    private Character character;
+    private UserCharacter userCharacter;
 }
