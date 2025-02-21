@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import site.walkies.walkie.domain.egg.service.dto.EggService;
+import site.walkies.walkie.domain.egg.service.EggService;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggResponse;
 
 import java.util.List;

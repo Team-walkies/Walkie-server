@@ -1,4 +1,4 @@
-package site.walkies.walkie.domain.egg.service.dto;
+package site.walkies.walkie.domain.egg.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
