@@ -44,4 +44,19 @@ public class Egg {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private Member user;
+
+    public Egg() {
+
+    }
+
+    public Egg(Integer rank, Integer needStep, Integer nowStep, String obtainedPosition, LocalDate obtainedDate, Boolean picked, UserCharacter userCharacter, Member user) {
+        this.rank = rank;
+        this.needStep = needStep;
+        this.nowStep = nowStep;
+        this.obtainedPosition = obtainedPosition;
+        this.obtainedDate = obtainedDate;
+        this.picked = picked;
+        this.userCharacter = userCharacter;
+        this.user = user;
+    }
 }
