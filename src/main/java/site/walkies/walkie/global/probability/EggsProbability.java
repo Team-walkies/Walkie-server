@@ -1,4 +1,4 @@
-package site.walkies.walkie.global.enums;
+package site.walkies.walkie.global.probability;
 import lombok.Getter;
 
 @Getter
