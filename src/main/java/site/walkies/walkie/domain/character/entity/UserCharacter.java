@@ -5,11 +5,12 @@ import lombok.Getter;
 import site.walkies.walkie.domain.member.entity.Member;
 
 @Entity
-@Table(name = "character")
+@Table(name = "user_character")
 @Getter
 public class UserCharacter {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
