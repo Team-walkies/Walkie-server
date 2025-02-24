@@ -47,7 +47,7 @@ public class EggService {
         // 2. 범위에 따라 다른 Egg 생성
         if(random <= EggsProbability.NORMAL_EGG.getProbability()) {
             // 3. 확률에 따라 캐릭터 생성
-
+            
             
             Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 2000,0, obtainedPosition, obtainedDate, false,null,member);
             return egg;
