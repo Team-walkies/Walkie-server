@@ -14,10 +14,10 @@ public class UserCharacter {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "rank")
+    @Column(name = "character_rank")
     private Integer rank;
 
-    @Column(name = "type")
+    @Column(name = "character_type")
     private Integer type;
 
     // 'class'는 예약어이므로 다른 이름으로 매핑합니다.
