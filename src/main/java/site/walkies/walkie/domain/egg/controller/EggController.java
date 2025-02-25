@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.egg.service.EggService;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggResponse;
+import site.walkies.walkie.domain.egg.service.dto.response.PostEggResponse;
 import site.walkies.walkie.global.web.dto.response.SuccessResponse;
 
 import java.time.LocalDate;
@@ -31,7 +32,17 @@ public class EggController {
     @PostMapping
     public SuccessResponse<?> createEgg() {
         Egg egg = eggService.createEgg(1, "테스트 장소", LocalDate.now());
-        System.out.println(egg);
-        return SuccessResponse.created(egg);
+        PostEggResponse postEggResponse = PostEggResponse.builder()
+                .eggId(egg.getId())
+                .rank(egg.getRank())
+                .needStep(egg.getNeedStep())
+                .nowStep(egg.getNowStep())
+                .obtainedPosition(egg.getObtainedPosition())
+                .obtainedDate(egg.getObtainedDate())
+                .picked(egg.getPicked())
+                .userCharacterId(egg.getUserCharacter().getId())
+                .memberId(egg.getUser().getId())
+                .build();
+        return SuccessResponse.created(postEggResponse);
     }
 }
