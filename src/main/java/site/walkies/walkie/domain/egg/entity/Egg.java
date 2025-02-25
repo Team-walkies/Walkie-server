@@ -19,7 +19,7 @@ public class Egg {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "rank")
+    @Column(name = "`rank`")
     private Integer rank;
 
     @Column(name = "need_step")

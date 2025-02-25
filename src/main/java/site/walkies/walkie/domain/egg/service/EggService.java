@@ -50,231 +50,104 @@ public class EggService {
         }
 
         // 1. 랜덤값 생성
+        // 알 랭크 랜덤값
         double eggRandom = Math.random() * 100;
+        // 캐릭터 등급 랜덤값
         double characterRandom = Math.random() * 100;
+        // 같은 등급의 캐릭터 종류 랜덤값
         double characterClassRandom = Math.random() * 100;
 
-        // 2. Egg 생성 : 여기서는 NORMAL_EGG만 처리한다고 가정
+        // 2. Egg 타입별 분기 처리 (각 알의 확률 값에 따라)
         if (eggRandom <= EggsProbability.NORMAL_EGG.getProbability()) {
-            // [일반 캐릭터] - 등급 0
-            if (characterRandom <= EggsProbability.NORMAL_EGG.getNormalProbability()) {
-                // normal 캐릭터 (rank 0)
-                if (characterClassRandom <= CharacterProbability.JELLYFISH.getProbability()) {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.JELLYFISH.getRank(),
-                            CharacterProbability.JELLYFISH.getType(),
-                            CharacterProbability.JELLYFISH.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 2000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                } else if (characterClassRandom <= CharacterProbability.RED_JELLYFISH.getProbability()) {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.RED_JELLYFISH.getRank(),
-                            CharacterProbability.RED_JELLYFISH.getType(),
-                            CharacterProbability.RED_JELLYFISH.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 2000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                } else if (characterClassRandom <= CharacterProbability.GREEN_JELLYFISH.getProbability()) {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.GREEN_JELLYFISH.getRank(),
-                            CharacterProbability.GREEN_JELLYFISH.getType(),
-                            CharacterProbability.GREEN_JELLYFISH.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 2000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                } else if (characterClassRandom <= CharacterProbability.PURPLE_JELLYFISH.getProbability()) {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.PURPLE_JELLYFISH.getRank(),
-                            CharacterProbability.PURPLE_JELLYFISH.getType(),
-                            CharacterProbability.PURPLE_JELLYFISH.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 2000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                } else if (characterClassRandom <= CharacterProbability.PINK_JELLYFISH.getProbability()) {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.PINK_JELLYFISH.getRank(),
-                            CharacterProbability.PINK_JELLYFISH.getType(),
-                            CharacterProbability.PINK_JELLYFISH.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 2000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                } else if (characterClassRandom <= CharacterProbability.DINO.getProbability()) {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.DINO.getRank(),
-                            CharacterProbability.DINO.getType(),
-                            CharacterProbability.DINO.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 2000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                } else if (characterClassRandom <= CharacterProbability.RED_DINO.getProbability()) {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.RED_DINO.getRank(),
-                            CharacterProbability.RED_DINO.getType(),
-                            CharacterProbability.RED_DINO.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 2000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                } else if (characterClassRandom <= CharacterProbability.GREEN_DINO.getProbability()) {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.GREEN_DINO.getRank(),
-                            CharacterProbability.GREEN_DINO.getType(),
-                            CharacterProbability.GREEN_DINO.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 2000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                } else if (characterClassRandom <= CharacterProbability.PURPLE_DINO.getProbability()) {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.PURPLE_DINO.getRank(),
-                            CharacterProbability.PURPLE_DINO.getType(),
-                            CharacterProbability.PURPLE_DINO.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 2000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                } else {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.PINK_DINO.getRank(),
-                            CharacterProbability.PINK_DINO.getType(),
-                            CharacterProbability.PINK_DINO.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 2000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                }
-            }
-            // [레어 캐릭터] - 등급 1
-            else if (characterRandom <= EggsProbability.NORMAL_EGG.getRareProbability()) {
-                if (characterClassRandom <= CharacterProbability.RABBIT_JELLYFISH.getProbability()) {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.RABBIT_JELLYFISH.getRank(),
-                            CharacterProbability.RABBIT_JELLYFISH.getType(),
-                            CharacterProbability.RABBIT_JELLYFISH.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 6000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                } else if (characterClassRandom <= CharacterProbability.STARFISH_JELLYFISH.getProbability()) {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.STARFISH_JELLYFISH.getRank(),
-                            CharacterProbability.STARFISH_JELLYFISH.getType(),
-                            CharacterProbability.STARFISH_JELLYFISH.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 6000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                } else if (characterClassRandom <= CharacterProbability.DEER_DINO.getProbability()) {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.DEER_DINO.getRank(),
-                            CharacterProbability.DEER_DINO.getType(),
-                            CharacterProbability.DEER_DINO.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 6000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                } else {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.NESSIE_DINO.getRank(),
-                            CharacterProbability.NESSIE_DINO.getType(),
-                            CharacterProbability.NESSIE_DINO.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 6000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                }
-            }
-            // [에픽 캐릭터] - 등급 2
-            else if (characterRandom <= EggsProbability.NORMAL_EGG.getEpicProbability()) {
-                if (characterClassRandom <= CharacterProbability.LIGHTNING_JELLYFISH.getProbability()) {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.LIGHTNING_JELLYFISH.getRank(),
-                            CharacterProbability.LIGHTNING_JELLYFISH.getType(),
-                            CharacterProbability.LIGHTNING_JELLYFISH.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 8000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                } else if (characterClassRandom <= CharacterProbability.STRAWBERRY_JELLYFISH.getProbability()) {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.STRAWBERRY_JELLYFISH.getRank(),
-                            CharacterProbability.STRAWBERRY_JELLYFISH.getType(),
-                            CharacterProbability.STRAWBERRY_JELLYFISH.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 8000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                } else if (characterClassRandom <= CharacterProbability.PANCAKE_DINO.getProbability()) {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.PANCAKE_DINO.getRank(),
-                            CharacterProbability.PANCAKE_DINO.getType(),
-                            CharacterProbability.PANCAKE_DINO.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 8000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                } else {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.MELONSODA_DINO.getRank(),
-                            CharacterProbability.MELONSODA_DINO.getType(),
-                            CharacterProbability.MELONSODA_DINO.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 8000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                }
-            }
-            // [레전드 캐릭터] - 등급 3
-            else if (characterRandom <= EggsProbability.NORMAL_EGG.getLegendaryProbability()) {
-                if (characterClassRandom <= CharacterProbability.SPACE_JELLYFISH.getProbability()) {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.SPACE_JELLYFISH.getRank(),
-                            CharacterProbability.SPACE_JELLYFISH.getType(),
-                            CharacterProbability.SPACE_JELLYFISH.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 10000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                } else {
-                    UserCharacter character = characterService.createCharacter(
-                            userId,
-                            CharacterProbability.DRAGON_DINO.getRank(),
-                            CharacterProbability.DRAGON_DINO.getType(),
-                            CharacterProbability.DRAGON_DINO.getCharacterClass(),
-                            false
-                    );
-                    Egg egg = new Egg(EggsProbability.NORMAL_EGG.getRank(), 10000, 0, obtainedPosition, obtainedDate, false, character, member);
-                    return egg;
-                }
-            }
+            return processEgg(userId, obtainedPosition, obtainedDate, member, EggsProbability.NORMAL_EGG, characterRandom, characterClassRandom, 2000);
+        } else if (eggRandom <= EggsProbability.RARE_EGG.getProbability()) {
+            return processEgg(userId, obtainedPosition, obtainedDate, member, EggsProbability.RARE_EGG, characterRandom, characterClassRandom, 6000);
+        } else if (eggRandom <= EggsProbability.EPIC_EGG.getProbability()) {
+            return processEgg(userId, obtainedPosition, obtainedDate, member, EggsProbability.EPIC_EGG, characterRandom, characterClassRandom, 8000);
+        } else if (eggRandom <= EggsProbability.LEGENDARY_EGG.getProbability()) {
+            return processEgg(userId, obtainedPosition, obtainedDate, member, EggsProbability.LEGENDARY_EGG, characterRandom, characterClassRandom, 10000);
         }
         return null;
     }
+
+    // 주어진 알의  캐릭터 확률을 기반으로 후보 배열을 선택하고 Egg를 생성하는 함수
+    // input : userId, obtainedPosition(얻은 위치), obtainedDate(얻은 날짜), Member, eggProb(알의 등급), characterRandom(캐릭터 등급 랜덤 값), characterClassRandom(캐릭터 종류 랜덥값),eggWalk(필요 걸음수)
+    // output : Egg
+    private Egg processEgg(long userId, String obtainedPosition, LocalDate obtainedDate, Member member,
+                           EggsProbability eggProb, double characterRandom, double characterClassRandom, int eggWalk) {
+        // 캐릭터 종류 후보 배열
+        CharacterProbability[] candidates;
+
+        // characterRandom을 통해서 캐릭터 등급을 고르고, 각 등급의 캐릭터 종류 후보 배열 생성
+        // 일반 등급
+        if (characterRandom <= eggProb.getNormalProbability()) {
+            candidates = new CharacterProbability[] {
+                    CharacterProbability.JELLYFISH,
+                    CharacterProbability.RED_JELLYFISH,
+                    CharacterProbability.GREEN_JELLYFISH,
+                    CharacterProbability.PURPLE_JELLYFISH,
+                    CharacterProbability.PINK_JELLYFISH,
+                    CharacterProbability.DINO,
+                    CharacterProbability.RED_DINO,
+                    CharacterProbability.GREEN_DINO,
+                    CharacterProbability.PURPLE_DINO,
+                    CharacterProbability.PINK_DINO
+            };
+        }
+        // 레어 등급
+        else if (characterRandom <= eggProb.getRareProbability()) {
+            candidates = new CharacterProbability[] {
+                    CharacterProbability.RABBIT_JELLYFISH,
+                    CharacterProbability.STARFISH_JELLYFISH,
+                    CharacterProbability.DEER_DINO,
+                    CharacterProbability.NESSIE_DINO
+            };
+        }
+        // 에픽 등급
+        else if (characterRandom <= eggProb.getEpicProbability()) {
+            candidates = new CharacterProbability[] {
+                    CharacterProbability.LIGHTNING_JELLYFISH,
+                    CharacterProbability.STRAWBERRY_JELLYFISH,
+                    CharacterProbability.PANCAKE_DINO,
+                    CharacterProbability.MELONSODA_DINO
+            };
+        }
+        // 레전더리 등급
+        else {
+            candidates = new CharacterProbability[] {
+                    CharacterProbability.SPACE_JELLYFISH,
+                    CharacterProbability.DRAGON_DINO
+            };
+        }
+
+        // 후보 배열에서 characterClassRandom 값에 따라 캐릭터(enum) 선택
+        CharacterProbability selectedCandidate = selectCandidate(candidates, characterClassRandom);
+
+        // 캐릭터 생성
+        UserCharacter character = characterService.createCharacter(
+                userId,
+                selectedCandidate.getRank(),
+                selectedCandidate.getType(),
+                selectedCandidate.getCharacterClass(),
+                false
+        );
+        
+        // 생성된 캐릭터를 담은 Egg 생성
+        Egg egg = new Egg(eggProb.getRank(), eggWalk, 0, obtainedPosition, obtainedDate, false, character, member);
+        eggRepository.save(egg);
+        return egg;
+    }
+
+    // 후보 배열에서 characterClassRandom 값에 따라 캐릭터 후보 선택 method
+    // input : candidates(캐릭터 후보 배열), randomVal(캐릭터 선택 랜덤 값)
+    private CharacterProbability selectCandidate(CharacterProbability[] candidates, double randomVal) {
+        for (CharacterProbability candidate : candidates) {
+            if (randomVal <= candidate.getProbability()) {
+                return candidate;
+            }
+        }
+        return candidates[candidates.length - 1];
+    }
+
 
 }
