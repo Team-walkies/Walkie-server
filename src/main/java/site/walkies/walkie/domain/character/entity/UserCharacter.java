@@ -5,18 +5,19 @@ import lombok.Getter;
 import site.walkies.walkie.domain.member.entity.Member;
 
 @Entity
-@Table(name = "character")
+@Table(name = "user_character")
 @Getter
 public class UserCharacter {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "rank")
+    @Column(name = "character_rank")
     private Integer rank;
 
-    @Column(name = "type")
+    @Column(name = "character_type")
     private Integer type;
 
     // 'class'는 예약어이므로 다른 이름으로 매핑합니다.
