@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.egg.service.EggService;
+import site.walkies.walkie.domain.egg.service.dto.response.GetEggCountResponse;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggDetailResponse;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggResponse;
 import site.walkies.walkie.domain.egg.service.dto.response.PostEggResponse;
@@ -30,6 +31,13 @@ public class EggController {
     @GetMapping("/{eggId}")
     public SuccessResponse<GetEggDetailResponse> getEggDetail(@PathVariable Long eggId) {
         GetEggDetailResponse response = eggService.getEggDetail(eggId);
+        return SuccessResponse.ok(response);
+    }
+
+    // 보유한 알 갯수 조회 API
+    @GetMapping("/count")
+    public SuccessResponse<GetEggCountResponse> getEggCount() {
+        GetEggCountResponse response = eggService.getEggCount(1);
         return SuccessResponse.ok(response);
     }
 }
