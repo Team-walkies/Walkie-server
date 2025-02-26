@@ -14,7 +14,7 @@ public enum ErrorCode {
     //    JSON_PROCESSING_ERROR("JSON 처리 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // 알 관련 예외
-
+    EGG_NOT_FOUND("해당 id를 가진 알이 없습니다.", HttpStatus.NOT_FOUND),
     // 캐릭터 관련 예외
 
     // 공지 관련 예외
