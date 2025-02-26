@@ -23,26 +23,8 @@ public class EggController {
 
     // 보유한 알 리스트 조회 API
     @GetMapping
-    public List<GetEggResponse> getAll() {
+    public SuccessResponse<List<GetEggResponse>> getAll() {
         List<GetEggResponse> responses = eggService.getEggsList(1);
-        return responses;
-    }
-
-    // 알 생성 테스트 API
-    @PostMapping
-    public SuccessResponse<?> createEgg() {
-        Egg egg = eggService.createEgg(1, "테스트 장소", LocalDate.now());
-        PostEggResponse postEggResponse = PostEggResponse.builder()
-                .eggId(egg.getId())
-                .rank(egg.getRank())
-                .needStep(egg.getNeedStep())
-                .nowStep(egg.getNowStep())
-                .obtainedPosition(egg.getObtainedPosition())
-                .obtainedDate(egg.getObtainedDate())
-                .picked(egg.getPicked())
-                .userCharacterId(egg.getUserCharacter().getId())
-                .memberId(egg.getUser().getId())
-                .build();
-        return SuccessResponse.created(postEggResponse);
+        return SuccessResponse.ok(responses);
     }
 }
