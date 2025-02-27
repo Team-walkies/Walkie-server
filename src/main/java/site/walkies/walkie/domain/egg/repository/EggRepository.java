@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface EggRepository extends JpaRepository<Egg, Long> {
     List<Egg> findAllByUserId(Long userId);
+
+    Integer countAllByUserId(Long userId);
 }
