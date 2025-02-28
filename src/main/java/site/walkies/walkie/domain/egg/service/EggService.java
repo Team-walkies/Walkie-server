@@ -8,10 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
 import site.walkies.walkie.domain.character.entity.UserCharacter;
-import site.walkies.walkie.domain.character.repository.UserCharacterRepository;
 import site.walkies.walkie.domain.character.service.CharacterService;
 import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.egg.repository.EggRepository;
+import site.walkies.walkie.domain.egg.service.dto.response.GetEggCountResponse;
+import site.walkies.walkie.domain.egg.service.dto.response.GetEggDetailResponse;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggResponse;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
@@ -159,7 +160,32 @@ public class EggService {
         return candidates[candidates.length - 1];
     }
 
+    // 알 상세정보 조회 method
+    // input : egg ID
+    // output : GetEggDetailResponse
+    public GetEggDetailResponse getEggDetail(long eggId) {
+        Egg egg = eggRepository.findById(eggId).orElse(null);
+        if (egg == null) {
+            throw new CustomException(ErrorCode.EGG_NOT_FOUND);
+        }
 
+        GetEggDetailResponse response = GetEggDetailResponse.builder()
+                .rank(egg.getRank())
+                .needStep(egg.getNeedStep())
+                .nowStep(egg.getNowStep())
+                .obtainedPosition(egg.getObtainedPosition())
+                .obtainedDate(egg.getObtainedDate())
+                .build();
+        return response;
+    }
+
+    // 보유한 알 갯수 조회 method
+    // input : user ID
+    // output : GetEggCountResponse
+    public GetEggCountResponse getEggCount(long userId) {
+        GetEggCountResponse response = GetEggCountResponse.builder().eggCount(eggRepository.countAllByUserId(userId)).build();
+        return response;
+    }
 
     // 알의 걸은 걸음수 업데이트 method
     // input : egg ID, now step
