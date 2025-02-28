@@ -8,6 +8,8 @@ import site.walkies.walkie.domain.character.repository.UserCharacterRepository;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.character.entity.UserCharacter;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
+import site.walkies.walkie.global.web.exception.CustomException;
+import site.walkies.walkie.global.web.exception.ErrorCode;
 
 import java.time.LocalDate;
 
@@ -23,7 +25,9 @@ public class CharacterService {
     // output : character
     public UserCharacter createCharacter(Long userId, int rank, int type, int characterClass, boolean picked) {
         Member member = memberRepository.findById(userId).orElse(null);
-        if (member == null) { return null; }
+        if (member == null) {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
 
         // 캐릭터가 존재하는 경우 캐릭터 return
         UserCharacter userCharacter = userCharacterRepository.findByUserIdAndRankAndAndTypeAndAndCharacterClass(member.getId(),rank,type,characterClass);
@@ -43,7 +47,9 @@ public class CharacterService {
     // output : CharacterBorn
     public UserCharacterBorn createCharacterBorn(Long characterId, LocalDate obtainedDate, String obtainedPosition) {
         UserCharacter userCharacter = userCharacterRepository.findById(characterId).orElse(null);
-        if(userCharacter == null) { return null;}
+        if(userCharacter == null) {
+            throw new CustomException(ErrorCode.CHARACTER_NOT_FOUND);
+        }
 
         UserCharacterBorn userCharacterBorn = new UserCharacterBorn(obtainedDate, obtainedPosition, userCharacter);
         userCharacterBornRepository.save(userCharacterBorn);
