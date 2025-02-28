@@ -57,7 +57,7 @@ public class EggService {
     public Egg createEgg(long userId, String obtainedPosition, LocalDate obtainedDate) {
         Member member = memberRepository.findById(userId).orElse(null);
         if (member == null) {
-            return null;
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
 
         // 1. 랜덤값 생성
@@ -192,12 +192,14 @@ public class EggService {
     public void updateEggNowStep(long eggId, int nowStep, double latitude, double longitude) {
         Egg egg = eggRepository.findById(eggId).orElse(null);
         if (egg == null) {
-            return;
+            throw new CustomException(ErrorCode.EGG_NOT_FOUND);
         }
 
         if(egg.getNeedStep() <= nowStep){
             String sido = convertGeoToString(latitude,longitude);
             characterService.createCharacterBorn(egg.getUserCharacter().getId(),LocalDate.now(),sido);
+            eggRepository.delete(egg);
+            return;
         }
 
         egg.eggNowStepUpdate(nowStep);

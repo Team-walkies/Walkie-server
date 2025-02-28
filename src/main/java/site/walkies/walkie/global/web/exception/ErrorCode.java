@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     // 멤버 관련 예외
     // 아래는 예시입니다. 오류 상황에 맞는 이름과 메시지를 만들고, 사용할 HttpStatus를 선택하면 됩니다.
-    //    USER_NOT_FOUND("존재하지 않는 유저입니다.", HttpStatus.UNAUTHORIZED),
+        USER_NOT_FOUND("존재하지 않는 유저입니다.", HttpStatus.UNAUTHORIZED),
     //    USER_VALIDATION_ERROR("유저 검증 오류가 발생했습니다.", HttpStatus.UNAUTHORIZED),
     //    INVALID_PASSWORD("올바르지 않은 비밀번호입니다.", HttpStatus.UNAUTHORIZED),
     //    INVALID_ACCESS_TOKEN("올바르지 않은 ACCESSTOKEN 입니다", HttpStatus.UNAUTHORIZED),
@@ -16,10 +16,11 @@ public enum ErrorCode {
     // 알 관련 예외
     EGG_NOT_FOUND("해당 id를 가진 알이 없습니다.", HttpStatus.NOT_FOUND),
 
-    // tmap 관련 예외
-    TMAP_SERVER_ERROR("좌표 전환에 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-    // 캐릭터 관련 예외
+    // TMAP 관련 예외
+    TMAP_SERVER_ERROR("TMAP API 조회에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 
+    // 캐릭터 관련 예외
+    CHARACTER_NOT_FOUND("해당 id를 가진 캐릭터가 없습니다.", HttpStatus.NOT_FOUND),
     // 공지 관련 예외
 
     // 리뷰 관련 예외
