@@ -1,7 +1,12 @@
 package site.walkies.walkie.domain.egg.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.*;
 import site.walkies.walkie.domain.character.entity.UserCharacter;
 import site.walkies.walkie.domain.character.repository.UserCharacterRepository;
 import site.walkies.walkie.domain.character.service.CharacterService;
@@ -12,6 +17,8 @@ import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.global.probability.CharacterProbability;
 import site.walkies.walkie.global.probability.EggsProbability;
+import site.walkies.walkie.global.web.exception.CustomException;
+import site.walkies.walkie.global.web.exception.ErrorCode;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,6 +32,9 @@ public class EggService {
     private final MemberRepository memberRepository;
 
     private final CharacterService characterService;
+
+    @Value("${tmap-key}")
+    private String tmapKey;
 
     // 보유한 알 리스트 조회 method
     // input : user ID
@@ -150,4 +160,55 @@ public class EggService {
     }
 
 
+
+    // 알의 걸은 걸음수 업데이트 method
+    // input : egg ID, now step
+    public void updateEggNowStep(long eggId, int nowStep, double latitude, double longitude) {
+        Egg egg = eggRepository.findById(eggId).orElse(null);
+        if (egg == null) {
+            return;
+        }
+
+        if(egg.getNeedStep() <= nowStep){
+            String sido = convertGeoToString(latitude,longitude);
+            characterService.createCharacterBorn(egg.getUserCharacter().getId(),LocalDate.now(),sido);
+        }
+
+        egg.eggNowStepUpdate(nowStep);
+        eggRepository.save(egg);
+    }
+
+    // Tmap api를 통해서 좌표를 시도로 변환해주는 함수
+    // input : latitude(위도), longitude(경도)
+    // outPut : position
+    private String convertGeoToString(double latitude, double longitude) {
+        String tmapUrl = "https://apis.openapi.sk.com/tmap/geo/reversegeocoding?version=1&lat="
+                + latitude + "&lon=" + longitude;
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept", "application/json");
+        headers.set("appKey", tmapKey);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(tmapUrl, HttpMethod.GET, entity, String.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                String responseBody = response.getBody();
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode root = mapper.readTree(responseBody);
+                JsonNode addressInfo = root.path("addressInfo");
+
+                String city = addressInfo.path("city_do").asText();
+                String district = addressInfo.path("gu_gun").asText();
+
+                return city + " " +district;
+            }
+        } catch (Exception e) {
+            // API 호출 또는 JSON 파싱 에러 처리
+            e.printStackTrace();
+            throw new CustomException(ErrorCode.TMAP_SERVER_ERROR);
+        }
+        return "";
+    }
 }
