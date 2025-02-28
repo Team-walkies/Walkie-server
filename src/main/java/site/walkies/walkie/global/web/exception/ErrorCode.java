@@ -15,6 +15,8 @@ public enum ErrorCode {
 
     // 알 관련 예외
 
+    // tmap 관련 예외
+    TMAP_SERVER_ERROR("좌표 전환에 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     // 캐릭터 관련 예외
 
     // 공지 관련 예외
