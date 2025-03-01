@@ -21,6 +21,18 @@ public class Member {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "explored_spot")
+    private Integer exploredSpot;
+
+    @Column(name = "recorded_spot")
+    private Integer recordedSpot;
+
+    @Column(name = "is_public")
+    private Boolean isPublic;
+
+    @Column(name = "member_tier")
+    private String memberTier;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "leveling_egg_id")
     private Egg levelingEgg;
