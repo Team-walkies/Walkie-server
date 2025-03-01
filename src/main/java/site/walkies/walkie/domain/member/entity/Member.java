@@ -24,6 +24,9 @@ public class Member {
     @Column(name = "explored_spot")
     private Integer exploredSpot;
 
+    @Column(name = "recorded_spot")
+    private Integer recordedSpot;
+
     @Column(name = "is_public")
     private Boolean isPublic;
 
