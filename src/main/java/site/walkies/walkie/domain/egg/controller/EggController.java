@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.egg.service.EggService;
+import site.walkies.walkie.domain.egg.service.dto.response.*;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggCountResponse;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggDetailResponse;
 import site.walkies.walkie.domain.egg.service.dto.request.PostStepRequest;
@@ -23,9 +24,10 @@ public class EggController {
 
     // 보유한 알 리스트 조회 API
     @GetMapping
-    public SuccessResponse<List<GetEggResponse>> getAll() {
+    public SuccessResponse<EggListResponse> getAll() {
         List<GetEggResponse> responses = eggService.getEggsList(2);
-        return SuccessResponse.ok(responses);
+        EggListResponse response = new EggListResponse(responses);
+        return SuccessResponse.ok(response);
     }
 
     //  알의 걸은 걸음수 업데이트 API
@@ -47,22 +49,5 @@ public class EggController {
     public SuccessResponse<GetEggCountResponse> getEggCount() {
         GetEggCountResponse response = eggService.getEggCount(2);
         return SuccessResponse.ok(response);
-    }
-
-    @PostMapping
-    public SuccessResponse<?> createEgg() {
-        Egg egg = eggService.createEgg(2, "테스트 장소", LocalDate.now());
-        PostEggResponse postEggResponse = PostEggResponse.builder()
-                .eggId(egg.getId())
-                .rank(egg.getRank())
-                .needStep(egg.getNeedStep())
-                .nowStep(egg.getNowStep())
-                .obtainedPosition(egg.getObtainedPosition())
-                .obtainedDate(egg.getObtainedDate())
-                .picked(egg.getPicked())
-                .userCharacterId(egg.getUserCharacter().getId())
-                .memberId(egg.getUser().getId())
-                .build();
-        return SuccessResponse.created(postEggResponse);
     }
 }
