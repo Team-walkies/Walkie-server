@@ -6,4 +6,5 @@ import site.walkies.walkie.domain.character.entity.UserCharacterBorn;
 
 @Repository
 public interface UserCharacterBornRepository extends JpaRepository<UserCharacterBorn, Long> {
+    int countByUserCharacterId(Long userCharacterId);
 }
