@@ -6,4 +6,5 @@ import site.walkies.walkie.domain.character.entity.UserCharacter;
 
 @Repository
 public interface UserCharacterRepository extends JpaRepository<UserCharacter, Long> {
+    UserCharacter findByUserIdAndRankAndAndTypeAndAndCharacterClass(long userId, int rank, int type, int characterClass);
 }
