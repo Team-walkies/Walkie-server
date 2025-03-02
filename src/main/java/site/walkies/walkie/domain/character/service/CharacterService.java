@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import site.walkies.walkie.domain.character.entity.UserCharacterBorn;
 import site.walkies.walkie.domain.character.repository.UserCharacterBornRepository;
 import site.walkies.walkie.domain.character.repository.UserCharacterRepository;
+import site.walkies.walkie.domain.character.service.dto.response.GetCharacterCount;
 import site.walkies.walkie.domain.character.service.dto.response.GetCharacterResponse;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.character.entity.UserCharacter;
@@ -98,4 +99,23 @@ public class CharacterService {
         return responses;
     }
 
+    // 보유한 캐릭터 갯수 조회 API
+    // input : userId
+    // output : GetCharacterCount
+    public GetCharacterCount getCharacterCount(long userId) {
+        Member member = memberRepository.findById(userId).orElse(null);
+        if (member == null) {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
+        List<UserCharacter> userCharacters = userCharacterRepository.findAllByUserId(userId);;
+
+        int count = 0;
+        for(UserCharacter userCharacter : userCharacters) {
+            count += userCharacterBornRepository.countByUserCharacterId(userCharacter.getId());
+        }
+        GetCharacterCount response = GetCharacterCount.builder()
+                .charactersCount(count)
+                .build();
+        return response;
+    }
 }
