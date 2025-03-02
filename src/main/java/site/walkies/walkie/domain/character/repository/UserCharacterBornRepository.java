@@ -4,7 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import site.walkies.walkie.domain.character.entity.UserCharacterBorn;
 
+import java.util.List;
+
 @Repository
 public interface UserCharacterBornRepository extends JpaRepository<UserCharacterBorn, Long> {
     int countByUserCharacterId(Long userCharacterId);
+    List<UserCharacterBorn> findAllByUserCharacterId(Long userCharacterId);
 }

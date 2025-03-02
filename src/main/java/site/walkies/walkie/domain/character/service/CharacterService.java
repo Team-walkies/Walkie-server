@@ -6,7 +6,9 @@ import site.walkies.walkie.domain.character.entity.UserCharacterBorn;
 import site.walkies.walkie.domain.character.repository.UserCharacterBornRepository;
 import site.walkies.walkie.domain.character.repository.UserCharacterRepository;
 import site.walkies.walkie.domain.character.service.dto.response.GetCharacterCount;
+import site.walkies.walkie.domain.character.service.dto.response.GetCharacterDetailResponse;
 import site.walkies.walkie.domain.character.service.dto.response.GetCharacterResponse;
+import site.walkies.walkie.domain.character.service.dto.response.ObtainedDetail;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.character.entity.UserCharacter;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
@@ -66,7 +68,9 @@ public class CharacterService {
     // output : List<GetCharacterResponse>
     public List<GetCharacterResponse> getCharacters(long userId,Integer characterType) {
         Member member = memberRepository.findById(userId).orElse(null);
-        if (member == null) { return null; }
+        if (member == null) {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
 
         List<UserCharacter> userCharacters;
         
@@ -115,6 +119,35 @@ public class CharacterService {
         }
         GetCharacterCount response = GetCharacterCount.builder()
                 .charactersCount(count)
+                .build();
+        return response;
+    }
+
+    // 캐릭터 획득 정보 상세 조회 함수
+    // input : characterId
+    // output : GetCharacterDetailResponse
+    public GetCharacterDetailResponse getCharacterDetailResponse(Long characterId) {
+        UserCharacter userCharacter = userCharacterRepository.findById(characterId).orElse(null);
+        if(userCharacter == null) {
+            throw new CustomException(ErrorCode.CHARACTER_NOT_FOUND);
+        }
+        // 해당 캐릭터 갯수
+        int count = userCharacterBornRepository.countByUserCharacterId(userCharacter.getId());
+        // 캐릭터 부화 리스트 조회
+        List<UserCharacterBorn> userCharacterBorns = userCharacterBornRepository.findAllByUserCharacterId(userCharacter.getId());
+        // 캐릭터 부화 디테일 저장
+        List<ObtainedDetail> details = new ArrayList<>();
+        for(UserCharacterBorn userCharacterBorn : userCharacterBorns) {
+            ObtainedDetail detail = ObtainedDetail.builder()
+                    .obtainedPosition(userCharacterBorn.getObtainedPosition())
+                    .obtainedDate(userCharacterBorn.getObtainedDate())
+                    .build();
+            details.add(detail);
+        }
+        GetCharacterDetailResponse response = GetCharacterDetailResponse.builder()
+                .characterCount(count)
+                .rank(userCharacter.getRank())
+                .obtainedDetails(details)
                 .build();
         return response;
     }
