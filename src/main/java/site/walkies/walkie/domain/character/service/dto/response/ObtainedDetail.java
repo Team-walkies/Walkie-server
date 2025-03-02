@@ -1,0 +1,15 @@
+package site.walkies.walkie.domain.character.service.dto.response;
+
+import lombok.Builder;
+import lombok.Getter;
+
+import java.time.LocalDate;
+
+@Getter
+@Builder
+public class ObtainedDetail {
+    // 얻은 위치
+    private String obtainedPosition;
+    // 얻은 날짜
+    private LocalDate obtainedDate;
+}
