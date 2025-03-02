@@ -1,0 +1,76 @@
+package site.walkies.walkie.domain.review.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import site.walkies.walkie.domain.character.entity.UserCharacter;
+import site.walkies.walkie.domain.character.repository.UserCharacterRepository;
+import site.walkies.walkie.domain.member.entity.Member;
+import site.walkies.walkie.domain.member.repository.MemberRepository;
+import site.walkies.walkie.domain.review.entity.Review;
+import site.walkies.walkie.domain.review.repository.ReviewRepository;
+import site.walkies.walkie.domain.review.service.dto.response.PostReviewResponse;
+import site.walkies.walkie.domain.spot.entity.Spot;
+import site.walkies.walkie.domain.spot.repository.SpotRepository;
+import site.walkies.walkie.global.file.FileService;
+import site.walkies.walkie.global.web.exception.CustomException;
+import site.walkies.walkie.global.web.exception.ErrorCode;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+@Service
+@RequiredArgsConstructor
+public class ReviewService {
+    private final ReviewRepository reviewRepository;
+    private final MemberRepository memberRepository;
+    private final SpotRepository spotRepository;
+    private final UserCharacterRepository userCharacterRepository;
+
+    private final FileService fileService;
+
+    // 리뷰 작성 method
+    // input : userId, spotId (스팟 id), distance (걸은 거리), step(걸은 걸음), date(걸은 날짜), startTime(시작 시간), endTime(종료 시간), characterId(캐릭터 id), pic(사진), reviewCd(리뷰 작성 여부),  review(리뷰), rating(평점)
+    // output: PostReviewResponse
+    public PostReviewResponse postReview(long userId, long spotId, double distance, int step, LocalDate date, LocalTime startTime, LocalTime endTime, long characterId, boolean reviewCd, MultipartFile pic, String review, double rating) {
+        Member member = memberRepository.findById(userId).orElse(null);
+        if (member == null) {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        Spot spot = spotRepository.findById(spotId).orElse(null);
+        if (spot == null) {
+            return null;
+        }
+
+        UserCharacter userCharacter = userCharacterRepository.findById(characterId).orElse(null);
+        if (userCharacter == null) {
+            throw new CustomException(ErrorCode.CHARACTER_NOT_FOUND);
+        }
+
+        // 파일 저장
+        String fileName = fileService.saveFile(pic);
+
+        // 리뷰 생성
+        Review createReview = Review.createReview(member,spot,distance,step,date,startTime,endTime,userCharacter,fileName,reviewCd,review,rating);
+
+        //리뷰 저장
+        reviewRepository.save(createReview);
+
+        PostReviewResponse response = PostReviewResponse.builder()
+                .spotId(createReview.getSpot().getId())
+                .distance(createReview.getDistance())
+                .step(createReview.getStep())
+                .date(createReview.getReviewDate())
+                .startTime(createReview.getStartTime())
+                .endTime(createReview.getEndTime())
+                .characterId(createReview.getUserCharacter().getId())
+                .reviewCd(createReview.getReviewCd())
+                .pic(createReview.getPic())
+                .review(createReview.getReview())
+                .rating(createReview.getRating())
+                .build();
+
+        return response;
+    }
+}
