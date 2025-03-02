@@ -5,6 +5,11 @@ import org.springframework.web.bind.annotation.*;
 import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.egg.service.EggService;
 import site.walkies.walkie.domain.egg.service.dto.response.*;
+import site.walkies.walkie.domain.egg.service.dto.response.GetEggCountResponse;
+import site.walkies.walkie.domain.egg.service.dto.response.GetEggDetailResponse;
+import site.walkies.walkie.domain.egg.service.dto.request.PostStepRequest;
+import site.walkies.walkie.domain.egg.service.dto.response.GetEggResponse;
+import site.walkies.walkie.domain.egg.service.dto.response.PostEggResponse;
 import site.walkies.walkie.global.web.dto.response.SuccessResponse;
 
 import java.time.LocalDate;
@@ -20,9 +25,16 @@ public class EggController {
     // 보유한 알 리스트 조회 API
     @GetMapping
     public SuccessResponse<EggListResponse> getAll() {
-        List<GetEggResponse> responses = eggService.getEggsList(1);
+        List<GetEggResponse> responses = eggService.getEggsList(2);
         EggListResponse response = new EggListResponse(responses);
         return SuccessResponse.ok(response);
+    }
+
+    //  알의 걸은 걸음수 업데이트 API
+    @PostMapping("/steps")
+    public SuccessResponse<?> updateSteps(@RequestBody PostStepRequest stepRequest) {
+        eggService.updateEggNowStep(stepRequest.getEggId(), stepRequest.getNowStep(),stepRequest.getLatitude(),stepRequest.getLongitude());
+        return SuccessResponse.ok();
     }
 
     // 알 디테일 조회 API
@@ -35,7 +47,7 @@ public class EggController {
     // 보유한 알 갯수 조회 API
     @GetMapping("/count")
     public SuccessResponse<GetEggCountResponse> getEggCount() {
-        GetEggCountResponse response = eggService.getEggCount(1);
+        GetEggCountResponse response = eggService.getEggCount(2);
         return SuccessResponse.ok(response);
     }
 }

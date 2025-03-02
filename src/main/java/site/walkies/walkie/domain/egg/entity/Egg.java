@@ -59,4 +59,9 @@ public class Egg {
         this.userCharacter = userCharacter;
         this.user = user;
     }
+
+    public Egg eggNowStepUpdate(Integer nowStep) {
+        this.nowStep = nowStep;
+        return this;
+    }
 }
