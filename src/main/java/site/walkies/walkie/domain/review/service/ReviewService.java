@@ -9,10 +9,7 @@ import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.domain.review.entity.Review;
 import site.walkies.walkie.domain.review.repository.ReviewRepository;
-import site.walkies.walkie.domain.review.service.dto.response.GetReviewResponse;
-import site.walkies.walkie.domain.review.service.dto.response.PatchReviewResponse;
-import site.walkies.walkie.domain.review.service.dto.response.PostReviewResponse;
-import site.walkies.walkie.domain.review.service.dto.response.ReviewListResponse;
+import site.walkies.walkie.domain.review.service.dto.response.*;
 import site.walkies.walkie.domain.spot.entity.Spot;
 import site.walkies.walkie.domain.spot.repository.SpotRepository;
 import site.walkies.walkie.global.file.FileService;
@@ -190,5 +187,18 @@ public class ReviewService {
         }
         reviewRepository.delete(review);
         return review.getId();
+    }
+
+    // 스팟 별 리뷰수 조회 method
+    // input : userId, spotId
+    // output : GetReviewCount
+    public GetReviewCountResponse getReviewCount(long spotId) {
+        int count = reviewRepository.countBySpotId(spotId);
+
+        GetReviewCountResponse response = GetReviewCountResponse.builder()
+                .count(count)
+                .build();
+
+        return response;
     }
 }
