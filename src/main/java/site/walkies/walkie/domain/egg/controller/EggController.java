@@ -31,10 +31,11 @@ public class EggController {
     }
 
     //  알의 걸은 걸음수 업데이트 API
-    @PostMapping("/steps")
+    @PatchMapping("/steps")
     public SuccessResponse<?> updateSteps(@RequestBody PostStepRequest stepRequest) {
-        eggService.updateEggNowStep(stepRequest.getEggId(), stepRequest.getNowStep(),stepRequest.getLatitude(),stepRequest.getLongitude());
-        return SuccessResponse.ok();
+        PatchEggResponse response = eggService.updateEggNowStep(stepRequest.getEggId(), stepRequest.getNowStep(),stepRequest.getLatitude(),stepRequest.getLongitude());
+        // update 추가시 수정 필요
+        return SuccessResponse.ok(response);
     }
 
     // 알 디테일 조회 API
