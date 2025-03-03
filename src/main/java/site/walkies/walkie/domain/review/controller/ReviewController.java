@@ -29,4 +29,11 @@ public class ReviewController {
         ReviewListResponse response = reviewService.getReviewList(2,startDate,endDate);
         return SuccessResponse.ok(response);
     }
+
+    @GetMapping("/spots")
+    public SuccessResponse<ReviewListResponse> getReviewListBySpots(@RequestParam("spotId") long spotId) {
+        ReviewListResponse response = reviewService.getReviewList(2,spotId);
+        return SuccessResponse.ok(response);
+    }
+
 }
