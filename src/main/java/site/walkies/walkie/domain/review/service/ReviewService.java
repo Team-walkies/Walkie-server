@@ -180,13 +180,8 @@ public class ReviewService {
     // 스팟 별 리뷰수 조회 method
     // input : userId, spotId
     // output : GetReviewCount
-    public GetReviewCountResponse getReviewCount(long userId, long spotId) {
-        Member member = memberRepository.findById(userId).orElse(null);
-        if (member == null) {
-            throw new CustomException(ErrorCode.USER_NOT_FOUND);
-        }
-
-        int count = reviewRepository.countByMemberIdAndSpotId(userId,spotId);
+    public GetReviewCountResponse getReviewCount(long spotId) {
+        int count = reviewRepository.countBySpotId(spotId);
 
         GetReviewCountResponse response = GetReviewCountResponse.builder()
                 .count(count)

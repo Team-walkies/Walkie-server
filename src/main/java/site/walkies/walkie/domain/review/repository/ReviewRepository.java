@@ -17,5 +17,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByMemberIdAndSpotId(Long id, Long spotId);
 
     // 리뷰 갯수 조회
-    int countByMemberIdAndSpotId(Long id, Long spotId);
+    int countBySpotId(Long spotId);
 }

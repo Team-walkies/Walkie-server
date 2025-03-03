@@ -48,7 +48,7 @@ public class ReviewController {
 
     @GetMapping("/count/{spotId}")
     public SuccessResponse<GetReviewCountResponse> getReviewCount(@PathVariable("spotId") long spotId) {
-        GetReviewCountResponse response = reviewService.getReviewCount(2,spotId);
+        GetReviewCountResponse response = reviewService.getReviewCount(spotId);
         return SuccessResponse.ok(response);
     }
 }
