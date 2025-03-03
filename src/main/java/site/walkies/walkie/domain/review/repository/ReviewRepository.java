@@ -12,4 +12,7 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     // start와 end 사이의 기간 조회
     List<Review> findByMemberIdAndAndReviewDateBetween(Long id, LocalDate start, LocalDate end);
+
+    // spotId로 조회
+    List<Review> findByMemberIdAndSpotId(Long id, Long spotId);
 }
