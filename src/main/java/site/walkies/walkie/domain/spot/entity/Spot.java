@@ -19,7 +19,7 @@ public class Spot {
     @Column(name = "latitude")
     private Double latitude;
 
-    @Column(name = "longtitude")
+    @Column(name = "longitude")
     private Double longtitude;
 
     @Column(name = "street_address")

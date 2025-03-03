@@ -19,7 +19,7 @@ public class Review {
     private Long id;
 
     @Column(name = "review", columnDefinition = "TEXT")
-    private String reviewText;
+    private String review;
 
     @Column(name = "rating")
     private Double rating;
@@ -40,7 +40,7 @@ public class Review {
     private LocalTime endTime;
 
     @Column(name = "image_url", columnDefinition = "MEDIUMTEXT")
-    private String imageUrl;
+    private String pic;
 
     @Column(name = "review_cd")
     private Boolean reviewCd;
@@ -59,4 +59,59 @@ public class Review {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "character_id", nullable = false)
     private UserCharacter userCharacter;
+
+    // 기본 생성자 (JPA용)
+    protected Review() {
+    }
+
+    public static Review createReview(
+            Member member,
+            Spot spot,
+            Double distance,
+            Integer step,
+            LocalDate reviewDate,
+            LocalTime startTime,
+            LocalTime endTime,
+            UserCharacter userCharacter,
+            String imageUrl,
+            Boolean reviewCd,
+            String reviewText,
+            Double rating
+    ) {
+        Review review = new Review();
+        review.review = reviewText;
+        review.rating = rating;
+        review.distance = distance;
+        review.step = step;
+        review.reviewDate = reviewDate;
+        review.startTime = startTime;
+        review.endTime = endTime;
+        review.pic = imageUrl;
+        review.reviewCd = reviewCd;
+        review.deleteCd = false; // 기본값으로 false 지정
+        review.member = member;
+        review.spot = spot;
+        review.userCharacter = userCharacter;
+        return review;
+    }
+
+    public Review updateReviewCd(Boolean reviewCd) {
+        this.reviewCd = reviewCd;
+        return this;
+    }
+
+    public Review updateDeleteCd(Boolean deleteCd) {
+        this.deleteCd = deleteCd;
+        return this;
+    }
+
+    public Review updateReviewText(String reviewText) {
+        this.review = reviewText;
+        return this;
+    }
+
+    public Review updateRating(Double rating) {
+        this.rating = rating;
+        return this;
+    }
 }

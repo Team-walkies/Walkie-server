@@ -24,6 +24,8 @@ public enum ErrorCode {
     // 공지 관련 예외
 
     // 리뷰 관련 예외
+    FILE_SAVE_ERROR("파일 저장에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    FILE_NOT_FOUND("파일을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
     // 스팟 관련 예외
     // 아래는 예시입니다. Enum이므로 마지막 예외에는 세미콜론 (;), 그 외에는 콤마(,)를 붙여줘야 합니다.
