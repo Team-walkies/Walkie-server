@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import site.walkies.walkie.domain.review.service.ReviewService;
 import site.walkies.walkie.domain.review.service.dto.request.PatchReviewRequest;
 import site.walkies.walkie.domain.review.service.dto.request.ReviewData;
+import site.walkies.walkie.domain.review.service.dto.response.GetReviewCountResponse;
 import site.walkies.walkie.domain.review.service.dto.response.PatchReviewResponse;
 import site.walkies.walkie.domain.review.service.dto.response.PostReviewResponse;
 import site.walkies.walkie.domain.review.service.dto.response.ReviewListResponse;
@@ -42,6 +43,12 @@ public class ReviewController {
     public SuccessResponse<?> updateReview(@PathVariable("reviewId") Long reviewId, @RequestBody PatchReviewRequest patchReviewRequest) {
         PatchReviewResponse response = reviewService.patchReviewResponse(reviewId, patchReviewRequest.getReview(),patchReviewRequest.getRating());
         // 추후 update로 변경 필요
+        return SuccessResponse.ok(response);
+    }
+
+    @GetMapping("/count/{spotId}")
+    public SuccessResponse<GetReviewCountResponse> getReviewCount(@PathVariable("spotId") long spotId) {
+        GetReviewCountResponse response = reviewService.getReviewCount(2,spotId);
         return SuccessResponse.ok(response);
     }
 }
