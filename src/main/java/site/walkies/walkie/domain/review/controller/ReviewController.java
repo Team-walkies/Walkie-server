@@ -14,6 +14,7 @@ import site.walkies.walkie.domain.review.service.dto.response.ReviewListResponse
 import site.walkies.walkie.global.web.dto.response.SuccessResponse;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/reviews")
@@ -46,6 +47,14 @@ public class ReviewController {
         return SuccessResponse.ok(response);
     }
 
+
+    @DeleteMapping("/{reviewId}")
+    public SuccessResponse<?> deleteReview(@PathVariable("reviewId") Long reviewId) {
+        long id = reviewService.deleteReview(reviewId);
+        // 추후 delete로 변경 필요
+        return SuccessResponse.ok(id);
+    }
+  
     @GetMapping("/count/{spotId}")
     public SuccessResponse<GetReviewCountResponse> getReviewCount(@PathVariable("spotId") long spotId) {
         GetReviewCountResponse response = reviewService.getReviewCount(spotId);
