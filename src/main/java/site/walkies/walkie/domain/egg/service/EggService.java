@@ -11,10 +11,7 @@ import site.walkies.walkie.domain.character.entity.UserCharacter;
 import site.walkies.walkie.domain.character.service.CharacterService;
 import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.egg.repository.EggRepository;
-import site.walkies.walkie.domain.egg.service.dto.response.GetEggCountResponse;
-import site.walkies.walkie.domain.egg.service.dto.response.GetEggDetailResponse;
-import site.walkies.walkie.domain.egg.service.dto.response.GetEggResponse;
-import site.walkies.walkie.domain.egg.service.dto.response.PatchEggResponse;
+import site.walkies.walkie.domain.egg.service.dto.response.*;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.global.probability.CharacterProbability;
@@ -191,7 +188,7 @@ public class EggService {
     // 알의 걸은 걸음수 업데이트 method
     // input : egg ID, now step
     // output : PatchEggResponse
-    public PatchEggResponse updateEggNowStep(long eggId, int nowStep, double latitude, double longitude) {
+    public EggResponse updateEggNowStep(long eggId, int nowStep, double latitude, double longitude) {
         Egg egg = eggRepository.findById(eggId).orElse(null);
         if (egg == null) {
             throw new CustomException(ErrorCode.EGG_NOT_FOUND);
@@ -201,13 +198,16 @@ public class EggService {
             String sido = convertGeoToString(latitude,longitude);
             characterService.createCharacterBorn(egg.getUserCharacter().getId(),LocalDate.now(),sido);
             eggRepository.delete(egg);
-            PatchEggResponse response = PatchEggResponse.builder()
+            EggResponse response = EggResponse.builder()
                     .eggId(egg.getId())
                     .rank(egg.getRank())
                     .nowStep(egg.getNowStep())
                     .needStep(egg.getNeedStep())
-                    .characterId(egg.getUserCharacter().getId())
-                    .play(egg.getPicked())
+                    .userCharacterId(egg.getUserCharacter().getId())
+                    .obtainedDate(egg.getObtainedDate())
+                    .obtainedPosition(egg.getObtainedPosition())
+                    .memberId(egg.getUser().getId())
+                    .picked(egg.getPicked())
                     .build();
             return response;
         }
@@ -215,13 +215,16 @@ public class EggService {
         egg.eggNowStepUpdate(nowStep);
         egg = eggRepository.save(egg);
 
-        PatchEggResponse response = PatchEggResponse.builder()
+        EggResponse response = EggResponse.builder()
                 .eggId(egg.getId())
                 .rank(egg.getRank())
                 .nowStep(egg.getNowStep())
                 .needStep(egg.getNeedStep())
-                .characterId(egg.getUserCharacter().getId())
-                .play(egg.getPicked())
+                .userCharacterId(egg.getUserCharacter().getId())
+                .obtainedDate(egg.getObtainedDate())
+                .obtainedPosition(egg.getObtainedPosition())
+                .memberId(egg.getUser().getId())
+                .picked(egg.getPicked())
                 .build();
         return response;
     }
