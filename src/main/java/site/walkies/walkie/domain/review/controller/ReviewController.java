@@ -9,7 +9,10 @@ import site.walkies.walkie.domain.review.service.dto.request.PatchReviewRequest;
 import site.walkies.walkie.domain.review.service.dto.request.ReviewData;
 import site.walkies.walkie.domain.review.service.dto.response.PatchReviewResponse;
 import site.walkies.walkie.domain.review.service.dto.response.PostReviewResponse;
+import site.walkies.walkie.domain.review.service.dto.response.ReviewListResponse;
 import site.walkies.walkie.global.web.dto.response.SuccessResponse;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/reviews")
@@ -22,7 +25,13 @@ public class ReviewController {
         PostReviewResponse response = reviewService.postReview(2,reviewData.getSpotId(),reviewData.getDistance(),reviewData.getStep(),reviewData.getDate(),reviewData.getStartTime(),reviewData.getEndTime(),reviewData.getCharacterId(),reviewData.getReviewCd(),pic,reviewData.getReview(),reviewData.getRating());
         return SuccessResponse.created(response);
     }
-    
+
+    @GetMapping("/calendar")
+    public SuccessResponse<ReviewListResponse> getReviewListByCalendar(@RequestParam(value = "startDate", defaultValue = "2000-01-01")LocalDate startDate, @RequestParam(value = "endDate", defaultValue = "9999-12-31")LocalDate endDate) {
+        ReviewListResponse response = reviewService.getReviewList(2,startDate,endDate);
+        return SuccessResponse.ok(response);
+    }
+
     @PatchMapping("/{reviewId}")
     public SuccessResponse<?> updateReview(@PathVariable("reviewId") Long reviewId, @RequestBody PatchReviewRequest patchReviewRequest) {
         PatchReviewResponse response = reviewService.patchReviewResponse(reviewId, patchReviewRequest.getReview(),patchReviewRequest.getRating());

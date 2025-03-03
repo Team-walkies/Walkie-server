@@ -9,8 +9,10 @@ import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.domain.review.entity.Review;
 import site.walkies.walkie.domain.review.repository.ReviewRepository;
+import site.walkies.walkie.domain.review.service.dto.response.GetReviewResponse;
 import site.walkies.walkie.domain.review.service.dto.response.PatchReviewResponse;
 import site.walkies.walkie.domain.review.service.dto.response.PostReviewResponse;
+import site.walkies.walkie.domain.review.service.dto.response.ReviewListResponse;
 import site.walkies.walkie.domain.spot.entity.Spot;
 import site.walkies.walkie.domain.spot.repository.SpotRepository;
 import site.walkies.walkie.global.file.FileService;
@@ -19,6 +21,8 @@ import site.walkies.walkie.global.web.exception.ErrorCode;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -72,6 +76,41 @@ public class ReviewService {
                 .rating(createReview.getRating())
                 .build();
 
+        return response;
+    }
+
+    // 캘린더 리뷰 리스트 조회 method
+    // input : userId, startDate(조회 시작 날짜), endDate(조회 종료 날짜)
+    // output : ReviewListResponse
+    public ReviewListResponse getReviewList(long userId, LocalDate startDate, LocalDate endDate) {
+        Member member = memberRepository.findById(userId).orElse(null);
+        if (member == null) {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        List<Review> reviews =  reviewRepository.findByMemberIdAndAndReviewDateBetween(userId,startDate,endDate);
+
+        // 조회된 리뷰를 저장할 리스트
+        List<GetReviewResponse> responses = new ArrayList<>();
+        for (Review review : reviews) {
+            GetReviewResponse getReviewResponse = GetReviewResponse.builder()
+                    .reviewId(review.getId())
+                    .spotId(review.getSpot().getId())
+                    .distance(review.getDistance())
+                    .step(review.getStep())
+                    .date(review.getReviewDate())
+                    .startTime(review.getStartTime())
+                    .endTime(review.getEndTime())
+                    .characterId(review.getUserCharacter().getId())
+                    .pic(review.getPic())
+                    .reviewCd(review.getReviewCd())
+                    .review(review.getReview())
+                    .rating(review.getRating())
+                    .build();
+            responses.add(getReviewResponse);
+        }
+
+        ReviewListResponse response = new ReviewListResponse(responses);
         return response;
     }
 
