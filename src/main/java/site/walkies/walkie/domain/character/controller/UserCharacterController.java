@@ -31,6 +31,8 @@ public class UserCharacterController {
     @GetMapping("/count")
     public SuccessResponse<GetCharacterCount> getCharacterCount() {
         GetCharacterCount response = characterService.getCharacterCount(2);
+        return SuccessResponse.ok(response);
+    }
 
     // 캐릭터 획득 정보 상세 조회 API
     @GetMapping("/details/{characterId}")
