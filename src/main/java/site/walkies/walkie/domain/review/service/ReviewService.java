@@ -10,6 +10,7 @@ import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.domain.review.entity.Review;
 import site.walkies.walkie.domain.review.repository.ReviewRepository;
 import site.walkies.walkie.domain.review.service.dto.response.GetReviewResponse;
+import site.walkies.walkie.domain.review.service.dto.response.PatchReviewResponse;
 import site.walkies.walkie.domain.review.service.dto.response.PostReviewResponse;
 import site.walkies.walkie.domain.review.service.dto.response.ReviewListResponse;
 import site.walkies.walkie.domain.spot.entity.Spot;
@@ -145,6 +146,37 @@ public class ReviewService {
         }
 
         ReviewListResponse response = new ReviewListResponse(responses);
+      
+        return response;
+    }
+  
+    // 리뷰 수정 method
+    // input : reviewId, review, rating
+    // output : PatchReviewResponse
+    public PatchReviewResponse patchReviewResponse(long reviewId, String review, double rating) {
+        Review patchReview = reviewRepository.findById(reviewId).orElse(null);
+        if (review == null) {
+            throw new CustomException(ErrorCode.REVIEW_NOT_FOUND);
+        }
+        patchReview.updateReviewCd(true).updateReviewText(review).updateRating(rating);
+
+        Review patchedReview = reviewRepository.save(patchReview);
+
+        PatchReviewResponse response = PatchReviewResponse.builder()
+                .reviewId(patchedReview.getId())
+                .spotId(patchedReview.getSpot().getId())
+                .distance(patchedReview.getDistance())
+                .step(patchedReview.getStep())
+                .date(patchedReview.getReviewDate())
+                .startTime(patchedReview.getStartTime())
+                .endTime(patchedReview.getEndTime())
+                .characterId(patchedReview.getUserCharacter().getId())
+                .pic(patchedReview.getPic())
+                .reviewCd(patchedReview.getReviewCd())
+                .review(patchedReview.getReview())
+                .rating(patchedReview.getRating())
+                .build();
+
         return response;
     }
 }
