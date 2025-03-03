@@ -179,4 +179,16 @@ public class ReviewService {
 
         return response;
     }
+
+    // 리뷰 삭제 method
+    // input : reviewId
+    // output : reviewId
+    public long deleteReview(long reviewId) {
+        Review review = reviewRepository.findById(reviewId).orElse(null);
+        if (review == null) {
+            throw new CustomException(ErrorCode.REVIEW_NOT_FOUND);
+        }
+        reviewRepository.delete(review);
+        return review.getId();
+    }
 }
