@@ -32,6 +32,12 @@ public class ReviewController {
         return SuccessResponse.ok(response);
     }
 
+    @GetMapping("/spots")
+    public SuccessResponse<ReviewListResponse> getReviewListBySpots(@RequestParam("spotId") long spotId) {
+        ReviewListResponse response = reviewService.getReviewList(2,spotId);
+        return SuccessResponse.ok(response);
+    }
+
     @PatchMapping("/{reviewId}")
     public SuccessResponse<?> updateReview(@PathVariable("reviewId") Long reviewId, @RequestBody PatchReviewRequest patchReviewRequest) {
         PatchReviewResponse response = reviewService.patchReviewResponse(reviewId, patchReviewRequest.getReview(),patchReviewRequest.getRating());

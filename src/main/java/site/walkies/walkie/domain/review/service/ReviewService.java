@@ -114,6 +114,42 @@ public class ReviewService {
         return response;
     }
 
+    // 스팟의 리뷰 리스트 조회 method
+    // input : userId, spotId
+    // output : ReviewListResponse
+    public ReviewListResponse getReviewList(long userId, long spotId) {
+        Member member = memberRepository.findById(userId).orElse(null);
+        if (member == null) {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        List<Review> reviews =  reviewRepository.findByMemberIdAndSpotId(userId,spotId);
+
+        // 조회된 리뷰를 저장할 리스트
+        List<GetReviewResponse> responses = new ArrayList<>();
+        for (Review review : reviews) {
+            GetReviewResponse getReviewResponse = GetReviewResponse.builder()
+                    .reviewId(review.getId())
+                    .spotId(review.getSpot().getId())
+                    .distance(review.getDistance())
+                    .step(review.getStep())
+                    .date(review.getReviewDate())
+                    .startTime(review.getStartTime())
+                    .endTime(review.getEndTime())
+                    .characterId(review.getUserCharacter().getId())
+                    .pic(review.getPic())
+                    .reviewCd(review.getReviewCd())
+                    .review(review.getReview())
+                    .rating(review.getRating())
+                    .build();
+            responses.add(getReviewResponse);
+        }
+
+        ReviewListResponse response = new ReviewListResponse(responses);
+      
+        return response;
+    }
+  
     // 리뷰 수정 method
     // input : reviewId, review, rating
     // output : PatchReviewResponse
