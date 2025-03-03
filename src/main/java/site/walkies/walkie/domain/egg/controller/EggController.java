@@ -2,17 +2,14 @@ package site.walkies.walkie.domain.egg.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.egg.service.EggService;
 import site.walkies.walkie.domain.egg.service.dto.response.*;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggCountResponse;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggDetailResponse;
 import site.walkies.walkie.domain.egg.service.dto.request.PostStepRequest;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggResponse;
-import site.walkies.walkie.domain.egg.service.dto.response.PostEggResponse;
 import site.walkies.walkie.global.web.dto.response.SuccessResponse;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -31,10 +28,11 @@ public class EggController {
     }
 
     //  알의 걸은 걸음수 업데이트 API
-    @PostMapping("/steps")
+    @PatchMapping("/steps")
     public SuccessResponse<?> updateSteps(@RequestBody PostStepRequest stepRequest) {
-        eggService.updateEggNowStep(stepRequest.getEggId(), stepRequest.getNowStep(),stepRequest.getLatitude(),stepRequest.getLongitude());
-        return SuccessResponse.ok();
+        EggResponse response = eggService.updateEggNowStep(stepRequest.getEggId(), stepRequest.getNowStep(),stepRequest.getLatitude(),stepRequest.getLongitude());
+        // update 추가시 수정 필요
+        return SuccessResponse.ok(response);
     }
 
     // 알 디테일 조회 API

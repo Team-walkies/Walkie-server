@@ -11,9 +11,7 @@ import site.walkies.walkie.domain.character.entity.UserCharacter;
 import site.walkies.walkie.domain.character.service.CharacterService;
 import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.egg.repository.EggRepository;
-import site.walkies.walkie.domain.egg.service.dto.response.GetEggCountResponse;
-import site.walkies.walkie.domain.egg.service.dto.response.GetEggDetailResponse;
-import site.walkies.walkie.domain.egg.service.dto.response.GetEggResponse;
+import site.walkies.walkie.domain.egg.service.dto.response.*;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.global.probability.CharacterProbability;
@@ -189,7 +187,8 @@ public class EggService {
 
     // 알의 걸은 걸음수 업데이트 method
     // input : egg ID, now step
-    public void updateEggNowStep(long eggId, int nowStep, double latitude, double longitude) {
+    // output : PatchEggResponse
+    public EggResponse updateEggNowStep(long eggId, int nowStep, double latitude, double longitude) {
         Egg egg = eggRepository.findById(eggId).orElse(null);
         if (egg == null) {
             throw new CustomException(ErrorCode.EGG_NOT_FOUND);
@@ -199,11 +198,35 @@ public class EggService {
             String sido = convertGeoToString(latitude,longitude);
             characterService.createCharacterBorn(egg.getUserCharacter().getId(),LocalDate.now(),sido);
             eggRepository.delete(egg);
-            return;
+            EggResponse response = EggResponse.builder()
+                    .eggId(egg.getId())
+                    .rank(egg.getRank())
+                    .nowStep(egg.getNowStep())
+                    .needStep(egg.getNeedStep())
+                    .userCharacterId(egg.getUserCharacter().getId())
+                    .obtainedDate(egg.getObtainedDate())
+                    .obtainedPosition(egg.getObtainedPosition())
+                    .memberId(egg.getUser().getId())
+                    .picked(egg.getPicked())
+                    .build();
+            return response;
         }
 
         egg.eggNowStepUpdate(nowStep);
-        eggRepository.save(egg);
+        egg = eggRepository.save(egg);
+
+        EggResponse response = EggResponse.builder()
+                .eggId(egg.getId())
+                .rank(egg.getRank())
+                .nowStep(egg.getNowStep())
+                .needStep(egg.getNeedStep())
+                .userCharacterId(egg.getUserCharacter().getId())
+                .obtainedDate(egg.getObtainedDate())
+                .obtainedPosition(egg.getObtainedPosition())
+                .memberId(egg.getUser().getId())
+                .picked(egg.getPicked())
+                .build();
+        return response;
     }
 
     // Tmap api를 통해서 좌표를 시도로 변환해주는 함수
