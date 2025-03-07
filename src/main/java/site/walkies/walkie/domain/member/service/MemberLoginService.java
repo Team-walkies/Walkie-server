@@ -13,26 +13,28 @@ public class MemberLoginService {
 
     private final MemberRepository memberRepository;
 
-    // 기존 멤버인지, 아닌지 확인
-    public MemberResponseDto findOrCreateMember(KakaoUserInfoResponseDto userInfo) {
+    public MemberResponseDto findOrCreateKakaoMember(KakaoUserInfoResponseDto userInfo) {
         String providerId = userInfo.getId().toString();
+        return findOrCreateMember("kakao", providerId, userInfo.getKakaoAccount().getProfile().getNickName());
+    }
+
+    public MemberResponseDto findOrCreateAppleMember(String appleUserId) {
+        return findOrCreateMember("apple", appleUserId, "애플 사용자");
+    }
+
+    // 기존 멤버인지, 아닌지 확인
+    private MemberResponseDto findOrCreateMember(String provider, String providerId, String nickname) {
         return memberRepository.findByProviderId(providerId)
-                .map(this::converMemberToMemberResponseDto)
-                .orElseGet(() -> createMember(userInfo));
+                .map(this::convertMemberToMemberResponseDto)
+                .orElseGet(() -> createMember(provider, providerId, nickname));
     }
 
     // 멤버 생성
-    private MemberResponseDto createMember(KakaoUserInfoResponseDto userInfo) {
-        Member signUpInfo = createKakaoSignUpInfo(userInfo);
-        Member savedMember = memberRepository.save(signUpInfo);
-        return converMemberToMemberResponseDto(savedMember);
-    }
-
-    private Member createKakaoSignUpInfo(KakaoUserInfoResponseDto userInfo) {
-        return Member.builder()
-                .provider("kakao")
-                .providerId(userInfo.getId().toString())
-                .nickname(userInfo.getKakaoAccount().getProfile().getNickName())
+    private MemberResponseDto createMember(String provider, String providerId, String nickname) {
+        Member newMember = Member.builder()
+                .provider(provider)
+                .providerId(providerId)
+                .nickname(nickname)
                 .exploredSpot(0)
                 .recordedSpot(0)
                 .isPublic(true)
@@ -40,19 +42,16 @@ public class MemberLoginService {
                 .levelingEgg(null)
                 .levelingUserCharacter(null)
                 .build();
+        Member savedMember = memberRepository.save(newMember);
+        return convertMemberToMemberResponseDto(savedMember);
     }
 
-    private MemberResponseDto converMemberToMemberResponseDto(Member member) {
+    private MemberResponseDto convertMemberToMemberResponseDto(Member member) {
         return MemberResponseDto.builder()
                 .id(member.getId())
                 .providerId(member.getProviderId())
                 .provider(member.getProvider())
                 .nickname(member.getNickname())
-                .exploredSpot(member.getExploredSpot())
-                .recordedSpot(member.getRecordedSpot())
-                .memberTier(member.getMemberTier())
-                .eggId(member.getLevelingEgg() != null ? member.getLevelingEgg().getId() : null)
-                .userCharacterId(member.getLevelingUserCharacter() != null ? member.getLevelingUserCharacter().getId() : null)
                 .build();
     }
 
