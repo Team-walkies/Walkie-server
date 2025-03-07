@@ -12,6 +12,7 @@ import site.walkies.walkie.domain.character.service.dto.response.ObtainedDetail;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.character.entity.UserCharacter;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
+import site.walkies.walkie.global.Tmap.TmapAPIService;
 import site.walkies.walkie.global.web.exception.CustomException;
 import site.walkies.walkie.global.web.exception.ErrorCode;
 
@@ -25,6 +26,8 @@ public class CharacterService {
     private final UserCharacterRepository userCharacterRepository;
     private final UserCharacterBornRepository userCharacterBornRepository;
     private final MemberRepository memberRepository;
+
+    private final TmapAPIService tmapAPIService;
 
     // 캐릭터 생성 함수
     // input : userId, rank(캐릭터 등급), type(캐릭터 타입), characterClass(캐릭터 소분류), picked(같이 다니는 여부)
@@ -46,6 +49,23 @@ public class CharacterService {
         userCharacterRepository.save(userCharacter);
 
         return userCharacter;
+    }
+
+    // 기본 캐릭터 생성 함수
+    // input : userId, createDate(생성일), latitude, longitude (생성 위경도)
+    // output : x
+    public void createDefaultCharacter(long userId, LocalDate createDate, double latitude, double longitude) {
+        Member member = memberRepository.findById(userId).orElse(null);
+        if (member == null) {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        // 기본 캐릭터 생성 후 리턴
+        UserCharacter userCharacter = new UserCharacter(0, 0, 0,true, member);
+        userCharacter = userCharacterRepository.save(userCharacter);
+
+        // 기본 캐릭터 부화
+        createCharacterBorn(userCharacter.getId(), createDate, tmapAPIService.convertGeoToString(latitude, longitude));
     }
 
     // 캐릭터 부화 함수
