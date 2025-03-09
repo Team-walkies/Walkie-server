@@ -3,6 +3,8 @@ package site.walkies.walkie.domain.egg.service.dto.response;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
+
 @Getter
 @Builder
 public class GetEggResponse {
@@ -18,9 +20,13 @@ public class GetEggResponse {
     private Long characterId;
     //같이 걷는 알 여부
     private Boolean play;
+    // 얻은 위치
+    private String obtainedPosition;
+    // 얻은 날짜
+    private LocalDate obtainedDate;
 
     // 생성 함수
-    public static GetEggResponse createGetEggResponse(Long eggId, Integer rank, Integer needStep, Integer nowStep, Long characterId, Boolean play) {
+    public static GetEggResponse createGetEggResponse(Long eggId, Integer rank, Integer needStep, Integer nowStep, Long characterId, Boolean play, String obtainedPosition, LocalDate obtainedDate) {
         return GetEggResponse.builder()
                 .eggId(eggId)
                 .rank(rank)
@@ -28,6 +34,8 @@ public class GetEggResponse {
                 .nowStep(nowStep)
                 .characterId(characterId)
                 .play(play)
+                .obtainedPosition(obtainedPosition)
+                .obtainedDate(obtainedDate)
                 .build();
     }
 }
