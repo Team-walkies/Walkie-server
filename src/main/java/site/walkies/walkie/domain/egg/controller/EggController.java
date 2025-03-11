@@ -1,6 +1,7 @@
 package site.walkies.walkie.domain.egg.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import site.walkies.walkie.domain.egg.service.EggService;
 import site.walkies.walkie.domain.egg.service.dto.response.*;
@@ -8,6 +9,7 @@ import site.walkies.walkie.domain.egg.service.dto.response.GetEggCountResponse;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggDetailResponse;
 import site.walkies.walkie.domain.egg.service.dto.request.PostStepRequest;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggResponse;
+import site.walkies.walkie.global.auth.dto.MemberPrincipal;
 import site.walkies.walkie.global.web.dto.response.SuccessResponse;
 
 import java.util.List;
@@ -21,8 +23,8 @@ public class EggController {
 
     // 보유한 알 리스트 조회 API
     @GetMapping
-    public SuccessResponse<EggListResponse> getAll() {
-        List<GetEggResponse> responses = eggService.getEggsList(2);
+    public SuccessResponse<EggListResponse> getAll(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        List<GetEggResponse> responses = eggService.getEggsList(memberPrincipal.getMemberId());
         EggListResponse response = new EggListResponse(responses);
         return SuccessResponse.ok(response);
     }
@@ -44,8 +46,8 @@ public class EggController {
 
     // 보유한 알 갯수 조회 API
     @GetMapping("/count")
-    public SuccessResponse<GetEggCountResponse> getEggCount() {
-        GetEggCountResponse response = eggService.getEggCount(2);
+    public SuccessResponse<GetEggCountResponse> getEggCount(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        GetEggCountResponse response = eggService.getEggCount(memberPrincipal.getMemberId());
         return SuccessResponse.ok(response);
     }
 }
