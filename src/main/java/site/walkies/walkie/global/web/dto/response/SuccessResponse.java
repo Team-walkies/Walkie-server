@@ -33,12 +33,12 @@ public class SuccessResponse<D> {
         return new SuccessResponse<>(HttpStatus.CREATED, DEFAULT_CREATED_MESSAGE, data);
     }
 
-    public static SuccessResponse<?> update(){
-        return new SuccessResponse<>(HttpStatus.OK, DEFAULT_UPDATED_MESSAGE);
+    public static <D> SuccessResponse<D> updated(D data){
+        return new SuccessResponse<>(HttpStatus.OK, DEFAULT_UPDATED_MESSAGE, data);
     }
 
-    public static SuccessResponse<?> deleted(){
-        return new SuccessResponse<>(HttpStatus.OK, DEFAULT_DELETED_MESSAGE);
+    public static <D> SuccessResponse<D> deleted(D data){
+        return new SuccessResponse<>(HttpStatus.OK, DEFAULT_DELETED_MESSAGE, data);
     }
 
     @Builder
