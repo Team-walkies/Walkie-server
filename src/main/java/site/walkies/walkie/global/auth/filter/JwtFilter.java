@@ -39,7 +39,10 @@ public class JwtFilter extends GenericFilterBean {
 
         // JWT가 필요 없는 API 리스트 (로그인, 회원가입 등)
         List<String> excludedUrls = List.of(
-                "/api/v1/auth/login"
+                "/api/v1/auth/login",
+                "/api/v1/swagger-ui.html",
+                "/api/v1/v3/api-docs/**",
+                "/swagger-ui/**"
         );
 
         // JWT 없이 접근 가능한 API는 필터를 건너뜀
