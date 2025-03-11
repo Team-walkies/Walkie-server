@@ -6,6 +6,8 @@ import site.walkies.walkie.domain.auth.service.dto.response.KakaoUserInfoRespons
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.service.dto.response.MemberResponseDto;
+import site.walkies.walkie.global.web.exception.CustomException;
+import site.walkies.walkie.global.web.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -13,11 +15,13 @@ public class MemberLoginService {
 
     private final MemberRepository memberRepository;
 
+    // 카카오 로그인
     public MemberResponseDto findOrCreateKakaoMember(KakaoUserInfoResponseDto userInfo) {
         String providerId = userInfo.getId().toString();
         return findOrCreateMember("kakao", providerId, userInfo.getKakaoAccount().getProfile().getNickName());
     }
 
+    // 애플 로그인
     public MemberResponseDto findOrCreateAppleMember(String appleUserId) {
         return findOrCreateMember("apple", appleUserId, "애플 사용자");
     }
@@ -27,6 +31,12 @@ public class MemberLoginService {
         return memberRepository.findByProviderId(providerId)
                 .map(this::convertMemberToMemberResponseDto)
                 .orElseGet(() -> createMember(provider, providerId, nickname));
+    }
+
+    // memberId로 DB에서 정보 가져오기
+    public Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     // 멤버 생성
