@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoginRequestDto {
     private String provider;  // "kakao" 또는 "apple"
-    private String accessToken;  // 카카오 accessToken 또는 애플 idToken
+    private String loginAccessToken;  // 카카오 accessToken 또는 애플 idToken
 }
 
