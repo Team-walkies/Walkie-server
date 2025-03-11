@@ -45,16 +45,14 @@ public class ReviewController {
     @PatchMapping("/{reviewId}")
     public SuccessResponse<?> updateReview(@PathVariable("reviewId") Long reviewId, @RequestBody PatchReviewRequest patchReviewRequest) {
         PatchReviewResponse response = reviewService.patchReviewResponse(reviewId, patchReviewRequest.getReview(),patchReviewRequest.getRating());
-        // 추후 update로 변경 필요
-        return SuccessResponse.ok(response);
+        return SuccessResponse.updated(response);
     }
 
 
     @DeleteMapping("/{reviewId}")
     public SuccessResponse<?> deleteReview(@PathVariable("reviewId") Long reviewId) {
         long id = reviewService.deleteReview(reviewId);
-        // 추후 delete로 변경 필요
-        return SuccessResponse.ok(id);
+        return SuccessResponse.deleted(id);
     }
   
     @GetMapping("/count/{spotId}")

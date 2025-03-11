@@ -33,8 +33,7 @@ public class EggController {
     @PatchMapping("/steps")
     public SuccessResponse<?> updateSteps(@RequestBody PostStepRequest stepRequest) {
         EggResponse response = eggService.updateEggNowStep(stepRequest.getEggId(), stepRequest.getNowStep(),stepRequest.getLatitude(),stepRequest.getLongitude());
-        // update 추가시 수정 필요
-        return SuccessResponse.ok(response);
+        return SuccessResponse.updated(response);
     }
 
     // 알 디테일 조회 API
