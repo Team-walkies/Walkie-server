@@ -2,10 +2,9 @@ package site.walkies.walkie.domain.member.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import site.walkies.walkie.domain.member.service.MemberService;
+import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateRequestDto;
 import site.walkies.walkie.domain.member.service.dto.response.MemberResponseDto;
 import site.walkies.walkie.global.auth.dto.MemberPrincipal;
 import site.walkies.walkie.global.web.dto.response.SuccessResponse;
@@ -22,5 +21,12 @@ public class MemberController {
     public SuccessResponse<MemberResponseDto> getMemberInfo(@AuthenticationPrincipal MemberPrincipal memberPrincipal ) {
         MemberResponseDto memberResponseDto = memberService.getMemberInfo(memberPrincipal.getMemberId());
         return SuccessResponse.ok(memberResponseDto);
+    }
+
+    // 사용자 정보 수정
+    @PatchMapping
+    public SuccessResponse<MemberResponseDto> updateMemberInfo(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody MemberUpdateRequestDto memberUpdateRequestDto ) {
+        MemberResponseDto memberResponseDto = memberService.updateMemberInfo(memberPrincipal.getMemberId(), memberUpdateRequestDto);
+        return SuccessResponse.updated(memberResponseDto);
     }
 }
