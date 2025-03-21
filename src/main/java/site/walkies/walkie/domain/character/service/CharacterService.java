@@ -167,6 +167,8 @@ public class CharacterService {
         GetCharacterDetailResponse response = GetCharacterDetailResponse.builder()
                 .characterCount(count)
                 .rank(userCharacter.getRank())
+                .characterClass(userCharacter.getCharacterClass())
+                .type(userCharacter.getType())
                 .obtainedDetails(details)
                 .build();
         return response;
