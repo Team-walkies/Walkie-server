@@ -42,7 +42,7 @@ public class ReviewService {
 
         Spot spot = spotRepository.findById(spotId).orElse(null);
         if (spot == null) {
-            return null;
+            throw new CustomException(ErrorCode.SPOT_NOT_FOUND);
         }
 
         UserCharacter userCharacter = userCharacterRepository.findById(characterId).orElse(null);
