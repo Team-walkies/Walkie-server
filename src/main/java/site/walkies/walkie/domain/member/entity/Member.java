@@ -64,4 +64,8 @@ public class Member {
     public void changeNickname(String newNickname) {
         this.nickname = newNickname;
     }
+
+    public void changeLevelingEgg(Egg newLevelingEgg) {
+        this.levelingEgg = newLevelingEgg;
+    }
 }
