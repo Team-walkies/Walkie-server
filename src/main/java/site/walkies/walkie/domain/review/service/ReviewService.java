@@ -42,7 +42,7 @@ public class ReviewService {
 
         Spot spot = spotRepository.findById(spotId).orElse(null);
         if (spot == null) {
-            return null;
+            throw new CustomException(ErrorCode.SPOT_NOT_FOUND);
         }
 
         UserCharacter userCharacter = userCharacterRepository.findById(characterId).orElse(null);
@@ -93,12 +93,16 @@ public class ReviewService {
             GetReviewResponse getReviewResponse = GetReviewResponse.builder()
                     .reviewId(review.getId())
                     .spotId(review.getSpot().getId())
+                    .spotName(review.getSpot().getLocationName())
                     .distance(review.getDistance())
                     .step(review.getStep())
                     .date(review.getReviewDate())
                     .startTime(review.getStartTime())
                     .endTime(review.getEndTime())
                     .characterId(review.getUserCharacter().getId())
+                    .rank(review.getUserCharacter().getRank())
+                    .type(review.getUserCharacter().getType())
+                    .characterClass(review.getUserCharacter().getCharacterClass())
                     .pic(review.getPic())
                     .reviewCd(review.getReviewCd())
                     .review(review.getReview())
@@ -128,12 +132,16 @@ public class ReviewService {
             GetReviewResponse getReviewResponse = GetReviewResponse.builder()
                     .reviewId(review.getId())
                     .spotId(review.getSpot().getId())
+                    .spotName(review.getSpot().getLocationName())
                     .distance(review.getDistance())
                     .step(review.getStep())
                     .date(review.getReviewDate())
                     .startTime(review.getStartTime())
                     .endTime(review.getEndTime())
                     .characterId(review.getUserCharacter().getId())
+                    .rank(review.getUserCharacter().getRank())
+                    .type(review.getUserCharacter().getType())
+                    .characterClass(review.getUserCharacter().getCharacterClass())
                     .pic(review.getPic())
                     .reviewCd(review.getReviewCd())
                     .review(review.getReview())

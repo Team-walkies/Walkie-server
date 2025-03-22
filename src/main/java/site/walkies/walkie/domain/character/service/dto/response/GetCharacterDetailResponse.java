@@ -12,6 +12,10 @@ public class GetCharacterDetailResponse {
     private Integer characterCount;
     // 캐릭터 등급
     private Integer rank;
+    // 캐릭터 타입
+    private Integer type;
+    // 캐릭터 클래스
+    private Integer characterClass;
     // 획득 상세 정보
     private List<ObtainedDetail> obtainedDetails;
 }
