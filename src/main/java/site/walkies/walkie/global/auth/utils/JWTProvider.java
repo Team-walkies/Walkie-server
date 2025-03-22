@@ -21,7 +21,7 @@ import java.util.Date;
 @Slf4j
 public class JWTProvider implements InitializingBean {
 
-    private static final int ACCESS_TOKEN_EXPIRATION_PERIOD = 60 * 60 * 100;
+    private static final long ACCESS_TOKEN_EXPIRATION_PERIOD = 30L * 24 * 60 * 60;
     private static final String PROVIDER_ID = "providerId";
     private static final String MEMBER_ID = "memberId";
 
