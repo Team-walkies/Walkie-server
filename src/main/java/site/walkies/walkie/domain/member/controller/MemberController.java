@@ -5,6 +5,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import site.walkies.walkie.domain.member.service.MemberService;
 import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateCharacterRequestDto;
+import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateLevelingEggRequestDto;
 import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateRequestDto;
 import site.walkies.walkie.domain.member.service.dto.response.MemberResponseDto;
 import site.walkies.walkie.global.auth.dto.MemberPrincipal;
@@ -31,11 +32,17 @@ public class MemberController {
         return SuccessResponse.updated(memberResponseDto);
     }
 
-
     // 함께 걷는 캐릭터 변경
     @PatchMapping("/characters/play")
     public SuccessResponse<MemberResponseDto> updateMemberLevelingCharacter(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody MemberUpdateCharacterRequestDto memberUpdateCharacterRequestDto ) {
-        MemberResponseDto memberResponseDto = memberService.updateMemberLevelingCharacter(memberPrincipal.getMemberId(), memberUpdateCharacterRequestDto);
+       MemberResponseDto memberResponseDto = memberService.updateMemberLevelingCharacter(memberPrincipal.getMemberId(), memberUpdateCharacterRequestDto);
+       return SuccessResponse.updated(memberResponseDto);
+    }
+  
+    // 사용자가 레벨업 시키는 알 변경
+    @PatchMapping("/eggs/play")
+    public SuccessResponse<MemberResponseDto> updateMemberLevelingEgg(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody MemberUpdateLevelingEggRequestDto memberUpdateLevelingEggRequestDto){
+        MemberResponseDto memberResponseDto = memberService.updateMemberLevelingEgg(memberPrincipal.getMemberId(), memberUpdateLevelingEggRequestDto);
         return SuccessResponse.updated(memberResponseDto);
     }
 }

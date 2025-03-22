@@ -8,6 +8,11 @@ import site.walkies.walkie.domain.character.repository.UserCharacterRepository;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateCharacterRequestDto;
+import site.walkies.walkie.domain.egg.entity.Egg;
+import site.walkies.walkie.domain.egg.repository.EggRepository;
+import site.walkies.walkie.domain.member.entity.Member;
+import site.walkies.walkie.domain.member.repository.MemberRepository;
+import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateLevelingEggRequestDto;
 import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateRequestDto;
 import site.walkies.walkie.domain.member.service.dto.response.MemberResponseDto;
 import site.walkies.walkie.global.web.exception.CustomException;
@@ -18,6 +23,7 @@ import site.walkies.walkie.global.web.exception.ErrorCode;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final UserCharacterRepository characterRepository;
+    private final EggRepository eggRepository;
 
     // 사용자 정보 조회
     @Transactional(readOnly = true)
@@ -43,7 +49,18 @@ public class MemberService {
         UserCharacter character = characterRepository.findById(memberUpdateCharacterRequestDto.getCharacterId()).orElseThrow(() -> new CustomException(ErrorCode.CHARACTER_NOT_FOUND));
 
         member.changeLevelingUserCharacter(character);
+        return convertMemberToResponseDto(member);
+    }
 
+    // 사용자와 함께 걷는 알 변경
+    @Transactional
+    public MemberResponseDto updateMemberLevelingEgg(Long memberId, MemberUpdateLevelingEggRequestDto memberUpdateLevelingEggRequestDto){
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Egg egg = eggRepository.findById(memberUpdateLevelingEggRequestDto.getEggId())
+                .orElseThrow(() -> new CustomException(ErrorCode.EGG_NOT_FOUND));
+
+        member.changeLevelingEgg(egg); // 또는 changeLevelingEgg(egg);
         return convertMemberToResponseDto(member);
     }
 
