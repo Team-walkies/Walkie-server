@@ -35,16 +35,34 @@ public class MemberService {
         }
         return convertMemberToResponseDto(member);
     }
+  
+    // 사용자가 부화시키는 알 변경
+    @Transactional
+    public MemberResponseDto updateMemberLevelingEgg(Long memberId, MemberUpdateLevelingEggRequestDto memberUpdateLevelingEggRequestDto){
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Egg previousEgg = member.getLevelingEgg();
+        previousEgg.changePicked(false);
+
+        Egg egg = eggRepository.findById(memberUpdateLevelingEggRequestDto.getEggId())
+                .orElseThrow(() -> new CustomException(ErrorCode.EGG_NOT_FOUND));
+
+        member.changeLevelingEgg(egg);
+        egg.changePicked(true);
+
+        return convertMemberToResponseDto(member);
+    }
+    
 
     // 함께 걷는 캐릭터 변경
     @Transactional
     public MemberResponseDto updateMemberLevelingCharacter(Long memberId, MemberUpdateCharacterRequestDto memberUpdateCharacterRequestDto){
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         UserCharacter previousCharacter = member.getLevelingUserCharacter();
         previousCharacter.changePicked(false);
 
         UserCharacter character = characterRepository.findById(memberUpdateCharacterRequestDto.getCharacterId()).orElseThrow(() -> new CustomException(ErrorCode.CHARACTER_NOT_FOUND));
-
+      
         member.changeLevelingUserCharacter(character);
         character.changePicked(true);
 
