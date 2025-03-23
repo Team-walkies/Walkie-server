@@ -68,4 +68,8 @@ public class Member {
     public void changeLevelingEgg(Egg newLevelingEgg) {
         this.levelingEgg = newLevelingEgg;
     }
+
+    public void changeProfileVisibility(Boolean isPublic){
+        this.isPublic = isPublic;
+    }
 }
