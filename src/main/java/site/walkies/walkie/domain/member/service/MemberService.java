@@ -49,6 +49,13 @@ public class MemberService {
         return convertMemberToResponseDto(member);
     }
 
+    @Transactional
+    public MemberResponseDto toggleMemberProfileVisibility(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        member.changeProfileVisibility(!member.getIsPublic());
+        return convertMemberToResponseDto(member);
+    }
+
     // Member객체를 MemberResponse DTO로 변경
     public MemberResponseDto convertMemberToResponseDto(Member member){
         return MemberResponseDto.builder()
