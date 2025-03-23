@@ -40,9 +40,13 @@ public class MemberService {
     @Transactional
     public MemberResponseDto updateMemberLevelingCharacter(Long memberId, MemberUpdateCharacterRequestDto memberUpdateCharacterRequestDto){
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        UserCharacter previousCharacter = member.getLevelingUserCharacter();
+        previousCharacter.changePicked(false);
+
         UserCharacter character = characterRepository.findById(memberUpdateCharacterRequestDto.getCharacterId()).orElseThrow(() -> new CustomException(ErrorCode.CHARACTER_NOT_FOUND));
 
         member.changeLevelingUserCharacter(character);
+        character.changePicked(true);
 
         return convertMemberToResponseDto(member);
     }
