@@ -54,11 +54,19 @@ public class MemberController {
     public SuccessResponse<EggResponse> getMemberLevelingEgg(@AuthenticationPrincipal MemberPrincipal memberPrincipal){
         EggResponse eggResponse = memberService.getMemberLevelingEgg(memberPrincipal.getMemberId());
         return SuccessResponse.ok(eggResponse);
+    }
 
     // 함께 걷는 캐릭터 변경
     @PatchMapping("/characters/play")
     public SuccessResponse<MemberResponseDto> updateMemberLevelingCharacter(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody MemberUpdateCharacterRequestDto memberUpdateCharacterRequestDto ) {
        MemberResponseDto memberResponseDto = memberService.updateMemberLevelingCharacter(memberPrincipal.getMemberId(), memberUpdateCharacterRequestDto);
        return SuccessResponse.updated(memberResponseDto);
+    }
+  
+    // 사용자 프로필 조회 토글
+    @PatchMapping("/profile/visibility")
+    public SuccessResponse<MemberResponseDto> toggleMemberProfileVisibility(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        MemberResponseDto memberResponseDto = memberService.toggleMemberProfileVisibility(memberPrincipal.getMemberId());
+        return SuccessResponse.updated(memberResponseDto);
     }
 }
