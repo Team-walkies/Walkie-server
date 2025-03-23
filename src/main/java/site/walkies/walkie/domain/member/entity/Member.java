@@ -65,6 +65,10 @@ public class Member {
         this.nickname = newNickname;
     }
 
+    public void changeLevelingUserCharacter(UserCharacter newLevelingUserCharacter) {
+        this.levelingUserCharacter = newLevelingUserCharacter;
+    }
+
     public void changeLevelingEgg(Egg newLevelingEgg) {
         this.levelingEgg = newLevelingEgg;
     }

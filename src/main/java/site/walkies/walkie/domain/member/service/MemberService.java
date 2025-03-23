@@ -6,9 +6,12 @@ import org.springframework.transaction.annotation.Transactional;
 import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.egg.repository.EggRepository;
 import site.walkies.walkie.domain.egg.service.dto.response.EggResponse;
+import site.walkies.walkie.domain.character.entity.UserCharacter;
+import site.walkies.walkie.domain.character.service.dto.response.GetCharacterResponse;
+import site.walkies.walkie.domain.character.repository.UserCharacterRepository;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
-import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateLevelingEggRequestDto;
+import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateCharacterRequestDto;
 import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateRequestDto;
 import site.walkies.walkie.domain.member.service.dto.response.MemberResponseDto;
 import site.walkies.walkie.global.web.exception.CustomException;
@@ -18,7 +21,7 @@ import site.walkies.walkie.global.web.exception.ErrorCode;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final EggRepository eggRepository;
+    private final UserCharacterRepository characterRepository;
 
     // 사용자 정보 조회
     @Transactional(readOnly = true)
@@ -36,18 +39,52 @@ public class MemberService {
         }
         return convertMemberToResponseDto(member);
     }
-
-    // 사용자와 함께 걷는 알 변경
+  
+    // 사용자가 부화시키는 알 변경
     @Transactional
     public MemberResponseDto updateMemberLevelingEgg(Long memberId, MemberUpdateLevelingEggRequestDto memberUpdateLevelingEggRequestDto){
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Egg previousEgg = member.getLevelingEgg();
+        previousEgg.changePicked(false);
 
         Egg egg = eggRepository.findById(memberUpdateLevelingEggRequestDto.getEggId())
                 .orElseThrow(() -> new CustomException(ErrorCode.EGG_NOT_FOUND));
 
-        member.changeLevelingEgg(egg); // 또는 changeLevelingEgg(egg);
+        member.changeLevelingEgg(egg);
+        egg.changePicked(true);
 
         return convertMemberToResponseDto(member);
+    }
+    
+
+    // 함께 걷는 캐릭터 변경
+    @Transactional
+    public MemberResponseDto updateMemberLevelingCharacter(Long memberId, MemberUpdateCharacterRequestDto memberUpdateCharacterRequestDto){
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        UserCharacter previousCharacter = member.getLevelingUserCharacter();
+        previousCharacter.changePicked(false);
+
+        UserCharacter character = characterRepository.findById(memberUpdateCharacterRequestDto.getCharacterId()).orElseThrow(() -> new CustomException(ErrorCode.CHARACTER_NOT_FOUND));
+      
+        member.changeLevelingUserCharacter(character);
+        character.changePicked(true);
+
+        return convertMemberToResponseDto(member);
+    }
+
+    // 같이 걷는 캐릭터 조회
+    @Transactional(readOnly = true)
+    public GetCharacterResponse getMemberCharacter(Long memberId){
+        Member member  = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        UserCharacter character = member.getLevelingUserCharacter();
+        return GetCharacterResponse.builder()
+                .characterId(character.getId())
+                .type(character.getType())
+                .characterClass(character.getCharacterClass())
+                .rank(character.getRank())
+                .picked(character.getPicked())
+                .build();
     }
 
     // 사용자가 부화시키는 알 조회

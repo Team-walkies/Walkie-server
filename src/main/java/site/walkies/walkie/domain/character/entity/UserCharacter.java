@@ -42,4 +42,9 @@ public class UserCharacter {
     public UserCharacter() {
 
     }
+
+    public UserCharacter changePicked(Boolean picked) {
+        this.picked = picked;
+        return this;
+    }
 }
