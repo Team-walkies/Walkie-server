@@ -64,4 +64,9 @@ public class Egg {
         this.nowStep = nowStep;
         return this;
     }
+
+    public Egg changePicked(Boolean picked) {
+        this.picked = picked;
+        return this;
+    }
 }
