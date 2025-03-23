@@ -31,7 +31,7 @@ public class MemberController {
         return SuccessResponse.updated(memberResponseDto);
     }
 
-    // 사용자가 레벨업 시키는 알 변경
+    // 사용자가 부화 시키는 알 변경
     @PatchMapping("/eggs/play")
     public SuccessResponse<MemberResponseDto> updateMemberLevelingEgg(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody MemberUpdateLevelingEggRequestDto memberUpdateLevelingEggRequestDto){
         MemberResponseDto memberResponseDto = memberService.updateMemberLevelingEgg(memberPrincipal.getMemberId(), memberUpdateLevelingEggRequestDto);
