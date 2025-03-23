@@ -3,6 +3,7 @@ package site.walkies.walkie.domain.member.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import site.walkies.walkie.domain.character.service.dto.response.GetCharacterResponse;
 import site.walkies.walkie.domain.member.service.MemberService;
 import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateRequestDto;
 import site.walkies.walkie.domain.member.service.dto.response.MemberResponseDto;
@@ -28,5 +29,12 @@ public class MemberController {
     public SuccessResponse<MemberResponseDto> updateMemberInfo(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody MemberUpdateRequestDto memberUpdateRequestDto ) {
         MemberResponseDto memberResponseDto = memberService.updateMemberInfo(memberPrincipal.getMemberId(), memberUpdateRequestDto);
         return SuccessResponse.updated(memberResponseDto);
+    }
+
+    // 함께 걷는 캐릭터 조회
+    @GetMapping("/characters/play")
+    public SuccessResponse<GetCharacterResponse> getMemberCharacter(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        GetCharacterResponse getCharacterResponse = memberService.getMemberCharacter(memberPrincipal.getMemberId());
+        return SuccessResponse.ok(getCharacterResponse);
     }
 }
