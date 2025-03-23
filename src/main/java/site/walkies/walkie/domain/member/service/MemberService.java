@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.egg.repository.EggRepository;
+import site.walkies.walkie.domain.egg.service.dto.response.EggResponse;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateLevelingEggRequestDto;
@@ -47,6 +48,25 @@ public class MemberService {
         member.changeLevelingEgg(egg); // 또는 changeLevelingEgg(egg);
 
         return convertMemberToResponseDto(member);
+    }
+
+    // 사용자가 부화시키는 알 조회
+    @Transactional(readOnly = true)
+    public EggResponse getMemberLevelingEgg(Long memberId){
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Egg egg = member.getLevelingEgg();
+
+        return EggResponse.builder()
+                .eggId(egg.getId())
+                .rank(egg.getRank())
+                .needStep(egg.getNeedStep())
+                .nowStep(egg.getNowStep())
+                .obtainedPosition(egg.getObtainedPosition())
+                .obtainedDate(egg.getObtainedDate())
+                .picked(egg.getPicked())
+                .userCharacterId(egg.getUserCharacter().getId())
+                .build();
     }
 
     // Member객체를 MemberResponse DTO로 변경
