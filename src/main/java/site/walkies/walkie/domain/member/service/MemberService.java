@@ -3,11 +3,11 @@ package site.walkies.walkie.domain.member.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import site.walkies.walkie.domain.egg.entity.Egg;
-import site.walkies.walkie.domain.egg.repository.EggRepository;
+import site.walkies.walkie.domain.character.entity.UserCharacter;
+import site.walkies.walkie.domain.character.repository.UserCharacterRepository;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
-import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateLevelingEggRequestDto;
+import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateCharacterRequestDto;
 import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateRequestDto;
 import site.walkies.walkie.domain.member.service.dto.response.MemberResponseDto;
 import site.walkies.walkie.global.web.exception.CustomException;
@@ -17,7 +17,7 @@ import site.walkies.walkie.global.web.exception.ErrorCode;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final EggRepository eggRepository;
+    private final UserCharacterRepository characterRepository;
 
     // 사용자 정보 조회
     @Transactional(readOnly = true)
@@ -35,7 +35,7 @@ public class MemberService {
         }
         return convertMemberToResponseDto(member);
     }
-
+  
     // 사용자가 부화시키는 알 변경
     @Transactional
     public MemberResponseDto updateMemberLevelingEgg(Long memberId, MemberUpdateLevelingEggRequestDto memberUpdateLevelingEggRequestDto){
@@ -48,6 +48,23 @@ public class MemberService {
 
         member.changeLevelingEgg(egg);
         egg.changePicked(true);
+
+        return convertMemberToResponseDto(member);
+    }
+    
+
+    // 함께 걷는 캐릭터 변경
+    @Transactional
+    public MemberResponseDto updateMemberLevelingCharacter(Long memberId, MemberUpdateCharacterRequestDto memberUpdateCharacterRequestDto){
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        UserCharacter previousCharacter = member.getLevelingUserCharacter();
+        previousCharacter.changePicked(false);
+
+        UserCharacter character = characterRepository.findById(memberUpdateCharacterRequestDto.getCharacterId()).orElseThrow(() -> new CustomException(ErrorCode.CHARACTER_NOT_FOUND));
+      
+        member.changeLevelingUserCharacter(character);
+        character.changePicked(true);
 
         return convertMemberToResponseDto(member);
     }
