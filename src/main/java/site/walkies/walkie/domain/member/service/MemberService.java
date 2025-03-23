@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.walkies.walkie.domain.character.entity.UserCharacter;
+import site.walkies.walkie.domain.character.service.dto.response.GetCharacterResponse;
 import site.walkies.walkie.domain.character.repository.UserCharacterRepository;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
@@ -67,6 +68,20 @@ public class MemberService {
         character.changePicked(true);
 
         return convertMemberToResponseDto(member);
+    }
+
+    // 같이 걷는 캐릭터 조회
+    @Transactional(readOnly = true)
+    public GetCharacterResponse getMemberCharacter(Long memberId){
+        Member member  = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        UserCharacter character = member.getLevelingUserCharacter();
+        return GetCharacterResponse.builder()
+                .characterId(character.getId())
+                .type(character.getType())
+                .characterClass(character.getCharacterClass())
+                .rank(character.getRank())
+                .picked(character.getPicked())
+                .build();
     }
 
     // Member객체를 MemberResponse DTO로 변경
