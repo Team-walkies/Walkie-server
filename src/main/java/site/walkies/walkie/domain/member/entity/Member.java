@@ -68,4 +68,8 @@ public class Member {
     public void changeLevelingUserCharacter(UserCharacter newLevelingUserCharacter) {
         this.levelingUserCharacter = newLevelingUserCharacter;
     }
+
+    public void changeLevelingEgg(Egg newLevelingEgg) {
+        this.levelingEgg = newLevelingEgg;
+    }
 }
