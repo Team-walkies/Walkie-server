@@ -3,6 +3,8 @@ package site.walkies.walkie.domain.member.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import site.walkies.walkie.domain.egg.service.dto.response.EggResponse;
+import site.walkies.walkie.domain.egg.service.dto.response.GetEggResponse;
 import site.walkies.walkie.domain.member.service.MemberService;
 import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateLevelingEggRequestDto;
 import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateRequestDto;
@@ -36,5 +38,12 @@ public class MemberController {
     public SuccessResponse<MemberResponseDto> updateMemberLevelingEgg(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody MemberUpdateLevelingEggRequestDto memberUpdateLevelingEggRequestDto){
         MemberResponseDto memberResponseDto = memberService.updateMemberLevelingEgg(memberPrincipal.getMemberId(), memberUpdateLevelingEggRequestDto);
         return SuccessResponse.updated(memberResponseDto);
+    }
+
+    // 사용자가 부화시키는 알 조회
+    @GetMapping("/eggs/play")
+    public SuccessResponse<EggResponse> getMemberLevelingEgg(@AuthenticationPrincipal MemberPrincipal memberPrincipal){
+        EggResponse eggResponse = memberService.getMemberLevelingEgg(memberPrincipal.getMemberId());
+        return SuccessResponse.ok(eggResponse);
     }
 }
