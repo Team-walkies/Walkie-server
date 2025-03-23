@@ -37,4 +37,11 @@ public class MemberController {
         MemberResponseDto memberResponseDto = memberService.updateMemberLevelingEgg(memberPrincipal.getMemberId(), memberUpdateLevelingEggRequestDto);
         return SuccessResponse.updated(memberResponseDto);
     }
+
+    // 사용자 프로필 조회 토글
+    @PatchMapping("/profile/visibility")
+    public SuccessResponse<MemberResponseDto> toggleMemberProfileVisibility(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        MemberResponseDto memberResponseDto = memberService.toggleMemberProfileVisibility(memberPrincipal.getMemberId());
+        return SuccessResponse.updated(memberResponseDto);
+    }
 }
