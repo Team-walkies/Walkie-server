@@ -12,6 +12,7 @@ import site.walkies.walkie.domain.character.repository.UserCharacterRepository;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateCharacterRequestDto;
+import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateLevelingEggRequestDto;
 import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateRequestDto;
 import site.walkies.walkie.domain.member.service.dto.response.MemberResponseDto;
 import site.walkies.walkie.global.web.exception.CustomException;
@@ -21,6 +22,7 @@ import site.walkies.walkie.global.web.exception.ErrorCode;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final EggRepository eggRepository;
     private final UserCharacterRepository characterRepository;
 
     // 사용자 정보 조회
@@ -117,6 +119,7 @@ public class MemberService {
     public MemberResponseDto convertMemberToResponseDto(Member member){
         return MemberResponseDto.builder()
                 .id(member.getId())
+                .providerId(member.getProviderId())
                 .provider(member.getProvider())
                 .nickname(member.getNickname())
                 .isPublic(member.getIsPublic())
