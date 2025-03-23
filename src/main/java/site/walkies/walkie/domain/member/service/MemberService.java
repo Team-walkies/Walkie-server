@@ -3,6 +3,9 @@ package site.walkies.walkie.domain.member.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import site.walkies.walkie.domain.egg.entity.Egg;
+import site.walkies.walkie.domain.egg.repository.EggRepository;
+import site.walkies.walkie.domain.egg.service.dto.response.EggResponse;
 import site.walkies.walkie.domain.character.entity.UserCharacter;
 import site.walkies.walkie.domain.character.service.dto.response.GetCharacterResponse;
 import site.walkies.walkie.domain.character.repository.UserCharacterRepository;
@@ -81,6 +84,25 @@ public class MemberService {
                 .characterClass(character.getCharacterClass())
                 .rank(character.getRank())
                 .picked(character.getPicked())
+                .build();
+    }
+
+    // 사용자가 부화시키는 알 조회
+    @Transactional(readOnly = true)
+    public EggResponse getMemberLevelingEgg(Long memberId){
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Egg egg = member.getLevelingEgg();
+
+        return EggResponse.builder()
+                .eggId(egg.getId())
+                .rank(egg.getRank())
+                .needStep(egg.getNeedStep())
+                .nowStep(egg.getNowStep())
+                .obtainedPosition(egg.getObtainedPosition())
+                .obtainedDate(egg.getObtainedDate())
+                .picked(egg.getPicked())
+                .userCharacterId(egg.getUserCharacter().getId())
                 .build();
     }
 

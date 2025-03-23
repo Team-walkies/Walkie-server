@@ -3,6 +3,8 @@ package site.walkies.walkie.domain.member.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import site.walkies.walkie.domain.egg.service.dto.response.EggResponse;
+import site.walkies.walkie.domain.egg.service.dto.response.GetEggResponse;
 import site.walkies.walkie.domain.character.service.dto.response.GetCharacterResponse;
 import site.walkies.walkie.domain.member.service.MemberService;
 import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateCharacterRequestDto;
@@ -46,6 +48,12 @@ public class MemberController {
         MemberResponseDto memberResponseDto = memberService.updateMemberLevelingEgg(memberPrincipal.getMemberId(), memberUpdateLevelingEggRequestDto);
         return SuccessResponse.updated(memberResponseDto);
     }
+
+    // 사용자가 부화시키는 알 조회
+    @GetMapping("/eggs/play")
+    public SuccessResponse<EggResponse> getMemberLevelingEgg(@AuthenticationPrincipal MemberPrincipal memberPrincipal){
+        EggResponse eggResponse = memberService.getMemberLevelingEgg(memberPrincipal.getMemberId());
+        return SuccessResponse.ok(eggResponse);
 
     // 함께 걷는 캐릭터 변경
     @PatchMapping("/characters/play")
