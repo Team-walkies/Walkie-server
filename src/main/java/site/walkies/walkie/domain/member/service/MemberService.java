@@ -105,6 +105,7 @@ public class MemberService {
                 .obtainedDate(egg.getObtainedDate())
                 .picked(egg.getPicked())
                 .userCharacterId(egg.getUserCharacter().getId())
+                .memberId(memberId)
                 .build();
     }
 
