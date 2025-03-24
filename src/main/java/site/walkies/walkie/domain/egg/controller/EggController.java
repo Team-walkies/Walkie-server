@@ -1,5 +1,6 @@
 package site.walkies.walkie.domain.egg.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,10 @@ public class EggController {
     // service 추가
     private final EggService eggService;
 
-    // 보유한 알 리스트 조회 API
+    @Operation(
+            summary = "보유한 알 목록 조회",
+            description = "사용자가 보유 중인 모든 알 정보를 조회합니다."
+    )
     @GetMapping
     public SuccessResponse<EggListResponse> getAll(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
         List<GetEggResponse> responses = eggService.getEggsList(memberPrincipal.getMemberId());
@@ -29,21 +33,31 @@ public class EggController {
         return SuccessResponse.ok(response);
     }
 
-    //  알의 걸은 걸음수 업데이트 API
+    @Operation(
+            summary = "알 걸음 수 업데이트",
+            description = "특정 알에 대해 현재까지 걸은 걸음 수를 업데이트합니다. " +
+                    "위치 정보(latitude, longitude)도 함께 전송됩니다."
+    )
     @PatchMapping("/steps")
     public SuccessResponse<?> updateSteps(@RequestBody PostStepRequest stepRequest) {
         EggResponse response = eggService.updateEggNowStep(stepRequest.getEggId(), stepRequest.getNowStep(),stepRequest.getLatitude(),stepRequest.getLongitude());
         return SuccessResponse.updated(response);
     }
 
-    // 알 디테일 조회 API
+    @Operation(
+            summary = "알 상세 정보 조회",
+            description = "특정 알의 상세 정보를 조회합니다. 알 ID를 경로 변수로 전달해야 합니다."
+    )
     @GetMapping("/{eggId}")
     public SuccessResponse<GetEggDetailResponse> getEggDetail(@PathVariable Long eggId) {
         GetEggDetailResponse response = eggService.getEggDetail(eggId);
         return SuccessResponse.ok(response);
     }
 
-    // 보유한 알 갯수 조회 API
+    @Operation(
+            summary = "보유한 알 개수 조회",
+            description = "사용자가 보유 중인 알의 총 개수를 조회합니다."
+    )
     @GetMapping("/count")
     public SuccessResponse<GetEggCountResponse> getEggCount(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
         GetEggCountResponse response = eggService.getEggCount(memberPrincipal.getMemberId());

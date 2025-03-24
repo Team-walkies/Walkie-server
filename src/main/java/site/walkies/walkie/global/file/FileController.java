@@ -1,5 +1,6 @@
 package site.walkies.walkie.web;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,9 @@ public class FileController {
     // 파일이 저장된 디렉토리
     private final Path rootDir = Paths.get("files");
 
-    // 파일 명으로 파일 호출
+    @Operation(
+            summary = "파일 명으로 파일 호출"
+    )
     @GetMapping("/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         try {
