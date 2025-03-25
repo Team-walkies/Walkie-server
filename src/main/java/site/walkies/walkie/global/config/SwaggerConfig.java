@@ -4,6 +4,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -23,7 +24,8 @@ public class SwaggerConfig {
                                 .url("https://github.com/Team-walkies/Walkie-server")
                         )
                 )
-                .addSecurityItem(new SecurityRequirement().addList("bearerAuth")); // 여기서 인증 "적용"함
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))// 여기서 인증 "적용"함
+                .addServersItem(new Server().description("기본 URL").url("/api/v1"));
     }
 }
 
