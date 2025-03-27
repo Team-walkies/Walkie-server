@@ -2,14 +2,15 @@ package site.walkies.walkie.domain.spot.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import site.walkies.walkie.domain.spot.service.SpotService;
+import site.walkies.walkie.domain.spot.service.dto.request.SpotNearbyRequestDto;
+import site.walkies.walkie.domain.spot.service.dto.response.SpotNearbyResponseDto;
 import site.walkies.walkie.domain.spot.service.dto.response.SpotResponseDto;
 import site.walkies.walkie.global.auth.dto.MemberPrincipal;
 import site.walkies.walkie.global.web.dto.response.SuccessResponse;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,5 +25,11 @@ public class SpotController {
     ) {
         SpotResponseDto responseDto = spotService.getSpotInfo(spotId, memberPrincipal.getMemberId());
         return SuccessResponse.ok(responseDto);
+    }
+
+    @PostMapping("/nearby")
+    public SuccessResponse<List<SpotNearbyResponseDto>> getNearbySpots(@RequestBody SpotNearbyRequestDto request) {
+        List<SpotNearbyResponseDto> response = spotService.getNearbySpots(request);
+        return SuccessResponse.ok(response);
     }
 }
