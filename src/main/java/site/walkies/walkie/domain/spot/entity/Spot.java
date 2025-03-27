@@ -2,6 +2,7 @@ package site.walkies.walkie.domain.spot.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import site.walkies.walkie.domain.spot.enums.SpotType;
 
 @Entity
 @Table(name = "spot")
@@ -20,13 +21,14 @@ public class Spot {
     private Double latitude;
 
     @Column(name = "longitude")
-    private Double longtitude;
+    private Double longitude;
 
     @Column(name = "street_address")
     private String streetAddress;
 
-    @Column(name = "photo_url")
-    private String photoUrl;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private SpotType type;
 
     @Column(name = "h3_index")
     private Long h3Index;
