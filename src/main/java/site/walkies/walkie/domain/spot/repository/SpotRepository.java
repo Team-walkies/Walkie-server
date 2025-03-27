@@ -4,6 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import site.walkies.walkie.domain.spot.entity.Spot;
 
+import java.util.List;
+
 @Repository
 public interface SpotRepository extends JpaRepository<Spot, Long> {
+    List<Spot> findByH3IndexIn(List<String> h3Indexes);
 }
