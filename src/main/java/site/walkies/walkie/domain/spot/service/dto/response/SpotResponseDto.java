@@ -20,10 +20,9 @@ public class SpotResponseDto {
     private int daysUntilNextVisit;
     private int visitCount;
     private int reviewCount;
-    private Long h3Index;
 
     @Builder
-    public SpotResponseDto(Long id, String locationName, Double latitude, Double longitude, String streetAddress, String type, List<String> photoUrls, boolean isExplored, int daysUntilNextVisit, int visitCount, int reviewCount, Long h3Index) {
+    public SpotResponseDto(Long id, String locationName, Double latitude, Double longitude, String streetAddress, String type, List<String> photoUrls, boolean isExplored, int daysUntilNextVisit, int visitCount, int reviewCount) {
         this.id = id;
         this.locationName = locationName;
         this.latitude = latitude;
@@ -35,7 +34,6 @@ public class SpotResponseDto {
         this.daysUntilNextVisit = daysUntilNextVisit;
         this.visitCount = visitCount;
         this.reviewCount = reviewCount;
-        this.h3Index = h3Index;
     }
 }
 

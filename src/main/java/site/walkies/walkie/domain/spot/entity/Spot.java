@@ -31,5 +31,5 @@ public class Spot {
     private SpotType type;
 
     @Column(name = "h3_index")
-    private Long h3Index;
+    private String h3Index;
 }
