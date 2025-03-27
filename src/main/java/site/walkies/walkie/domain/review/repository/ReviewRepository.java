@@ -18,4 +18,13 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // 리뷰 갯수 조회
     int countBySpotId(Long spotId);
+
+    // 해당 유저의 해당 스팟에 대한 리뷰 날짜 내림차순 조회
+    List<Review> findBySpotIdAndMemberIdOrderByReviewDateDesc(Long spotId, Long memberId);
+
+    // 스팟에 대한 방문자 수 조회
+    int countDistinctBySpotIdAndDeleteCdFalse(Long spotId);
+
+    // 스팟에 대한 전체 리뷰 수 조회
+    int countBySpotIdAndDeleteCdFalse(Long spotId);
 }
