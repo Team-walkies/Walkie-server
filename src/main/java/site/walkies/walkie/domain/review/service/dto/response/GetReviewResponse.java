@@ -15,6 +15,8 @@ public class GetReviewResponse {
     // 스팟 이름 추가
     private String spotName;
 
+    private String memberNickname;
+
     private Double distance;
     private Integer step;
     private LocalDate date;
