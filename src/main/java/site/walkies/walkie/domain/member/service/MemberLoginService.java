@@ -23,7 +23,7 @@ public class MemberLoginService {
 
     // 애플 로그인
     public MemberResponseDto findOrCreateAppleMember(String appleUserId) {
-        return findOrCreateMember("apple", appleUserId, "애플 사용자");
+        return findOrCreateMember("apple", appleUserId, "사과 워키");
     }
 
     // 기존 멤버인지, 아닌지 확인
