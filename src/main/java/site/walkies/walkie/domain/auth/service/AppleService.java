@@ -1,20 +1,29 @@
 package site.walkies.walkie.domain.auth.service;
 
+import io.jsonwebtoken.Claims;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import site.walkies.walkie.global.auth.utils.AppleJwtValidator;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AppleService {
 
-    public String verifyIdTokenAndGetUserId(String idToken) {
-        // 1. 애플의 Public Key로 JWT 검증 (애플 공식 문서 참고)
-        // 2. 유효하면 payload에서 sub (고유 사용자 ID) 추출
-        // 3. 검증 실패하면 예외 발생
+    private final AppleJwtValidator appleJwtValidator;
 
+    public String verifyIdTokenAndGetUserId(String idToken) {
         log.info("[AppleService] Received ID Token: {}", idToken);
 
-        String appleUserId = "decoded-apple-user-id"; // 검증 후 user id 추출
+        // 1. id_token 유효성 검증 및 파싱
+        Claims claims = appleJwtValidator.validateAndParseClaims(idToken);
+
+        // 2. sub (Apple 사용자 고유 ID) 추출
+        String appleUserId = claims.getSubject();
+
+        log.info("[AppleService] Extracted Apple User ID (sub): {}", appleUserId);
+
         return appleUserId;
     }
 }
