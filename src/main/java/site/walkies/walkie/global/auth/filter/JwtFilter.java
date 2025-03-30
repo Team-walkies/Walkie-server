@@ -41,6 +41,7 @@ public class JwtFilter extends GenericFilterBean {
         List<String> excludedUrls = List.of(
                 "/api/v1/auth/login",
                 "/api/v1/auth/signup",
+                "/api/v1/auth/refresh",
                 "/api/v1/swagger-ui.html",
                 "/api/v1/v3/api-docs/**",
                 "/swagger-ui/**"

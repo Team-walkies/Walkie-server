@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/auth/login","/auth/signup","/swagger-ui.html", "/v3/api-docs/**","/swagger-ui/**").permitAll()
+                        .requestMatchers("/auth/login","/auth/signup","/auth/refresh","/swagger-ui.html", "/v3/api-docs/**","/swagger-ui/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable()) // ✅ 로그인 폼 비활성화 (SNS 로그인만 사용)
