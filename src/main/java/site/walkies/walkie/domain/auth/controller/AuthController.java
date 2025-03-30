@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import site.walkies.walkie.domain.auth.service.AuthService;
 import site.walkies.walkie.domain.auth.service.dto.request.AuthCheckRequestDto;
 import site.walkies.walkie.domain.auth.service.dto.request.AuthSignupRequestDto;
+import site.walkies.walkie.domain.auth.service.dto.request.RefreshTokenRequestDto;
 import site.walkies.walkie.domain.auth.service.dto.response.LoginResponseDto;
 import site.walkies.walkie.global.web.dto.response.SuccessResponse;
 
@@ -58,4 +59,22 @@ public class AuthController {
         LoginResponseDto loginResponseDto = authService.signupNewUser(requestDto);
         return SuccessResponse.ok(loginResponseDto);
     }
+
+    @Operation(
+            summary = "JWT 토큰 재발급",
+            description = """
+        저장된 Refresh Token을 사용해 Access Token과 새로운 Refresh Token을 재발급합니다.
+        
+        - 요청: `{ "refreshToken": "<발급받은 refresh token>" }`
+        - 응답: `{ accessToken, refreshToken, provider }`
+        
+        📌 Refresh Token이 만료되었거나 존재하지 않는다면 401 에러가 발생합니다.
+        """
+    )
+    @PostMapping("/refresh")
+    public SuccessResponse<LoginResponseDto> refreshToken(@RequestBody RefreshTokenRequestDto requestDto) {
+        LoginResponseDto response = authService.refreshAccessToken(requestDto);
+        return SuccessResponse.ok(response);
+    }
+
 }
