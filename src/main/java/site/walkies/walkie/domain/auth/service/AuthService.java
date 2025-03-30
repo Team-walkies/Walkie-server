@@ -2,12 +2,15 @@ package site.walkies.walkie.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import site.walkies.walkie.domain.auth.service.dto.request.LoginRequestDto;
+import site.walkies.walkie.domain.auth.service.dto.request.AuthCheckRequestDto;
+import site.walkies.walkie.domain.auth.service.dto.request.AuthSignupRequestDto;
 import site.walkies.walkie.domain.auth.service.dto.response.KakaoUserInfoResponseDto;
 import site.walkies.walkie.domain.auth.service.dto.response.LoginResponseDto;
 import site.walkies.walkie.domain.member.service.MemberLoginService;
 import site.walkies.walkie.domain.member.service.dto.response.MemberResponseDto;
 import site.walkies.walkie.global.auth.utils.JWTProvider;
+import site.walkies.walkie.global.web.exception.CustomException;
+import site.walkies.walkie.global.web.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -18,21 +21,18 @@ public class AuthService {
     private final MemberLoginService memberLoginService;
     private final JWTProvider jwtProvider;
 
-    public LoginResponseDto login(LoginRequestDto requestDto) {
-        MemberResponseDto memberResponseDto;
+    public LoginResponseDto checkUserExists(AuthCheckRequestDto requestDto) {
+        MemberResponseDto memberResponseDto = getExistingMemberIfExists(requestDto);
 
-        switch (requestDto.getProvider().toLowerCase()) {
-            case "kakao":
-                memberResponseDto = loginWithKakao(requestDto.getLoginAccessToken());
-                break;
-            case "apple":
-                memberResponseDto = loginWithApple(requestDto.getLoginAccessToken());
-                break;
-            default:
-                throw new IllegalArgumentException("지원하지 않는 로그인 방식입니다.");
+        if (memberResponseDto == null) {
+            // 회원이 없는 경우: 프론트에서 회원가입 유도
+            return LoginResponseDto.builder()
+                    .provider(requestDto.getProvider())
+                    .accessToken(null)
+                    .refreshToken(null)
+                    .build();
         }
 
-        // JWT 토큰 생성
         String accessToken = jwtProvider.buildAccessToken(
                 memberResponseDto.getProviderId(),
                 memberResponseDto.getId()
@@ -41,17 +41,55 @@ public class AuthService {
         return LoginResponseDto.builder()
                 .provider(memberResponseDto.getProvider())
                 .accessToken(accessToken)
-                .refreshToken(null) // Refresh Token은 추후 구현
+                .refreshToken(null)
                 .build();
     }
 
-    private MemberResponseDto loginWithKakao(String accessToken) {
-        KakaoUserInfoResponseDto userInfo = kakaoService.getUserInfo(accessToken);
-        return memberLoginService.findOrCreateKakaoMember(userInfo);
+    public LoginResponseDto signupNewUser(AuthSignupRequestDto requestDto) {
+        MemberResponseDto memberResponseDto;
+
+        switch (requestDto.getProvider().toLowerCase()) {
+            case "kakao":
+                KakaoUserInfoResponseDto kakaoUserInfo = kakaoService.getUserInfo(requestDto.getLoginAccessToken());
+                memberResponseDto = memberLoginService.createKakaoMember(kakaoUserInfo, requestDto.getNickname());
+                break;
+            case "apple":
+                String appleUserId = appleService.getAppleUserIdFromToken(requestDto.getLoginAccessToken());
+                memberResponseDto = memberLoginService.createAppleMember(appleUserId, requestDto.getNickname());
+                break;
+            default:
+                throw new IllegalArgumentException("지원하지 않는 로그인 방식입니다.");
+        }
+
+        String accessToken = jwtProvider.buildAccessToken(
+                memberResponseDto.getProviderId(),
+                memberResponseDto.getId()
+        );
+
+        return LoginResponseDto.builder()
+                .provider(memberResponseDto.getProvider())
+                .accessToken(accessToken)
+                .refreshToken(null)
+                .build();
     }
 
-    private MemberResponseDto loginWithApple(String accessToken) {
-        String appleUserId = appleService.verifyIdTokenAndGetUserId(accessToken);
-        return memberLoginService.findOrCreateAppleMember(appleUserId);
+    private MemberResponseDto getExistingMemberIfExists(AuthCheckRequestDto requestDto) {
+        try {
+            switch (requestDto.getProvider().toLowerCase()) {
+                case "kakao":
+                    KakaoUserInfoResponseDto kakaoUserInfo = kakaoService.getUserInfo(requestDto.getLoginAccessToken());
+                    return memberLoginService.findKakaoMember(kakaoUserInfo);
+                case "apple":
+                    String appleUserId = appleService.getAppleUserIdFromToken(requestDto.getLoginAccessToken());
+                    return memberLoginService.findAppleMember(appleUserId);
+                default:
+                    throw new IllegalArgumentException("지원하지 않는 로그인 방식입니다.");
+            }
+        } catch (CustomException e) {
+            if (e.getErrorCode() == ErrorCode.USER_NOT_FOUND) {
+                return null;
+            }
+            throw e;
+        }
     }
 }
