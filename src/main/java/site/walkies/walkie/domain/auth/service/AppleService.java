@@ -13,7 +13,7 @@ public class AppleService {
 
     private final AppleJwtValidator appleJwtValidator;
 
-    public String verifyIdTokenAndGetUserId(String idToken) {
+    public String getAppleUserIdFromToken(String idToken) {
         log.info("[AppleService] Received ID Token: {}", idToken);
 
         // 1. id_token 유효성 검증 및 파싱
