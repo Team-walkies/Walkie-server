@@ -17,11 +17,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleCustomException(CustomException ex){
         log.error("CustomException 발생: ", ex);
         ExceptionResponse response = ExceptionResponse.builder()
-                .status(ex.getErrorcode().getHttpStatus().value())
+                .status(ex.getErrorCode().getHttpStatus().value())
                 .message(ex.getMessage())
                 .build();
 
-        return new ResponseEntity<>(response, ex.getErrorcode().getHttpStatus());
+        return new ResponseEntity<>(response, ex.getErrorCode().getHttpStatus());
     }
 
     // 그 외의 모든 Exception에 대한 처리
