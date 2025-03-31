@@ -37,12 +37,19 @@ public class JwtFilter extends GenericFilterBean {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String requestURI = request.getRequestURI();
 
+        // OPTIONS 요청은 그냥 필터 통과 (개발용)
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
         // JWT가 필요 없는 API 리스트 (로그인, 회원가입 등)
         List<String> excludedUrls = List.of(
                 "/api/v1/auth/login",
                 "/api/v1/auth/signup",
                 "/api/v1/auth/refresh",
                 "/api/v1/swagger-ui.html",
+                "/api/v1/v3/api-docs",
                 "/api/v1/v3/api-docs/**",
                 "/swagger-ui/**"
         );
