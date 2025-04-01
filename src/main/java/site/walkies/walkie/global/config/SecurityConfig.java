@@ -49,7 +49,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173", "https://walkie-virid.vercel.app", "https://walkie-frontend.vercel.app")); // 프론트 주소 명확히!
+        config.setAllowedOrigins(List.of("https://truthguard.site", "http://localhost:5173", "https://walkie-virid.vercel.app", "https://walkie-frontend.vercel.app")); // 프론트 주소 명확히!
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true); // withCredentials 요청 허용
