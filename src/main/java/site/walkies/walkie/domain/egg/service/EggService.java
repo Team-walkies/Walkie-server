@@ -196,6 +196,11 @@ public class EggService {
         if(egg.getNeedStep() <= nowStep){
             String sido = tmapAPIService.convertGeoToString(latitude,longitude);
             characterService.createCharacterBorn(egg.getUserCharacter().getId(),LocalDate.now(),sido);
+            // 멤버의 선택 egg 제거 로직 추가
+            Member member = memberRepository.findById(egg.getUser().getId()).orElse(null);
+            member.changeLevelingEgg(null);
+            memberRepository.save(member);
+
             eggRepository.delete(egg);
             EggResponse response = EggResponse.builder()
                     .eggId(egg.getId())
