@@ -18,4 +18,12 @@ public class GetEggDetailResponse {
     private String obtainedPosition;
     // 얻은 날짜
     private LocalDate obtainedDate;
+    // 캐릭터 id
+    private Long userCharacterId;
+    // 캐릭터 등급
+    private Integer characterRank;
+    // 캐릭터 타입
+    private Integer characterType;
+    // 캐릭터 클래스
+    private Integer characterClass;
 }
