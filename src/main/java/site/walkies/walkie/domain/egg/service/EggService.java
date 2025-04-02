@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
 import site.walkies.walkie.domain.character.entity.UserCharacter;
+import site.walkies.walkie.domain.character.repository.UserCharacterRepository;
 import site.walkies.walkie.domain.character.service.CharacterService;
 import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.egg.repository.EggRepository;
@@ -30,6 +31,7 @@ public class EggService {
 
     private final EggRepository eggRepository;
     private final MemberRepository memberRepository;
+    private final UserCharacterRepository characterRepository;
 
     private final CharacterService characterService;
     private final TmapAPIService tmapAPIService;
@@ -41,7 +43,11 @@ public class EggService {
         List<GetEggResponse> eggs = new ArrayList<>();
 
         for (Egg egg : eggRepository.findAllByUserId(userId)) {
-            GetEggResponse getEggResponse = GetEggResponse.createGetEggResponse(egg.getId(),egg.getRank(),egg.getNeedStep(),egg.getNowStep(),egg.getUserCharacter().getId(),egg.getPicked(),egg.getObtainedPosition(),egg.getObtainedDate());
+            UserCharacter character = characterRepository.findById(egg.getUserCharacter().getId()).orElse(null);
+            if (character == null) {
+                throw new CustomException(ErrorCode.CHARACTER_NOT_FOUND);
+            }
+            GetEggResponse getEggResponse = GetEggResponse.createGetEggResponse(egg.getId(),egg.getRank(),egg.getNeedStep(),egg.getNowStep(),character.getId(),character.getRank(), character.getType(), character.getCharacterClass(), egg.getPicked(),egg.getObtainedPosition(),egg.getObtainedDate());
             eggs.add(getEggResponse);
         }
 
@@ -166,12 +172,21 @@ public class EggService {
             throw new CustomException(ErrorCode.EGG_NOT_FOUND);
         }
 
+        UserCharacter character = characterRepository.findById(egg.getUserCharacter().getId()).orElse(null);
+        if (character == null) {
+            throw new CustomException(ErrorCode.CHARACTER_NOT_FOUND);
+        }
+
         GetEggDetailResponse response = GetEggDetailResponse.builder()
                 .rank(egg.getRank())
                 .needStep(egg.getNeedStep())
                 .nowStep(egg.getNowStep())
                 .obtainedPosition(egg.getObtainedPosition())
                 .obtainedDate(egg.getObtainedDate())
+                .userCharacterId(character.getId())
+                .characterRank(character.getRank())
+                .characterType(character.getType())
+                .characterClass(character.getCharacterClass())
                 .build();
         return response;
     }
