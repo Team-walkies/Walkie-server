@@ -16,7 +16,7 @@ public class SpotPhoto {
     @JoinColumn(name = "spot_id")
     private Spot spot;
 
-    @Column(name = "photo_url", length = 1024)
+    @Column(name = "photo_url", columnDefinition = "TEXT")
     private String photoUrl;
 }
 
