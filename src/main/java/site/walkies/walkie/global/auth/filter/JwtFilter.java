@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,6 +36,7 @@ public class JwtFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
         String requestURI = request.getRequestURI();
 
         // OPTIONS 요청은 그냥 필터 통과 (개발용)
@@ -71,18 +73,25 @@ public class JwtFilter extends GenericFilterBean {
             return;
         }
 
-        if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt)) {
-            Long memberId = jwtProvider.getMemberId(jwt);
-            String providerId = jwtProvider.getProviderId(jwt);
+        try{
+            if (jwtProvider.validateToken(jwt)) {
+                Long memberId = jwtProvider.getMemberId(jwt);
+                String providerId = jwtProvider.getProviderId(jwt);
 
-            Member member = memberLoginService.findMemberById(memberId);
+                Member member = memberLoginService.findMemberById(memberId);
 
-            UserDetails userDetails = MemberPrincipal.createMemberAuthority(member);
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } else {
-            throw new CustomException(ErrorCode.INVALID_ACCESS_TOKEN);
+                UserDetails userDetails = MemberPrincipal.createMemberAuthority(member);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                sendUnauthorized(response, "만료된 AccessToken 입니다. 새 토큰을 발급받으세요.");
+                return;
+            }
+        } catch (Exception e) {
+            sendUnauthorized(response, "유효하지 않은 AccessToken 입니다.");
+            return;
         }
+
         filterChain.doFilter(request, servletResponse);
     }
 
@@ -93,4 +102,16 @@ public class JwtFilter extends GenericFilterBean {
         }
         return null;
     }
+
+    private void sendUnauthorized(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write("""
+        {
+          "status": 401,
+          "message": "%s"
+        }
+        """.formatted(message));
+    }
+
 }
