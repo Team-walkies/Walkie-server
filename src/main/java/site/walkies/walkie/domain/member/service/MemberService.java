@@ -131,4 +131,10 @@ public class MemberService {
                 .exploredSpot(member.getExploredSpot())
                 .build();
     }
+
+    // 멤버가 기록한 스팟 개수 조회
+    public Integer getMemberRecordedSpot(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        return member.getRecordedSpot();
+    }
 }

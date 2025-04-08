@@ -91,5 +91,16 @@ public class MemberController {
         MemberResponseDto memberResponseDto = memberService.toggleMemberProfileVisibility(memberPrincipal.getMemberId());
         return SuccessResponse.updated(memberResponseDto);
     }
+
+    @Operation(
+            summary = "사용자의 기록한 스팟 개수 조회",
+            description = "메인 화면에서 사용자의 기록한 스팟 개수를 조회할 때 사용합니다."
+    )
+    @GetMapping("/recorded-spot")
+    public SuccessResponse<Integer> getMemberRecordedSpot(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        Integer memberRecordedSpot = memberService.getMemberRecordedSpot(memberPrincipal.getMemberId());
+        return SuccessResponse.ok(memberRecordedSpot);
+    }
+
 }
 
