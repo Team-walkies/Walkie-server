@@ -96,6 +96,12 @@ public class MemberService {
 
         Egg egg = member.getLevelingEgg();
 
+        if (egg == null) {
+            return EggResponse.builder()
+                    .memberId(memberId)
+                    .build();
+        }
+
         return EggResponse.builder()
                 .eggId(egg.getId())
                 .rank(egg.getRank())
