@@ -145,4 +145,23 @@ public class AuthService {
                 .build();
     }
 
+
+    // 멤버 로그아웃
+    public MemberResponseDto logout(Long memberId){
+        Member member = memberLoginService.findMemberById(memberId);
+        memberRefreshTokenService.deleteByMember(member);
+        return MemberResponseDto.builder()
+                .id(member.getId())
+                .nickname(member.getNickname())
+                .provider(member.getProvider())
+                .providerId(member.getProviderId())
+                .exploredSpot(member.getExploredSpot())
+                .recordedSpot(member.getRecordedSpot())
+                .userCharacterId(member.getLevelingUserCharacter() != null ? member.getLevelingUserCharacter().getId() : null)
+                .eggId(member.getLevelingEgg() != null ? member.getLevelingEgg().getId() : null)
+                .memberTier(member.getMemberTier())
+                .isPublic(member.getIsPublic())
+                .build();
+    }
+
 }

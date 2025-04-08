@@ -5,12 +5,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import site.walkies.walkie.domain.auth.service.AuthService;
 import site.walkies.walkie.domain.auth.service.dto.request.AuthCheckRequestDto;
 import site.walkies.walkie.domain.auth.service.dto.request.AuthSignupRequestDto;
 import site.walkies.walkie.domain.auth.service.dto.request.RefreshTokenRequestDto;
 import site.walkies.walkie.domain.auth.service.dto.response.LoginResponseDto;
+import site.walkies.walkie.domain.member.service.dto.response.MemberResponseDto;
+import site.walkies.walkie.global.auth.dto.MemberPrincipal;
 import site.walkies.walkie.global.web.dto.response.SuccessResponse;
 
 @Slf4j
@@ -75,6 +78,17 @@ public class AuthController {
     public SuccessResponse<LoginResponseDto> refreshToken(@RequestBody RefreshTokenRequestDto requestDto) {
         LoginResponseDto response = authService.refreshAccessToken(requestDto);
         return SuccessResponse.ok(response);
+    }
+
+
+    @Operation(
+            summary = "사용자 로그아웃",
+            description = "사용자의 refresh token 정보를 삭제하여 로그아웃 시킵니다."
+    )
+    @PostMapping("/logout")
+    public SuccessResponse<MemberResponseDto> logout(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        MemberResponseDto memberResponseDto = authService.logout(memberPrincipal.getMemberId());
+        return SuccessResponse.ok(memberResponseDto);
     }
 
 }
