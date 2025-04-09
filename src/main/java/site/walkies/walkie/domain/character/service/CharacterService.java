@@ -54,18 +54,20 @@ public class CharacterService {
     // 기본 캐릭터 생성 함수
     // input : userId, createDate(생성일), latitude, longitude (생성 위경도)
     // output : x
-    public void createDefaultCharacter(long userId, LocalDate createDate, double latitude, double longitude) {
+    public UserCharacter createDefaultCharacter(long userId, LocalDate createDate) {
         Member member = memberRepository.findById(userId).orElse(null);
         if (member == null) {
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
 
         // 기본 캐릭터 생성 후 리턴
-        UserCharacter userCharacter = new UserCharacter(0, 0, 0,true, member);
-        userCharacter = userCharacterRepository.save(userCharacter);
+        UserCharacter defaultUserCharacter = new UserCharacter(0, 0, 0,true, member);
+        defaultUserCharacter = userCharacterRepository.save(defaultUserCharacter);
 
         // 기본 캐릭터 부화
-        createCharacterBorn(userCharacter.getId(), createDate, tmapAPIService.convertGeoToString(latitude, longitude));
+        createCharacterBorn(defaultUserCharacter.getId(), createDate, "탄생의 바다");
+
+        return defaultUserCharacter;
     }
 
     // 캐릭터 부화 함수
