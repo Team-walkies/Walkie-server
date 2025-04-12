@@ -3,17 +3,21 @@ package site.walkies.walkie.domain.member.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import site.walkies.walkie.domain.auth.service.dto.response.KakaoUserInfoResponseDto;
+import site.walkies.walkie.domain.character.service.CharacterService;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.service.dto.response.MemberResponseDto;
 import site.walkies.walkie.global.web.exception.CustomException;
 import site.walkies.walkie.global.web.exception.ErrorCode;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class MemberLoginService {
 
     private final MemberRepository memberRepository;
+    private final CharacterService characterService;
 
     // 로그인 확인용 (회원 조회만)
     public MemberResponseDto findKakaoMember(KakaoUserInfoResponseDto userInfo) {
@@ -59,7 +63,9 @@ public class MemberLoginService {
                 .levelingEgg(null)
                 .levelingUserCharacter(null)
                 .build();
+
         Member savedMember = memberRepository.save(newMember);
+        newMember.changeLevelingUserCharacter(characterService.createDefaultCharacter(newMember.getId(), LocalDate.now()));
         return convertMemberToMemberResponseDto(savedMember);
     }
 
