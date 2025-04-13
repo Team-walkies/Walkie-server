@@ -247,4 +247,14 @@ public class EggService {
                 .build();
         return response;
     }
+
+    // 유저 id를 통한 알 완전 삭제
+    // input : userId
+    // output : x
+    public void deleteEggByUserId(long userId) {
+        List<Egg> eggs = eggRepository.findAllByUserId(userId);
+        for(Egg egg : eggs){
+            eggRepository.delete(egg);
+        }
+    }
 }
