@@ -67,4 +67,11 @@ public class UserCharacterController {
         GetCharacterDetailResponse response = characterService.getCharacterDetailResponse(characterId);
         return SuccessResponse.ok(response);
     }
+
+    // 모든 유저 캐릭터 틀 추가 함수 API(캐릭터 추가시 사용)
+    @PatchMapping("/members")
+    public SuccessResponse<?> updateMembers() {
+        characterService.addAllUserCharacter();
+        return SuccessResponse.ok();
+    }
 }
