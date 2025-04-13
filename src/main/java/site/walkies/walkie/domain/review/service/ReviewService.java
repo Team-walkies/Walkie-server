@@ -51,7 +51,10 @@ public class ReviewService {
         }
 
         // 파일 저장
-        String fileName = fileService.saveFile(pic);
+        String fileName = null;
+        if(pic != null) {
+            fileName = fileService.saveFile(pic);
+        }
 
         // 리뷰 생성
         Review createReview = Review.createReview(member,spot,distance,step,date,startTime,endTime,userCharacter,fileName,reviewCd,review,rating);
