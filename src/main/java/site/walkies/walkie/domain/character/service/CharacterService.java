@@ -13,6 +13,7 @@ import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.character.entity.UserCharacter;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.global.Tmap.TmapAPIService;
+import site.walkies.walkie.global.probability.CharacterProbability;
 import site.walkies.walkie.global.web.exception.CustomException;
 import site.walkies.walkie.global.web.exception.ErrorCode;
 
@@ -64,6 +65,9 @@ public class CharacterService {
         UserCharacter userCharacter = new UserCharacter(0, 0, 0,true, member);
         userCharacter = userCharacterRepository.save(userCharacter);
 
+        // 회원가입시 기본 캐릭터 틀 전부 생성
+        addUserCharacter(member);
+
         // 기본 캐릭터 부화
         createCharacterBorn(userCharacter.getId(), createDate, tmapAPIService.convertGeoToString(latitude, longitude));
     }
@@ -108,8 +112,7 @@ public class CharacterService {
         for(UserCharacter userCharacter : userCharacters) {
             // 태어난 캐릭터의 갯수를 확인
             int count = userCharacterBornRepository.countByUserCharacterId(userCharacter.getId());
-            // 아직 태어난 캐릭터가 없으면 pass
-            if(count == 0) continue;
+            // 캐릭터가 없어도 모든 캐릭터 정보 제공
             GetCharacterResponse response = GetCharacterResponse.builder()
                     .characterId(userCharacter.getId())
                     .type(userCharacter.getType())
@@ -173,4 +176,31 @@ public class CharacterService {
                 .build();
         return response;
     }
+
+    // 모든 유저 빈 캐릭터 추가 함수 => 모든 유저의 데이터를 확인해서 없는 캐릭터 유형을 추가
+    // input : x
+    // output : x
+    public void addAllUserCharacter() {
+        // 모든 유저의 데이터 확인
+        List<Member> members = memberRepository.findAll();
+        for (Member member : members) {
+            addUserCharacter(member);
+        }
+    }
+
+    // 특정 유저 빈 캐릭터 생성 함수 => 특정 유저의 데이터를 확인해서 없는 캐릭터 유형을 추가
+    // input : Member
+    // output : x
+    private void addUserCharacter(Member member) {
+        for (CharacterProbability cp : CharacterProbability.values()) {
+            createCharacter(
+                    member.getId(),
+                    cp.getRank(),
+                    cp.getType(),
+                    cp.getCharacterClass(),
+                    false
+            );
+        }
+    }
+
 }
