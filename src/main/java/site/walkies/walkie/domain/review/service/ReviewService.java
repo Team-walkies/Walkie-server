@@ -90,6 +90,7 @@ public class ReviewService {
         // 조회된 리뷰를 저장할 리스트
         List<GetReviewResponse> responses = new ArrayList<>();
         for (Review review : reviews) {
+            if(review.getDeleteCd()) continue;
             GetReviewResponse getReviewResponse = GetReviewResponse.builder()
                     .reviewId(review.getId())
                     .spotId(review.getSpot().getId())
@@ -130,6 +131,7 @@ public class ReviewService {
         // 조회된 리뷰를 저장할 리스트
         List<GetReviewResponse> responses = new ArrayList<>();
         for (Review review : reviews) {
+            if(review.getDeleteCd()) continue;
             GetReviewResponse getReviewResponse = GetReviewResponse.builder()
                     .reviewId(review.getId())
                     .spotId(review.getSpot().getId())
@@ -203,7 +205,7 @@ public class ReviewService {
     // input : userId, spotId
     // output : GetReviewCount
     public GetReviewCountResponse getReviewCount(long spotId) {
-        int count = reviewRepository.countBySpotId(spotId);
+        int count = reviewRepository.countBySpotIdAndDeleteCdFalse(spotId);
 
         GetReviewCountResponse response = GetReviewCountResponse.builder()
                 .count(count)
@@ -211,4 +213,26 @@ public class ReviewService {
 
         return response;
     }
+
+    // 유저 ID를 통한 리뷰 삭제 method(완전 삭제)
+    // input : userId
+    // output : x
+    public void deleteReviewByUserId(long userId) {
+        List<Review> reviews = reviewRepository.findByMemberId(userId);
+        for(Review review : reviews) {
+            reviewRepository.delete(review);
+        }
+    }
+
+    // 유저 ID를 통한 리뷰 삭제 method(soft 삭제)
+    // input : userId
+    // output : x
+    public void deleteReviewCodeByUserId(long userId) {
+        List<Review> reviews = reviewRepository.findByMemberId(userId);
+        for(Review review : reviews) {
+            review = review.updateDeleteCd(true);
+            reviewRepository.save(review);
+        }
+    }
+
 }
