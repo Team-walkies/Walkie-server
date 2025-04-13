@@ -1,6 +1,9 @@
 package site.walkies.walkie.domain.review.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,7 +33,21 @@ public class ReviewController {
             description = "걷기 기록 및 리뷰를 작성합니다. 텍스트 데이터와 함께 이미지 파일(pic)을 multipart/form-data 형식으로 전송해야 합니다."
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public SuccessResponse<?> postReview(@RequestPart("reviewData") ReviewData reviewData, @RequestPart(value = "pic", required = false) MultipartFile pic,@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+    public SuccessResponse<?> postReview(
+            @Parameter(
+            name = "reviewData",
+            description = "JSON 형식의 리뷰 데이터",
+            required = true,
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ReviewData.class)))
+         @RequestPart("reviewData") ReviewData reviewData,
+         @Parameter(
+                 name = "pic",
+                 description = "첨부 파일 (옵션)",
+                 required = false,
+                 content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE, schema = @Schema(type = "string", format = "binary"))
+         )
+         @RequestPart(value = "pic", required = false) MultipartFile pic,
+         @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
         PostReviewResponse response = reviewService.postReview(memberPrincipal.getMemberId(),reviewData.getSpotId(),reviewData.getDistance(),reviewData.getStep(),reviewData.getDate(),reviewData.getStartTime(),reviewData.getEndTime(),reviewData.getCharacterId(),reviewData.getReviewCd(),pic,reviewData.getReview(),reviewData.getRating());
         return SuccessResponse.created(response);
     }
