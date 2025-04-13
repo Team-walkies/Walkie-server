@@ -9,6 +9,7 @@ import site.walkies.walkie.domain.character.service.dto.response.GetCharacterCou
 import site.walkies.walkie.domain.character.service.dto.response.GetCharacterDetailResponse;
 import site.walkies.walkie.domain.character.service.dto.response.GetCharacterResponse;
 import site.walkies.walkie.domain.character.service.dto.response.ObtainedDetail;
+import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.character.entity.UserCharacter;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
@@ -205,4 +206,17 @@ public class CharacterService {
         }
     }
 
+    // 유저 id를 통한 캐릭터 및 캐릭터 born 완전 삭제
+    // input : userId
+    // output : x
+    public void deleteEggByUserId(long userId) {
+        List<UserCharacter> characters = userCharacterRepository.findAllByUserId(userId);
+        for(UserCharacter userCharacter : characters) {
+            List<UserCharacterBorn> userCharacterBorns = userCharacterBornRepository.findAllByUserCharacterId(userCharacter.getId());
+            for(UserCharacterBorn userCharacterBorn : userCharacterBorns) {
+                userCharacterBornRepository.delete(userCharacterBorn);
+            }
+            userCharacterRepository.delete(userCharacter);
+        }
+    }
 }
