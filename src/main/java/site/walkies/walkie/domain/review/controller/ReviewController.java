@@ -1,8 +1,10 @@
 package site.walkies.walkie.domain.review.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -18,7 +20,10 @@ import site.walkies.walkie.domain.review.service.dto.response.PostReviewResponse
 import site.walkies.walkie.domain.review.service.dto.response.ReviewListResponse;
 import site.walkies.walkie.global.auth.dto.MemberPrincipal;
 import site.walkies.walkie.global.web.dto.response.SuccessResponse;
+import site.walkies.walkie.global.web.exception.CustomException;
+import site.walkies.walkie.global.web.exception.ErrorCode;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -27,27 +32,40 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ReviewController {
     private final ReviewService reviewService;
+    private final ObjectMapper objectMapper;
 
     @Operation(
             summary = "리뷰 작성",
             description = "걷기 기록 및 리뷰를 작성합니다. 텍스트 데이터와 함께 이미지 파일(pic)을 multipart/form-data 형식으로 전송해야 합니다."
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public SuccessResponse<?> postReview(
-            @Parameter(
-            name = "reviewData",
-            description = "JSON 형식의 리뷰 데이터",
-            required = true,
-            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ReviewData.class)))
-         @RequestPart("reviewData") ReviewData reviewData,
-         @Parameter(
-                 name = "pic",
-                 description = "첨부 파일 (옵션)",
-                 required = false,
-                 content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE, schema = @Schema(type = "string", format = "binary"))
-         )
-         @RequestPart(value = "pic", required = false) MultipartFile pic,
-         @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+    public SuccessResponse<?> postReview(@Schema(
+                            example = "{\n" +
+                                    "  \"spotId\": 10,\n" +
+                                    "  \"distance\": 3.5,\n" +
+                                    "  \"step\": 3000,\n" +
+                                    "  \"date\": \"2025-03-03\",\n" +
+                                    "  \"startTime\": \"16:02:29\",\n" +
+                                    "  \"endTime\": \"16:32:29\",\n" +
+                                    "  \"characterId\": 38,\n" +
+                                    "  \"reviewCd\": true,\n" +
+                                    "  \"review\": \"재밌었다.\",\n" +
+                                    "  \"rating\": 4\n" +
+                                    "}"
+    )@RequestPart(value = "reviewData")String reviewDataString,
+     @RequestPart(value = "pic", required = false) MultipartFile pic,
+     @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+
+        // type오류를 막기위해서 string으로 받은 후 JSON으로 파싱
+        ReviewData reviewData;
+        try {
+            System.out.println(reviewDataString);
+            reviewData = objectMapper.readValue(reviewDataString, ReviewData.class);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            throw new CustomException(ErrorCode.PARSING_ERROR);
+        }
+
         PostReviewResponse response = reviewService.postReview(memberPrincipal.getMemberId(),reviewData.getSpotId(),reviewData.getDistance(),reviewData.getStep(),reviewData.getDate(),reviewData.getStartTime(),reviewData.getEndTime(),reviewData.getCharacterId(),reviewData.getReviewCd(),pic,reviewData.getReview(),reviewData.getRating());
         return SuccessResponse.created(response);
     }
