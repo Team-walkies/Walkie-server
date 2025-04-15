@@ -209,7 +209,12 @@ public class EggService {
         }
 
         if(egg.getNeedStep() <= nowStep){
-            String sido = tmapAPIService.convertGeoToString(latitude,longitude);
+            String sido;
+            if(latitude == - 1 && longitude ==  -1){
+                sido = "탄생의 바다";
+            } else {
+                sido = tmapAPIService.convertGeoToString(latitude, longitude);
+            }
             characterService.createCharacterBorn(egg.getUserCharacter().getId(),LocalDate.now(),sido);
             // 멤버의 선택 egg 제거 로직 추가
             Member member = memberRepository.findById(egg.getUser().getId()).orElse(null);
