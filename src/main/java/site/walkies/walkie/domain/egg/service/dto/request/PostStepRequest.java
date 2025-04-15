@@ -6,6 +6,8 @@ import lombok.Getter;
 public class PostStepRequest {
     private Long eggId;
     private Integer nowStep;
-    private Double latitude;
-    private Double longitude;
+    
+    // null 값 처리르 위해서 defualt 값 설정
+    private Double latitude = -1d;
+    private Double longitude = -1d;
 }
