@@ -95,8 +95,8 @@ public class ReviewController {
             description = "작성된 리뷰의 내용과 평점을 수정합니다."
     )
     @PatchMapping("/{reviewId}")
-    public SuccessResponse<?> updateReview(@PathVariable("reviewId") Long reviewId, @RequestBody PatchReviewRequest patchReviewRequest) {
-        PatchReviewResponse response = reviewService.patchReviewResponse(reviewId, patchReviewRequest.getReview(),patchReviewRequest.getRating());
+    public SuccessResponse<?> updateReview(@PathVariable("reviewId") Long reviewId, @RequestBody PatchReviewRequest patchReviewRequest, @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        PatchReviewResponse response = reviewService.patchReviewResponse(reviewId, patchReviewRequest.getReview(),patchReviewRequest.getRating(), memberPrincipal.getMemberId());
         return SuccessResponse.updated(response);
     }
 
@@ -105,8 +105,8 @@ public class ReviewController {
             description = "특정 리뷰를 삭제합니다. "
     )
     @DeleteMapping("/{reviewId}")
-    public SuccessResponse<?> deleteReview(@PathVariable("reviewId") Long reviewId) {
-        long id = reviewService.deleteReview(reviewId);
+    public SuccessResponse<?> deleteReview(@PathVariable("reviewId") Long reviewId, @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        long id = reviewService.deleteReview(reviewId, memberPrincipal.getMemberId());
         return SuccessResponse.deleted(id);
     }
 

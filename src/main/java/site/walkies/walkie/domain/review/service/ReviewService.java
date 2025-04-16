@@ -163,12 +163,16 @@ public class ReviewService {
     }
   
     // 리뷰 수정 method
-    // input : reviewId, review, rating
+    // input : reviewId, review, rating, memberId
     // output : PatchReviewResponse
-    public PatchReviewResponse patchReviewResponse(long reviewId, String review, double rating) {
+    public PatchReviewResponse patchReviewResponse(long reviewId, String review, double rating, long memberId) {
         Review patchReview = reviewRepository.findById(reviewId).orElse(null);
         if (review == null) {
             throw new CustomException(ErrorCode.REVIEW_NOT_FOUND);
+        }
+        // 해당 리뷰의 권한 검증
+        if(patchReview.getMember().getId() != memberId) {
+            throw new CustomException(ErrorCode.REVIEW_NOT_USER);
         }
         patchReview.updateReviewCd(true).updateReviewText(review).updateRating(rating);
 
@@ -195,10 +199,15 @@ public class ReviewService {
     // 리뷰 삭제 method
     // input : reviewId
     // output : reviewId
-    public long deleteReview(long reviewId) {
+    public long deleteReview(long reviewId, long memberId) {
         Review review = reviewRepository.findById(reviewId).orElse(null);
         if (review == null) {
             throw new CustomException(ErrorCode.REVIEW_NOT_FOUND);
+        }
+
+        // 해당 리뷰의 권한 검증
+        if(review.getMember().getId() != memberId) {
+            throw new CustomException(ErrorCode.REVIEW_NOT_USER);
         }
         reviewRepository.delete(review);
         return review.getId();
