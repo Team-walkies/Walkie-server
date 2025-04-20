@@ -1,5 +1,6 @@
 package site.walkies.walkie.domain.review.service.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,8 +13,11 @@ public class PostReviewResponse {
     private Long spotId;
     private Double distance;
     private Integer step;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
+    @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime startTime;
+    @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime endTime;
     private Long characterId;
     private Boolean reviewCd;
