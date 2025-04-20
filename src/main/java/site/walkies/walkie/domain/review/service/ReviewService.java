@@ -88,7 +88,7 @@ public class ReviewService {
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
 
-        List<Review> reviews =  reviewRepository.findByMemberIdAndAndReviewDateBetween(userId,startDate,endDate);
+        List<Review> reviews =  reviewRepository.findByMemberIdAndDeleteCdFalseAndReviewDateBetween(userId,startDate,endDate);
 
         // 조회된 리뷰를 저장할 리스트
         List<GetReviewResponse> responses = new ArrayList<>();
@@ -129,7 +129,7 @@ public class ReviewService {
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
 
-        List<Review> reviews =  reviewRepository.findByMemberIdAndSpotId(userId,spotId);
+        List<Review> reviews =  reviewRepository.findBySpotIdAndDeleteCdFalse(spotId);
 
         // 조회된 리뷰를 저장할 리스트
         List<GetReviewResponse> responses = new ArrayList<>();
