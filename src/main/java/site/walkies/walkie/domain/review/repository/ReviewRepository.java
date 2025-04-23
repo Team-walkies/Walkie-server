@@ -30,4 +30,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // 삭제를 위한 userId를 통한 조회
     List<Review> findByMemberId(Long memberId);
+
+    // 스팟에 대한 유저의 리뷰 개수 조회
+    int countByMemberIdAndSpotIdAndDeleteCdFalse(Long memberId, Long spotId);
 }
