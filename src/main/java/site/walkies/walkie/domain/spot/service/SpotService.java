@@ -41,7 +41,7 @@ public class SpotService {
                 .toList();
 
         // 해당 유저의 해당 스팟에 대한 리뷰
-        List<Review> memberReviews = reviewRepository.findBySpotIdAndMemberIdOrderByReviewDateDesc(spotId, memberId);
+        List<Review> memberReviews = reviewRepository.findBySpotIdAndDeleteCdFalseOrderByReviewDateDesc(spotId);
 
         // 탐험 여부
         boolean isExplored = !memberReviews.isEmpty();

@@ -11,16 +11,16 @@ import java.util.List;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     // start와 end 사이의 기간 조회
-    List<Review> findByMemberIdAndAndReviewDateBetween(Long id, LocalDate start, LocalDate end);
+    List<Review> findByMemberIdAndDeleteCdFalseAndReviewDateBetween(Long id, LocalDate start, LocalDate end);
 
     // spotId로 조회
-    List<Review> findByMemberIdAndSpotId(Long id, Long spotId);
+    List<Review> findBySpotIdAndDeleteCdFalse(Long spotId);
 
     // 리뷰 갯수 조회
     int countBySpotId(Long spotId);
 
     // 해당 유저의 해당 스팟에 대한 리뷰 날짜 내림차순 조회
-    List<Review> findBySpotIdAndMemberIdOrderByReviewDateDesc(Long spotId, Long memberId);
+    List<Review> findBySpotIdAndDeleteCdFalseOrderByReviewDateDesc(Long spotId);
 
     // 스팟에 대한 방문자 수 조회
     int countDistinctBySpotIdAndDeleteCdFalse(Long spotId);
