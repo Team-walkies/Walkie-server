@@ -19,7 +19,6 @@ import site.walkies.walkie.global.web.exception.ErrorCode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @Transactional
@@ -76,7 +75,7 @@ public class SpotService {
                 .build();
     }
 
-    public List<SpotNearbyResponseDto> getNearbySpots(SpotNearbyRequestDto request) {
+    public List<SpotNearbyResponseDto> getNearbySpots(SpotNearbyRequestDto request, Long memberId) {
         int resolution = 9;
         int k = 30;
 
@@ -97,15 +96,18 @@ public class SpotService {
         // String h3FromRequest = h3Core.geoToH3Address(37.5639, 126.9873, 9);
         // System.out.println("명동성당 직접 계산한 H3: " + h3FromRequest);
 
-
         return nearbySpots.stream()
                 .map(spot -> SpotNearbyResponseDto.builder()
                         .id(spot.getId())
                         .locationName(spot.getLocationName())
-                        .type(spot.getType().name())
+                        .type(isVisitedSpot(spot.getId(), memberId) ? spot.getType().name() : spot.getType().name()+"_VISITED")
                         .latitude(spot.getLatitude())
                         .longitude(spot.getLongitude())
                         .build())
                 .toList();
+    }
+
+    private boolean isVisitedSpot(Long nearSpotId, Long memberId){
+        return reviewRepository.countByMemberIdAndSpotIdAndDeleteCdFalse(memberId ,nearSpotId) > 0;
     }
 }

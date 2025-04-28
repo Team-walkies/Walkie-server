@@ -28,8 +28,11 @@ public class SpotController {
     }
 
     @PostMapping("/nearby")
-    public SuccessResponse<List<SpotNearbyResponseDto>> getNearbySpots(@RequestBody SpotNearbyRequestDto request) {
-        List<SpotNearbyResponseDto> response = spotService.getNearbySpots(request);
+    public SuccessResponse<List<SpotNearbyResponseDto>> getNearbySpots(
+            @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+            @RequestBody SpotNearbyRequestDto request
+    ) {
+        List<SpotNearbyResponseDto> response = spotService.getNearbySpots(request, memberPrincipal.getMemberId());
         return SuccessResponse.ok(response);
     }
 }
