@@ -66,7 +66,7 @@ public class SpotService {
                 .latitude(spot.getLatitude())
                 .longitude(spot.getLongitude())
                 .streetAddress(spot.getStreetAddress())
-                .type(spot.getType().name()) // enum -> String
+                .type(spot.getKeyword().name()) // enum -> String
                 .photoUrls(photoUrls)
                 .isExplored(isExplored)
                 .daysUntilNextVisit(daysUntilNextVisit)
@@ -100,7 +100,7 @@ public class SpotService {
                 .map(spot -> SpotNearbyResponseDto.builder()
                         .id(spot.getId())
                         .locationName(spot.getLocationName())
-                        .type(isVisitedSpot(spot.getId(), memberId) ? spot.getType().name() : spot.getType().name()+"_VISITED")
+                        .type(isVisitedSpot(spot.getId(), memberId) ? spot.getKeyword().name() : spot.getKeyword().name()+"_VISITED")
                         .latitude(spot.getLatitude())
                         .longitude(spot.getLongitude())
                         .build())
