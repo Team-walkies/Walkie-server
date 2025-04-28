@@ -11,7 +11,7 @@ import site.walkies.walkie.domain.spot.enums.SpotKeyword;
 import site.walkies.walkie.domain.spot.repository.SpotRepository;
 
 @Slf4j
-@Component
+// @Component
 @RequiredArgsConstructor
 public class SpotKeywordMigrationRunner implements ApplicationRunner {
 
