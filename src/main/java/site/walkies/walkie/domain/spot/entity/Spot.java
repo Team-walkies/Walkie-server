@@ -2,7 +2,7 @@ package site.walkies.walkie.domain.spot.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import site.walkies.walkie.domain.spot.enums.SpotType;
+import site.walkies.walkie.domain.spot.enums.SpotKeyword;
 
 @Entity
 @Table(name = "spot")
@@ -28,8 +28,12 @@ public class Spot {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private SpotType type;
+    private SpotKeyword keyword;
 
     @Column(name = "h3_index")
     private String h3Index;
+
+    public void changeKeyword(SpotKeyword spotKeyword) {
+        this.keyword = spotKeyword;
+    }
 }
