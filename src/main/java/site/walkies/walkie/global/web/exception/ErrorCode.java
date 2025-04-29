@@ -8,6 +8,7 @@ public enum ErrorCode {
     // 멤버 관련 예외
     // 아래는 예시입니다. 오류 상황에 맞는 이름과 메시지를 만들고, 사용할 HttpStatus를 선택하면 됩니다.
     USER_NOT_FOUND("존재하지 않는 유저입니다.", HttpStatus.UNAUTHORIZED),
+    ALREADY_REGISTERED_USER("이미 계정이 등록된 유저입니다.", HttpStatus.CONFLICT),
     INVALID_REFRESH_TOKEN("유효하지 않은 리프레시 토큰입니다.", HttpStatus.UNAUTHORIZED),
     //    USER_VALIDATION_ERROR("유저 검증 오류가 발생했습니다.", HttpStatus.UNAUTHORIZED),
     //    INVALID_PASSWORD("올바르지 않은 비밀번호입니다.", HttpStatus.UNAUTHORIZED),
