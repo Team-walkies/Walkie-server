@@ -52,6 +52,13 @@ public class MemberLoginService {
 
     // 멤버 생성
     private MemberResponseDto createMember(String provider, String providerId, String nickname) {
+        // 기존에 있는 회원인지 조회
+        boolean existsMember = memberRepository.existsByProviderAndProviderId(provider, providerId);
+
+        if(existsMember) {
+            throw new CustomException(ErrorCode.ALREADY_REGISTERED_USER);
+        }
+
         Member newMember = Member.builder()
                 .provider(provider)
                 .providerId(providerId)
