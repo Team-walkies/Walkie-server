@@ -1,5 +1,6 @@
 package site.walkies.walkie.domain.egg.service.dto.response;
 
+import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -24,6 +25,12 @@ public class EggResponse {
     private Boolean picked;
 
     private Long userCharacterId;
+
+    private Integer characterRank;
+
+    private Integer characterType;
+
+    private Integer characterClass;
 
     private Long memberId;
 }
