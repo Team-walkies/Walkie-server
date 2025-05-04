@@ -16,7 +16,7 @@ public class GetReviewResponse {
     private Long spotId;
     // 스팟 이름 추가
     private String spotName;
-    // 스팟 타입 추가
+    // 스팟 키워드 추가
     private SpotKeyword keyword;
 
     private String memberNickname;

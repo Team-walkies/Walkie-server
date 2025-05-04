@@ -90,7 +90,7 @@ public class ReviewService {
 
         List<Review> reviews =  reviewRepository.findByMemberIdAndDeleteCdFalseAndReviewDateBetween(userId,startDate,endDate);
 
-        // 조회된 리뷰를 저장할 리스트
+        // 조회된 리뷰를 저장할 리스트 (키워드 추가)
         List<GetReviewResponse> responses = new ArrayList<>();
         for (Review review : reviews) {
             if(review.getDeleteCd()) continue;
@@ -132,7 +132,7 @@ public class ReviewService {
 
         List<Review> reviews =  reviewRepository.findBySpotIdAndDeleteCdFalse(spotId);
 
-        // 조회된 리뷰를 저장할 리스트
+        // 조회된 리뷰를 저장할 리스트 (키워드 추가)
         List<GetReviewResponse> responses = new ArrayList<>();
         for (Review review : reviews) {
             if(review.getDeleteCd()) continue;
