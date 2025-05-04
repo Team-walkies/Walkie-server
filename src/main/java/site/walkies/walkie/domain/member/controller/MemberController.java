@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.egg.service.dto.response.EggResponse;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggResponse;
 import site.walkies.walkie.domain.character.service.dto.response.GetCharacterResponse;
@@ -77,9 +78,9 @@ public class MemberController {
             description = "사용자의 현재 부화 중인 알을 변경합니다."
     )
     @PatchMapping("/eggs/play")
-    public SuccessResponse<MemberResponseDto> updateMemberLevelingEgg(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody MemberUpdateLevelingEggRequestDto memberUpdateLevelingEggRequestDto){
-        MemberResponseDto memberResponseDto = memberService.updateMemberLevelingEgg(memberPrincipal.getMemberId(), memberUpdateLevelingEggRequestDto);
-        return SuccessResponse.updated(memberResponseDto);
+    public SuccessResponse<EggResponse> updateMemberLevelingEgg(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody MemberUpdateLevelingEggRequestDto memberUpdateLevelingEggRequestDto){
+        EggResponse eggResponse = memberService.updateMemberLevelingEgg(memberPrincipal.getMemberId(), memberUpdateLevelingEggRequestDto);
+        return SuccessResponse.updated(eggResponse);
     }
 
     @Operation(

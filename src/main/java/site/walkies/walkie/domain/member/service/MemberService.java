@@ -44,7 +44,7 @@ public class MemberService {
   
     // 사용자가 부화시키는 알 변경
     @Transactional
-    public MemberResponseDto updateMemberLevelingEgg(Long memberId, MemberUpdateLevelingEggRequestDto memberUpdateLevelingEggRequestDto){
+    public EggResponse updateMemberLevelingEgg(Long memberId, MemberUpdateLevelingEggRequestDto memberUpdateLevelingEggRequestDto){
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Egg previousEgg = member.getLevelingEgg();
         previousEgg.changePicked(false);
@@ -55,7 +55,20 @@ public class MemberService {
         member.changeLevelingEgg(egg);
         egg.changePicked(true);
 
-        return convertMemberToResponseDto(member);
+        return EggResponse.builder()
+                .eggId(egg.getId())
+                .rank(egg.getRank())
+                .needStep(egg.getNeedStep())
+                .nowStep(egg.getNowStep())
+                .obtainedPosition(egg.getObtainedPosition())
+                .obtainedDate(egg.getObtainedDate())
+                .picked(egg.getPicked())
+                .userCharacterId(egg.getUserCharacter().getId())
+                .characterRank(egg.getUserCharacter().getRank())
+                .characterType(egg.getUserCharacter().getType())
+                .characterClass(egg.getUserCharacter().getCharacterClass())
+                .memberId(memberId)
+                .build();
     }
     
 
@@ -111,6 +124,9 @@ public class MemberService {
                 .obtainedDate(egg.getObtainedDate())
                 .picked(egg.getPicked())
                 .userCharacterId(egg.getUserCharacter().getId())
+                .characterRank(egg.getUserCharacter().getRank())
+                .characterType(egg.getUserCharacter().getType())
+                .characterClass(egg.getUserCharacter().getCharacterClass())
                 .memberId(memberId)
                 .build();
     }
