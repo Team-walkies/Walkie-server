@@ -3,6 +3,7 @@ package site.walkies.walkie.domain.review.service.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
+import site.walkies.walkie.domain.spot.enums.SpotKeyword;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -15,6 +16,8 @@ public class GetReviewResponse {
     private Long spotId;
     // 스팟 이름 추가
     private String spotName;
+    // 스팟 키워드 추가
+    private SpotKeyword keyword;
 
     private String memberNickname;
 
