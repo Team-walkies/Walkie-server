@@ -2,10 +2,12 @@ package site.walkies.walkie.domain.spot.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "spot_photo")
 @Getter
+@Setter
 public class SpotPhoto {
 
     @Id

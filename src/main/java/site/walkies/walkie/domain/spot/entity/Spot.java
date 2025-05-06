@@ -43,4 +43,12 @@ public class Spot {
     public void changeKeyword(SpotKeyword spotKeyword) {
         this.keyword = spotKeyword;
     }
+
+    public void changeDetailUrl(String detailUrl) {
+        this.detailUrl = detailUrl;
+    }
+
+    public void changeStreetAddress(String streetAddress) {
+        this.streetAddress = streetAddress;
+    }
 }
