@@ -4,7 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.egg.service.EggService;
+import site.walkies.walkie.domain.egg.service.dto.request.CreateEggRequest;
 import site.walkies.walkie.domain.egg.service.dto.response.*;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggCountResponse;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggDetailResponse;
@@ -61,6 +63,16 @@ public class EggController {
     @GetMapping("/count")
     public SuccessResponse<GetEggCountResponse> getEggCount(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
         GetEggCountResponse response = eggService.getEggCount(memberPrincipal.getMemberId());
+        return SuccessResponse.ok(response);
+    }
+
+    @Operation(
+            summary = "알 생성",
+            description = "사용자가 위치 정보를 보내면 알을 생성합니다."
+    )
+    @PostMapping("")
+    public SuccessResponse<?> createEgg(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody CreateEggRequest createEggRequest) {
+        EggResponse response = eggService.createEgg(memberPrincipal.getMemberId(),createEggRequest.getLatitude(), createEggRequest.getLongitude());
         return SuccessResponse.ok(response);
     }
 }
