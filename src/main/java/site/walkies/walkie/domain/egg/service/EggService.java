@@ -57,11 +57,22 @@ public class EggService {
     // egg 생성 method
     // input : userId, obtainedPosition(얻은 위치), obtainedDate(얻은 날짜)
     // output : Egg
-    public Egg createEgg(long userId, String obtainedPosition, LocalDate obtainedDate) {
+    public EggResponse createEgg(long userId, double latitude, double longitude) {
         Member member = memberRepository.findById(userId).orElse(null);
         if (member == null) {
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
+
+        // 얻은 위치 저장
+        String obtainedPosition;
+        if(latitude == - 1 && longitude ==  -1){
+            obtainedPosition = "탄생의 바다";
+        } else {
+            obtainedPosition = tmapAPIService.convertGeoToString(latitude, longitude);
+        }
+
+        // 현재 날짜 저장
+        LocalDate obtainedDate = LocalDate.now();
 
         // 1. 랜덤값 생성
         // 알 랭크 랜덤값
@@ -71,17 +82,35 @@ public class EggService {
         // 같은 등급의 캐릭터 종류 랜덤값
         double characterClassRandom = Math.random() * 100;
 
+        Egg egg = new Egg();
+
         // 2. Egg 타입별 분기 처리 (각 알의 확률 값에 따라)
         if (eggRandom <= EggsProbability.NORMAL_EGG.getProbability()) {
-            return processEgg(userId, obtainedPosition, obtainedDate, member, EggsProbability.NORMAL_EGG, characterRandom, characterClassRandom, 2000);
+            egg =  processEgg(userId, obtainedPosition, obtainedDate, member, EggsProbability.NORMAL_EGG, characterRandom, characterClassRandom, 2000);
         } else if (eggRandom <= EggsProbability.RARE_EGG.getProbability()) {
-            return processEgg(userId, obtainedPosition, obtainedDate, member, EggsProbability.RARE_EGG, characterRandom, characterClassRandom, 6000);
+            egg =  processEgg(userId, obtainedPosition, obtainedDate, member, EggsProbability.RARE_EGG, characterRandom, characterClassRandom, 6000);
         } else if (eggRandom <= EggsProbability.EPIC_EGG.getProbability()) {
-            return processEgg(userId, obtainedPosition, obtainedDate, member, EggsProbability.EPIC_EGG, characterRandom, characterClassRandom, 8000);
+            egg =  processEgg(userId, obtainedPosition, obtainedDate, member, EggsProbability.EPIC_EGG, characterRandom, characterClassRandom, 8000);
         } else if (eggRandom <= EggsProbability.LEGENDARY_EGG.getProbability()) {
-            return processEgg(userId, obtainedPosition, obtainedDate, member, EggsProbability.LEGENDARY_EGG, characterRandom, characterClassRandom, 10000);
+            egg =  processEgg(userId, obtainedPosition, obtainedDate, member, EggsProbability.LEGENDARY_EGG, characterRandom, characterClassRandom, 10000);
         }
-        return null;
+
+        EggResponse response = EggResponse.builder()
+                .eggId(egg.getId())
+                .rank(egg.getRank())
+                .nowStep(egg.getNowStep())
+                .needStep(egg.getNeedStep())
+                .userCharacterId(egg.getUserCharacter().getId())
+                .characterRank(egg.getUserCharacter().getRank())
+                .characterType(egg.getUserCharacter().getType())
+                .characterClass(egg.getUserCharacter().getCharacterClass())
+                .obtainedDate(egg.getObtainedDate())
+                .obtainedPosition(egg.getObtainedPosition())
+                .memberId(egg.getUser().getId())
+                .picked(egg.getPicked())
+                .build();
+
+        return response;
     }
 
     // 주어진 알의  캐릭터 확률을 기반으로 후보 배열을 선택하고 Egg를 생성하는 함수
