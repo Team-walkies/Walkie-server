@@ -14,6 +14,8 @@ public enum ErrorCode {
     //    INVALID_PASSWORD("올바르지 않은 비밀번호입니다.", HttpStatus.UNAUTHORIZED),
     INVALID_ACCESS_TOKEN("올바르지 않은 ACCESSTOKEN 입니다", HttpStatus.UNAUTHORIZED),
     //    JSON_PROCESSING_ERROR("JSON 처리 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    DELETED_USER_CANNOT_LOGIN("탈퇴 유예 중인 유저는 로그인 할 수 없습니다. ", HttpStatus.UNAUTHORIZED),
+    DELETED_USER_CANNOT_ACCESS("탈퇴한 유저는 접근할 수 없습니다.", HttpStatus.UNAUTHORIZED),
 
     // 알 관련 예외
     EGG_NOT_FOUND("해당 id를 가진 알이 없습니다.", HttpStatus.NOT_FOUND),

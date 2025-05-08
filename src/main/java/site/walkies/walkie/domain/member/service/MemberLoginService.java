@@ -71,6 +71,7 @@ public class MemberLoginService {
                 .memberTier("초보워키")
                 .levelingEgg(null)
                 .levelingUserCharacter(null)
+                .deleteCd(false)
                 .build();
 
         Member savedMember = memberRepository.save(newMember);
