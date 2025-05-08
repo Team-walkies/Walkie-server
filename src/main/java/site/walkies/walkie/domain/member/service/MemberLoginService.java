@@ -9,6 +9,7 @@ import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.service.dto.response.MemberResponseDto;
 import site.walkies.walkie.global.web.exception.CustomException;
 import site.walkies.walkie.global.web.exception.ErrorCode;
+import site.walkies.walkie.global.webhook.DiscordNotifier;
 
 import java.time.LocalDate;
 
@@ -18,6 +19,7 @@ public class MemberLoginService {
 
     private final MemberRepository memberRepository;
     private final CharacterService characterService;
+    private final DiscordNotifier discordNotifier;
 
     // 로그인 확인용 (회원 조회만)
     public MemberResponseDto findKakaoMember(KakaoUserInfoResponseDto userInfo) {
@@ -73,6 +75,13 @@ public class MemberLoginService {
 
         Member savedMember = memberRepository.save(newMember);
         newMember.changeLevelingUserCharacter(characterService.createDefaultCharacter(newMember.getId(), LocalDate.now()));
+
+        // 디스코드 전송
+        String errorLog = "**축!! 회원가입!!**\n"
+                + nickname + "님이" + memberRepository.count() + "번째 워키멤버가 되었습니다.";
+
+        discordNotifier.sendRegistMessage(errorLog);
+
         return convertMemberToMemberResponseDto(savedMember);
     }
 
