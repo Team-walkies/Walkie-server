@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
                 + "- 메시지: " + ex.getMessage() + "\n"
                 + "- 클래스: " + ex.getClass().getName();
 
-        discordNotifier.sendMessage(errorLog);
+        discordNotifier.sendErrorMessage(errorLog);
 
         ExceptionResponse response = ExceptionResponse.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
