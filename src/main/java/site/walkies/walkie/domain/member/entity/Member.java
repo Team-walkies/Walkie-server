@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import site.walkies.walkie.domain.character.entity.UserCharacter;
 import site.walkies.walkie.domain.egg.entity.Egg;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "member")
 @Getter
@@ -47,8 +49,14 @@ public class Member {
     @JoinColumn(name = "leveling_character_id")
     private UserCharacter levelingUserCharacter;
 
+    @Column(name = "delete_cd")
+    private Boolean deleteCd;
+
+    @Column(name = "delete_requested_at")
+    private LocalDateTime deleteRequestedAt;
+
     @Builder
-    public Member(Long id, String providerId, String provider, String nickname, Integer exploredSpot, Integer recordedSpot, Boolean isPublic, String memberTier, Egg levelingEgg, UserCharacter levelingUserCharacter) {
+    public Member(Long id, String providerId, String provider, String nickname, Integer exploredSpot, Integer recordedSpot, Boolean isPublic, String memberTier, Egg levelingEgg, UserCharacter levelingUserCharacter, Boolean deleteCd) {
         this.id = id;
         this.providerId = providerId;
         this.provider = provider;
@@ -59,6 +67,7 @@ public class Member {
         this.memberTier = memberTier;
         this.levelingEgg = levelingEgg;
         this.levelingUserCharacter = levelingUserCharacter;
+        this.deleteCd = deleteCd;
     }
 
     public void changeNickname(String newNickname) {
@@ -75,5 +84,10 @@ public class Member {
 
     public void changeProfileVisibility(Boolean isPublic){
         this.isPublic = isPublic;
+    }
+
+    public void markDeleted(LocalDateTime now) {
+        this.deleteCd = true;
+        this.deleteRequestedAt = now;
     }
 }
