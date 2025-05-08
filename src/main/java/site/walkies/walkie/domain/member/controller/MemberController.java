@@ -106,8 +106,8 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "사용자의 기록한 스팟 개수 조회",
-            description = "메인 화면에서 사용자의 기록한 스팟 개수를 조회할 때 사용합니다."
+            summary = "회원 탈퇴",
+            description = "회원 탈퇴 요청을 보낼 때 사용합니다."
     )
     @DeleteMapping("")
     public SuccessResponse<Long> deleteMember(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
