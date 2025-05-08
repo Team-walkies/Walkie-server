@@ -1,5 +1,6 @@
 package site.walkies.walkie.domain.egg.service.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +21,7 @@ public class EggResponse {
 
     private String obtainedPosition;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate obtainedDate;
 
     private Boolean picked;
