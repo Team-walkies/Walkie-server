@@ -80,6 +80,11 @@ public class JwtFilter extends GenericFilterBean {
 
                 Member member = memberLoginService.findMemberById(memberId);
 
+                if (Boolean.TRUE.equals(member.getDeleteCd())) {
+                    log.warn("[JwtFilter] 탈퇴 유저의 접근 차단: memberId={}, uri={}", member.getId(), requestURI);
+                    throw new CustomException(ErrorCode.DELETED_USER_CANNOT_ACCESS);
+                }
+
                 UserDetails userDetails = MemberPrincipal.createMemberAuthority(member);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
