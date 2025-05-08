@@ -8,20 +8,37 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Component
 public class DiscordNotifier {
 
-    private final WebClient webClient;
+    @Value("${DISCORD_HOOK_ERROR}")
+    private String errorHook;
+
+    @Value("${DISCORD_HOOK_REGIST}")
+    private String registHook;
+
+    private final WebClient.Builder webClient;
 
 
-    public DiscordNotifier(WebClient.Builder builder,
-                           @Value("${DISCORD_HOOK}") String webhookUrl) {
-        this.webClient = builder.baseUrl(webhookUrl).build();
+    public DiscordNotifier(WebClient.Builder builder) {
+        this.webClient = builder;
     }
-
-    public void sendMessage(String content) {
-        webClient.post()
+    
+    private void sendMessage(String content, String webhookUrl) {
+        webClient.baseUrl(webhookUrl).
+                build()
+                .post()
                 .bodyValue(new DiscordMessage(content))
                 .retrieve()
                 .bodyToMono(String.class)
                 .subscribe();
+    }
+    
+    // 에러 메시지 웹훅
+    public void sendErrorMessage(String content) {
+        sendMessage(content, errorHook);
+    }
+
+    // 회원가입 웹훅
+    public void sendRegistMessage(String content) {
+        sendMessage(content, registHook);
     }
 
     private record DiscordMessage(String content) {}
