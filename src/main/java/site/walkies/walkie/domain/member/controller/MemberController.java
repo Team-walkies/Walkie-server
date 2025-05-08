@@ -8,6 +8,7 @@ import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.egg.service.dto.response.EggResponse;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggResponse;
 import site.walkies.walkie.domain.character.service.dto.response.GetCharacterResponse;
+import site.walkies.walkie.domain.member.service.MemberDeletionService;
 import site.walkies.walkie.domain.member.service.MemberService;
 import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateCharacterRequestDto;
 import site.walkies.walkie.domain.member.service.dto.request.MemberUpdateLevelingEggRequestDto;
@@ -22,6 +23,7 @@ import site.walkies.walkie.global.web.dto.response.SuccessResponse;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberDeletionService memberDeletionService;
 
     @Operation(
             summary = "사용자 정보 조회",
@@ -103,5 +105,14 @@ public class MemberController {
         return SuccessResponse.ok(memberRecordedSpot);
     }
 
+    @Operation(
+            summary = "사용자의 기록한 스팟 개수 조회",
+            description = "메인 화면에서 사용자의 기록한 스팟 개수를 조회할 때 사용합니다."
+    )
+    @DeleteMapping("")
+    public SuccessResponse<Long> deleteMember(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        Long deletedId = memberDeletionService.softDeleteMember(memberPrincipal.getMemberId());
+        return SuccessResponse.deleted(deletedId);
+    }
 }
 
