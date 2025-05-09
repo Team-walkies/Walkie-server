@@ -41,21 +41,23 @@ public class MemberService {
         }
         return convertMemberToResponseDto(member);
     }
-  
+
     // 사용자가 부화시키는 알 변경
     @Transactional
     public EggResponse updateMemberLevelingEgg(Long memberId, MemberUpdateLevelingEggRequestDto memberUpdateLevelingEggRequestDto){
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        Egg previousEgg = member.getLevelingEgg();
-        if (previousEgg != null) {
-            previousEgg.changePicked(false);
-        }
-
         Egg egg = eggRepository.findById(memberUpdateLevelingEggRequestDto.getEggId())
                 .orElseThrow(() -> new CustomException(ErrorCode.EGG_NOT_FOUND));
 
+        Egg previousEgg = member.getLevelingEgg();
+        // 부화시키는 알이 null인 경우나, 이전과 같은 알을 선택한 경우(프론트 오류 등으로 인해)는 체크 따로 안하기.
+        if (previousEgg != null && !previousEgg.getId().equals(egg.getId())) {
+            previousEgg.changePicked(false);
+        }
+
         member.changeLevelingEgg(egg);
         egg.changePicked(true);
+
 
         return EggResponse.builder()
                 .eggId(egg.getId())
