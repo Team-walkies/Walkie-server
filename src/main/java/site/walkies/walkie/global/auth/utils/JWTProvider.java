@@ -21,11 +21,11 @@ import java.util.Date;
 @Slf4j
 public class JWTProvider implements InitializingBean {
 
-    // Access Token 유효기간 (3분)
-    private static final long ACCESS_TOKEN_EXPIRATION_SECONDS = 180;
+    @Value("${jwt.access-token-expiration-seconds}")
+    private long accessTokenExpirationSeconds;
 
-    // Refresh Token 유효기간 (5분)
-    private static final long REFRESH_TOKEN_EXPIRATION_SECONDS = 300;
+    @Value("${jwt.refresh-token-expiration-seconds}")
+    private long refreshTokenExpirationSeconds;
 
     // JWT Claims 키 이름 정의
     private static final String PROVIDER_ID = "providerId";
@@ -53,13 +53,13 @@ public class JWTProvider implements InitializingBean {
     // Access Token 발급
     // 사용 위치: 로그인, 회원가입
     public String buildAccessToken(String providerId, Long memberId) {
-        return buildToken(providerId, memberId, ACCESS_TOKEN_EXPIRATION_SECONDS);
+        return buildToken(providerId, memberId, accessTokenExpirationSeconds);
     }
 
     // Refresh Token 발급
     // 사용 위치: 로그인, 회원가입
     public String buildRefreshToken(String providerId, Long memberId) {
-        return buildToken(providerId, memberId, REFRESH_TOKEN_EXPIRATION_SECONDS);
+        return buildToken(providerId, memberId, refreshTokenExpirationSeconds);
     }
 
     // 실제 JWT 생성 로직
