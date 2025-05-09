@@ -47,7 +47,9 @@ public class MemberService {
     public EggResponse updateMemberLevelingEgg(Long memberId, MemberUpdateLevelingEggRequestDto memberUpdateLevelingEggRequestDto){
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Egg previousEgg = member.getLevelingEgg();
-        previousEgg.changePicked(false);
+        if (previousEgg != null) {
+            previousEgg.changePicked(false);
+        }
 
         Egg egg = eggRepository.findById(memberUpdateLevelingEggRequestDto.getEggId())
                 .orElseThrow(() -> new CustomException(ErrorCode.EGG_NOT_FOUND));
