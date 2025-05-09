@@ -1,6 +1,7 @@
 package site.walkies.walkie.domain.review.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import site.walkies.walkie.domain.character.entity.UserCharacter;
@@ -21,6 +22,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
@@ -58,6 +60,14 @@ public class ReviewService {
 
         // 리뷰 생성
         Review createReview = Review.createReview(member,spot,distance,step,date,startTime,endTime,userCharacter,fileName,reviewCd,review,rating);
+
+        // 유저의 탐험&기록 업데이트
+        if (reviewCd) {
+            member.increaseExploredSpot();
+            member.increaseRecordedSpot();
+        } else {
+            member.increaseExploredSpot();
+        }
 
         //리뷰 저장
         reviewRepository.save(createReview);
