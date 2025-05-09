@@ -90,4 +90,13 @@ public class Member {
         this.deleteCd = true;
         this.deleteRequestedAt = now;
     }
+
+    public void increaseExploredSpot() {
+        this.exploredSpot = this.exploredSpot == null ? 1 : this.exploredSpot + 1;
+    }
+
+    public void increaseRecordedSpot() {
+        this.recordedSpot = this.recordedSpot == null ? 1 : this.recordedSpot + 1;
+    }
+
 }
