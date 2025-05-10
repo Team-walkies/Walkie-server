@@ -99,4 +99,7 @@ public class Member {
         this.recordedSpot = this.recordedSpot == null ? 1 : this.recordedSpot + 1;
     }
 
+    public void decreaseRecordedSpot() {
+        this.recordedSpot = this.recordedSpot == null ? 0 : this.recordedSpot - 1;
+    }
 }
