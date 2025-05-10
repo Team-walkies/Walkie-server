@@ -51,4 +51,8 @@ public class Spot {
     public void changeStreetAddress(String streetAddress) {
         this.streetAddress = streetAddress;
     }
+
+    public void changeH3Index(String h3Index) {
+        this.h3Index = h3Index;
+    }
 }
