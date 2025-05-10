@@ -222,6 +222,9 @@ public class ReviewService {
             throw new CustomException(ErrorCode.REVIEW_NOT_USER);
         }
         reviewRepository.delete(review);
+        Member member = memberRepository.findById(memberId).orElse(null);
+        member.decreaseRecordedSpot();
+        memberRepository.save(member);
         return review.getId();
     }
 
