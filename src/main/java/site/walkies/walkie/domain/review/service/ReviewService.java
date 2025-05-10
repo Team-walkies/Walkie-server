@@ -140,7 +140,7 @@ public class ReviewService {
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
 
-        List<Review> reviews =  reviewRepository.findBySpotIdAndDeleteCdFalse(spotId);
+        List<Review> reviews =  reviewRepository.findBySpotIdAndDeleteCdFalseOrderByReviewDateDesc(spotId);
 
         // 조회된 리뷰를 저장할 리스트 (키워드 추가)
         List<GetReviewResponse> responses = new ArrayList<>();
