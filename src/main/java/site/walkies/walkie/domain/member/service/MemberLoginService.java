@@ -12,6 +12,7 @@ import site.walkies.walkie.global.web.exception.ErrorCode;
 import site.walkies.walkie.global.webhook.DiscordNotifier;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,13 +26,23 @@ public class MemberLoginService {
     public MemberResponseDto findKakaoMember(KakaoUserInfoResponseDto userInfo) {
         String providerId = userInfo.getId().toString();
         return memberRepository.findByProviderId(providerId)
-                .map(this::convertMemberToMemberResponseDto)
+                .map(member -> {
+                    if (Boolean.TRUE.equals(member.getDeleteCd())) { // ✅ 수정됨
+                        throw new CustomException(ErrorCode.DELETED_USER_CANNOT_LOGIN);
+                    }
+                    return convertMemberToMemberResponseDto(member);
+                })
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     public MemberResponseDto findAppleMember(String appleUserId) {
         return memberRepository.findByProviderId(appleUserId)
-                .map(this::convertMemberToMemberResponseDto)
+                .map(member -> {
+                    if (Boolean.TRUE.equals(member.getDeleteCd())) { // ✅ 수정됨
+                        throw new CustomException(ErrorCode.DELETED_USER_CANNOT_LOGIN);
+                    }
+                    return convertMemberToMemberResponseDto(member);
+                })
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
@@ -55,9 +66,13 @@ public class MemberLoginService {
     // 멤버 생성
     private MemberResponseDto createMember(String provider, String providerId, String nickname) {
         // 기존에 있는 회원인지 조회
-        boolean existsMember = memberRepository.existsByProviderAndProviderId(provider, providerId);
+        Optional<Member> existingOpt = memberRepository.findByProviderAndProviderId(provider, providerId); // ✅ 수정됨
 
-        if(existsMember) {
+        if (existingOpt.isPresent()) {
+            Member existing = existingOpt.get();
+            if (Boolean.TRUE.equals(existing.getDeleteCd())) {
+                throw new CustomException(ErrorCode.DELETED_USER_CANNOT_LOGIN); // ✅ 수정됨
+            }
             throw new CustomException(ErrorCode.ALREADY_REGISTERED_USER);
         }
 

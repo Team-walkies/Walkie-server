@@ -106,7 +106,7 @@ public class SpotService {
     }
 
     private int getDaysUntilNextVisit(Long spotId, Long memberId) {
-        List<Review> reviews = reviewRepository.findByMemberIdAndSpotIdAndDeleteCdFalseOrderByReviewDateDesc(memberId, spotId);
+        List<Review> reviews = reviewRepository.findByMemberIdAndSpotIdAndDeleteCdFalseOrderByIdDesc(memberId, spotId);
 
         if (reviews.isEmpty()) return 0;
 
