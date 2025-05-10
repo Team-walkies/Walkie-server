@@ -11,4 +11,5 @@ import java.util.List;
 public interface SpotRepository extends JpaRepository<Spot, Long> {
     List<Spot> findByH3IndexIn(List<String> h3Indexes);
     Boolean existsByLocationName(String locationName);
+    List<Spot> findByH3IndexIsNull();
 }
