@@ -19,7 +19,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // 리뷰 갯수 조회
     int countBySpotId(Long spotId);
 
-    // 해당 유저의 해당 스팟에 대한 리뷰 날짜 내림차순 조회
+    // 해당 스팟에 대한 모든 유저의 리뷰 날짜 내림차순 조회
     List<Review> findBySpotIdAndDeleteCdFalseOrderByReviewDateDesc(Long spotId);
 
     // 스팟에 대한 방문자 수 조회
@@ -33,4 +33,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // 스팟에 대한 유저의 리뷰 개수 조회
     int countByMemberIdAndSpotIdAndDeleteCdFalse(Long memberId, Long spotId);
+
+    // 특정 멤버의 스팟에 대한 모든 리뷰 검색 후 날짜 내림차순 조회
+    List<Review> findByMemberIdAndSpotIdAndDeleteCdFalseOrderByReviewDateDesc(Long memberId, Long spotId);
 }

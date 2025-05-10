@@ -39,19 +39,9 @@ public class SpotService {
                 .map(SpotPhoto::getPhotoUrl)
                 .toList();
 
-        // 해당 유저의 해당 스팟에 대한 리뷰
-        List<Review> memberReviews = reviewRepository.findBySpotIdAndDeleteCdFalseOrderByReviewDateDesc(spotId);
-
-        // 탐험 여부
-        boolean isExplored = !memberReviews.isEmpty();
-
         // 재탐험까지 남은 일수
-        int daysUntilNextVisit = 0;
-        if (isExplored) {
-            LocalDate lastReviewDate = memberReviews.get(0).getReviewDate();
-            long daysPassed = ChronoUnit.DAYS.between(lastReviewDate, LocalDate.now());
-            daysUntilNextVisit = (daysPassed >= 3) ? 0 : (int)(3 - daysPassed);
-        }
+        int daysUntilNextVisit = getDaysUntilNextVisit(spot.getId(), memberId);
+        boolean isExplored = daysUntilNextVisit > 0;
 
         // 리뷰 수
         int reviewCount = reviewRepository.countBySpotIdAndDeleteCdFalse(spotId);
@@ -97,17 +87,32 @@ public class SpotService {
         // System.out.println("명동성당 직접 계산한 H3: " + h3FromRequest);
 
         return nearbySpots.stream()
-                .map(spot -> SpotNearbyResponseDto.builder()
-                        .id(spot.getId())
-                        .locationName(spot.getLocationName())
-                        .type(isVisitedSpot(spot.getId(), memberId) ? spot.getKeyword().name() : spot.getKeyword().name()+"_VISITED")
-                        .latitude(spot.getLatitude())
-                        .longitude(spot.getLongitude())
-                        .build())
+                .map(spot -> {
+                    int daysUntilNextVisit = getDaysUntilNextVisit(spot.getId(), memberId);
+                    String type = (daysUntilNextVisit >= 1)
+                            ? spot.getKeyword().name() + "_VISITED"
+                            : spot.getKeyword().name();
+
+                    return SpotNearbyResponseDto.builder()
+                            .id(spot.getId())
+                            .locationName(spot.getLocationName())
+                            .type(type)
+                            .latitude(spot.getLatitude())
+                            .longitude(spot.getLongitude())
+                            .build();
+                })
                 .toList();
+
     }
 
-    private boolean isVisitedSpot(Long nearSpotId, Long memberId){
-        return reviewRepository.countByMemberIdAndSpotIdAndDeleteCdFalse(memberId ,nearSpotId) > 0;
+    private int getDaysUntilNextVisit(Long spotId, Long memberId) {
+        List<Review> reviews = reviewRepository.findByMemberIdAndSpotIdAndDeleteCdFalseOrderByReviewDateDesc(memberId, spotId);
+
+        if (reviews.isEmpty()) return 0;
+
+        LocalDate lastDate = reviews.get(0).getReviewDate();
+        long daysPassed = ChronoUnit.DAYS.between(lastDate, LocalDate.now());
+
+        return (daysPassed >= 3) ? 0 : (int)(3 - daysPassed);
     }
 }
