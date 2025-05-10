@@ -16,4 +16,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     // 스케쥴러로 매일 삭제할 것들 탐색하기
     List<Member> findAllByDeleteCdTrueAndDeleteRequestedAtBefore(LocalDateTime before);
+
+    Optional<Member> findByProviderAndProviderId(String provider, String providerId);
 }
