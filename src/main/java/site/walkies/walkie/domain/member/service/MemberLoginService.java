@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import site.walkies.walkie.domain.auth.service.dto.response.KakaoUserInfoResponseDto;
 import site.walkies.walkie.domain.character.service.CharacterService;
+import site.walkies.walkie.domain.egg.service.EggService;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.service.dto.response.MemberResponseDto;
+import site.walkies.walkie.global.probability.EggsProbability;
 import site.walkies.walkie.global.web.exception.CustomException;
 import site.walkies.walkie.global.web.exception.ErrorCode;
 import site.walkies.walkie.global.webhook.DiscordNotifier;
@@ -21,6 +23,7 @@ public class MemberLoginService {
     private final MemberRepository memberRepository;
     private final CharacterService characterService;
     private final DiscordNotifier discordNotifier;
+    private final EggService eggService;
 
     // 로그인 확인용 (회원 조회만)
     public MemberResponseDto findKakaoMember(KakaoUserInfoResponseDto userInfo) {
@@ -71,7 +74,7 @@ public class MemberLoginService {
         if (existingOpt.isPresent()) {
             Member existing = existingOpt.get();
             if (Boolean.TRUE.equals(existing.getDeleteCd())) {
-                throw new CustomException(ErrorCode.DELETED_USER_CANNOT_LOGIN); // ✅ 수정됨
+                throw new CustomException(ErrorCode.DELETED_USER_CANNOT_LOGIN);
             }
             throw new CustomException(ErrorCode.ALREADY_REGISTERED_USER);
         }
@@ -91,6 +94,7 @@ public class MemberLoginService {
 
         Member savedMember = memberRepository.save(newMember);
         newMember.changeLevelingUserCharacter(characterService.createDefaultCharacter(newMember.getId(), LocalDate.now()));
+        newMember.changeLevelingEgg(eggService.processEgg("탄생의 바다", LocalDate.now(), savedMember, EggsProbability.NORMAL_EGG, Math.random() * 100, Math.random() * 100, 0));
 
         // 디스코드 전송
         String errorLog = "**축!! 회원가입!!**\n"
