@@ -86,13 +86,13 @@ public class EggService {
 
         // 2. Egg 타입별 분기 처리 (각 알의 확률 값에 따라)
         if (eggRandom <= EggsProbability.NORMAL_EGG.getProbability()) {
-            egg =  processEgg(userId, obtainedPosition, obtainedDate, member, EggsProbability.NORMAL_EGG, characterRandom, characterClassRandom, 2000);
+            egg =  processEgg(obtainedPosition, obtainedDate, member, EggsProbability.NORMAL_EGG, characterRandom, characterClassRandom, 2000);
         } else if (eggRandom <= EggsProbability.RARE_EGG.getProbability()) {
-            egg =  processEgg(userId, obtainedPosition, obtainedDate, member, EggsProbability.RARE_EGG, characterRandom, characterClassRandom, 6000);
+            egg =  processEgg(obtainedPosition, obtainedDate, member, EggsProbability.RARE_EGG, characterRandom, characterClassRandom, 6000);
         } else if (eggRandom <= EggsProbability.EPIC_EGG.getProbability()) {
-            egg =  processEgg(userId, obtainedPosition, obtainedDate, member, EggsProbability.EPIC_EGG, characterRandom, characterClassRandom, 8000);
+            egg =  processEgg(obtainedPosition, obtainedDate, member, EggsProbability.EPIC_EGG, characterRandom, characterClassRandom, 8000);
         } else if (eggRandom <= EggsProbability.LEGENDARY_EGG.getProbability()) {
-            egg =  processEgg(userId, obtainedPosition, obtainedDate, member, EggsProbability.LEGENDARY_EGG, characterRandom, characterClassRandom, 10000);
+            egg =  processEgg(obtainedPosition, obtainedDate, member, EggsProbability.LEGENDARY_EGG, characterRandom, characterClassRandom, 10000);
         }
 
         EggResponse response = EggResponse.builder()
@@ -116,10 +116,12 @@ public class EggService {
     // 주어진 알의  캐릭터 확률을 기반으로 후보 배열을 선택하고 Egg를 생성하는 함수
     // input : userId, obtainedPosition(얻은 위치), obtainedDate(얻은 날짜), Member, eggProb(알의 등급), characterRandom(캐릭터 등급 랜덤 값), characterClassRandom(캐릭터 종류 랜덥값),eggWalk(필요 걸음수)
     // output : Egg
-    private Egg processEgg(long userId, String obtainedPosition, LocalDate obtainedDate, Member member,
+    public Egg processEgg(String obtainedPosition, LocalDate obtainedDate, Member member,
                            EggsProbability eggProb, double characterRandom, double characterClassRandom, int eggWalk) {
         // 캐릭터 종류 후보 배열
         CharacterProbability[] candidates;
+
+        long userId = member.getId();
 
         // characterRandom을 통해서 캐릭터 등급을 고르고, 각 등급의 캐릭터 종류 후보 배열 생성
         // 일반 등급
