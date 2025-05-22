@@ -75,4 +75,14 @@ public class EggController {
         EggResponse response = eggService.createEgg(memberPrincipal.getMemberId(),createEggRequest.getLatitude(), createEggRequest.getLongitude());
         return SuccessResponse.ok(response);
     }
+
+    @Operation(
+            summary = "알 생성 test",
+            description = "사용자가 위치 정보를 보내면 100걸음짜리 test 알을 생성합니다."
+    )
+    @PostMapping("/test")
+    public SuccessResponse<?> createTestEgg(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody CreateEggRequest createEggRequest) {
+        EggResponse response = eggService.createTestEgg(memberPrincipal.getMemberId(),createEggRequest.getLatitude(), createEggRequest.getLongitude());
+        return SuccessResponse.ok(response);
+    }
 }
