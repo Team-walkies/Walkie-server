@@ -12,7 +12,6 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "egg")
 @Getter
-@Setter
 public class Egg {
 
     @Id
@@ -68,6 +67,11 @@ public class Egg {
 
     public Egg changePicked(Boolean picked) {
         this.picked = picked;
+        return this;
+    }
+
+    public Egg changeNeedStepUpdate(Integer needStep) {
+        this.needStep = needStep;
         return this;
     }
 }

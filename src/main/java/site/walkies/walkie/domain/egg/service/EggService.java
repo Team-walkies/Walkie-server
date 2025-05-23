@@ -306,7 +306,7 @@ public class EggService {
     public EggResponse createTestEgg(long userId, double latitude, double longitude) {
         EggResponse tempEgg = createEgg(userId, latitude, longitude);
         Egg egg = eggRepository.findById(tempEgg.getEggId()).orElse(null);
-        egg.setNeedStep(100);
+        egg.changeNeedStepUpdate(100);
         eggRepository.save(egg);
         EggResponse response = EggResponse.builder()
                 .eggId(egg.getId())
