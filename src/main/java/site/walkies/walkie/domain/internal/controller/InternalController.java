@@ -15,7 +15,7 @@ import site.walkies.walkie.global.web.dto.response.SuccessResponse;
 @RestController
 @RequestMapping("/internal")
 @RequiredArgsConstructor
-public class Internal {
+public class InternalController {
 
     private final SpotSyncService spotSyncService;
     private final SpotPhotoService spotPhotoService;
