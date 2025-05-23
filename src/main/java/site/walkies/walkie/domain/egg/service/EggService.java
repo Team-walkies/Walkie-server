@@ -299,4 +299,29 @@ public class EggService {
             eggRepository.delete(egg);
         }
     }
-}
+
+    // 테스트용 egg 생성 api 구현
+    // input : userId, latitude, longitude(얻은 위치)
+    // output : EggResponse
+    public EggResponse createTestEgg(long userId, double latitude, double longitude) {
+        EggResponse tempEgg = createEgg(userId, latitude, longitude);
+        Egg egg = eggRepository.findById(tempEgg.getEggId()).orElse(null);
+        egg.changeNeedStepUpdate(100);
+        eggRepository.save(egg);
+        EggResponse response = EggResponse.builder()
+                .eggId(egg.getId())
+                .rank(egg.getRank())
+                .nowStep(egg.getNowStep())
+                .needStep(egg.getNeedStep())
+                .userCharacterId(egg.getUserCharacter().getId())
+                .characterRank(egg.getUserCharacter().getRank())
+                .characterType(egg.getUserCharacter().getType())
+                .characterClass(egg.getUserCharacter().getCharacterClass())
+                .obtainedDate(egg.getObtainedDate())
+                .obtainedPosition(egg.getObtainedPosition())
+                .memberId(egg.getUser().getId())
+                .picked(egg.getPicked())
+                .build();
+        return response;
+        }
+    }

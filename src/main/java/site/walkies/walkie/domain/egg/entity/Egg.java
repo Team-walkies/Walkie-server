@@ -69,4 +69,9 @@ public class Egg {
         this.picked = picked;
         return this;
     }
+
+    public Egg changeNeedStepUpdate(Integer needStep) {
+        this.needStep = needStep;
+        return this;
+    }
 }
