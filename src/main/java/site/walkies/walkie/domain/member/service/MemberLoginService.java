@@ -94,7 +94,7 @@ public class MemberLoginService {
 
         Member savedMember = memberRepository.save(newMember);
         newMember.changeLevelingUserCharacter(characterService.createDefaultCharacter(newMember.getId(), LocalDate.now()));
-        newMember.changeLevelingEgg(eggService.processEgg("탄생의 바다", LocalDate.now(), savedMember, EggsProbability.NORMAL_EGG, Math.random() * 100, Math.random() * 100, 0));
+        newMember.changeLevelingEgg(eggService.processEgg("탄생의 바다", LocalDate.now(), savedMember, EggsProbability.NORMAL_EGG, Math.random() * 100, Math.random() * 100, 2000));
 
         // 디스코드 전송
         String errorLog = "**축!! 회원가입!!**\n"
