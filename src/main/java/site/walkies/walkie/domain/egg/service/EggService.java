@@ -1,12 +1,8 @@
 package site.walkies.walkie.domain.egg.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.http.*;
 import site.walkies.walkie.domain.character.entity.UserCharacter;
 import site.walkies.walkie.domain.character.repository.UserCharacterRepository;
 import site.walkies.walkie.domain.character.service.CharacterService;
@@ -26,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class EggService {
 
@@ -227,6 +224,7 @@ public class EggService {
     // output : GetEggCountResponse
     public GetEggCountResponse getEggCount(long userId) {
         GetEggCountResponse response = GetEggCountResponse.builder().eggCount(eggRepository.countAllByUserId(userId)).build();
+        log.info("ID: {}인 사용자가 자신의 알 {}개를 조회하였습니다.", userId, response.getEggCount());
         return response;
     }
 
@@ -251,6 +249,8 @@ public class EggService {
             Member member = memberRepository.findById(egg.getUser().getId()).orElse(null);
             member.changeLevelingEgg(null);
             memberRepository.save(member);
+
+            log.info("ID: {}인 사용자가 부화에 {}걸음이 필요한 {}번 알을 부화시켰습니다.", member.getId(), egg.getNeedStep(), egg.getId());
 
             eggRepository.delete(egg);
             EggResponse response = EggResponse.builder()
