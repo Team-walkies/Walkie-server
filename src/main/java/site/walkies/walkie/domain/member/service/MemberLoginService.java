@@ -1,5 +1,6 @@
 package site.walkies.walkie.domain.member.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -69,7 +70,8 @@ public class MemberLoginService {
     }
 
     // 멤버 생성
-    private MemberResponseDto createMember(String provider, String providerId, String nickname) {
+    @Transactional
+    public MemberResponseDto createMember(String provider, String providerId, String nickname) {
         // 기존에 있는 회원인지 조회
         Optional<Member> existingOpt = memberRepository.findByProviderAndProviderId(provider, providerId); // ✅ 수정됨
 
