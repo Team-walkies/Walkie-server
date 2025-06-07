@@ -1,6 +1,7 @@
 package site.walkies.walkie.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import site.walkies.walkie.domain.auth.service.dto.request.AuthCheckRequestDto;
 import site.walkies.walkie.domain.auth.service.dto.request.AuthSignupRequestDto;
@@ -19,6 +20,7 @@ import site.walkies.walkie.global.web.exception.ErrorCode;
 import java.time.LocalDateTime;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AuthService {
 
@@ -49,6 +51,8 @@ public class AuthService {
 
         // refreshToken 저장
         saveRefreshToken(memberResponseDto.getId(), refreshToken);
+
+        log.info("ID: {} 인 사용자가 로그인 했습니다.", memberResponseDto.getId());
 
         return LoginResponseDto.builder()
                 .provider(memberResponseDto.getProvider())
@@ -150,6 +154,9 @@ public class AuthService {
     public MemberResponseDto logout(Long memberId){
         Member member = memberLoginService.findMemberById(memberId);
         memberRefreshTokenService.deleteByMember(member);
+
+        log.info("ID: {} 인 사용자가 로그아웃 했습니다.", memberId);
+
         return MemberResponseDto.builder()
                 .id(member.getId())
                 .nickname(member.getNickname())
