@@ -72,6 +72,9 @@ public class ReviewService {
         //리뷰 저장
         reviewRepository.save(createReview);
 
+        log.info("ID: {} 인 사용자가 {}번 스팟({})에 대해 {} 점의 리뷰를 작성하였습니다.", member.getId(), spotId, spot.getLocationName(), rating);
+        log.info("ID: {} 인 사용자가 {}번 스팟({})에 대해 '{}' 라는 내용의 리뷰를 남겼습니다.", member.getId(), spotId, spot.getLocationName(), review);
+
         PostReviewResponse response = PostReviewResponse.builder()
                 .spotId(createReview.getSpot().getId())
                 .distance(createReview.getDistance())
@@ -189,6 +192,8 @@ public class ReviewService {
         patchReview.updateReviewCd(true).updateReviewText(review).updateRating(rating);
 
         Review patchedReview = reviewRepository.save(patchReview);
+
+        log.info("ID: {} 인 사용자가 {}번 스팟({})에 대해 '{}' 라는 내용의 리뷰로 업데이트했습니다.", memberId, patchedReview.getSpot().getId(), patchedReview.getSpot().getLocationName(), review);
 
         PatchReviewResponse response = PatchReviewResponse.builder()
                 .reviewId(patchedReview.getId())

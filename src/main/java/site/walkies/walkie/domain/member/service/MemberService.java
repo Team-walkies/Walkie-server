@@ -1,6 +1,7 @@
 package site.walkies.walkie.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.walkies.walkie.domain.egg.entity.Egg;
@@ -19,6 +20,7 @@ import site.walkies.walkie.global.web.exception.CustomException;
 import site.walkies.walkie.global.web.exception.ErrorCode;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
@@ -142,6 +144,10 @@ public class MemberService {
     public MemberResponseDto toggleMemberProfileVisibility(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         member.changeProfileVisibility(!member.getIsPublic());
+
+        //로그 기록을 위한 공개 여부 문자열화
+        String memberVisibility = member.getIsPublic() ? "public" : "private";
+        log.info("ID: {} 인 사용자가 자신의 프로필 공개 여부를 {}로 전환하였습니다.", memberId, memberVisibility);
         return convertMemberToResponseDto(member);
     }
 

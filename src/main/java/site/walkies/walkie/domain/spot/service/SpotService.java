@@ -2,6 +2,7 @@ package site.walkies.walkie.domain.spot.service;
 
 import com.uber.h3core.H3Core;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.walkies.walkie.domain.review.entity.Review;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @Service
 @Transactional
+@Slf4j
 @RequiredArgsConstructor
 public class SpotService {
 
@@ -48,6 +50,8 @@ public class SpotService {
 
         // 방문자 수 (distinct member 기준)
         int visitCount = reviewRepository.countDistinctBySpotIdAndDeleteCdFalse(spotId);
+
+        log.info("ID: {} 인 사용자가 {} 번 스팟 ({}) 의 정보를 조회했습니다.",  memberId, spotId, spot.getLocationName());
 
         // DTO 생성
         return SpotResponseDto.builder()
@@ -85,6 +89,8 @@ public class SpotService {
 
         // String h3FromRequest = h3Core.geoToH3Address(37.5639, 126.9873, 9);
         // System.out.println("명동성당 직접 계산한 H3: " + h3FromRequest);
+
+        log.info("ID: {} 인 사용자가 lat: {} , lng : {} 인 위치에서 {} 개의 스팟을 검색하였습니다.", memberId, request.getLatitude(), request.getLongitude(), nearbySpots.size() );
 
         return nearbySpots.stream()
                 .map(spot -> {

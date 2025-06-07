@@ -1,6 +1,7 @@
 package site.walkies.walkie.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import site.walkies.walkie.domain.auth.service.dto.response.KakaoUserInfoResponseDto;
 import site.walkies.walkie.domain.character.service.CharacterService;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class MemberLoginService {
 
@@ -101,6 +103,8 @@ public class MemberLoginService {
                 + nickname + "님이" + memberRepository.count() + "번째 워키멤버가 되었습니다.";
 
         discordNotifier.sendRegistMessage(errorLog);
+
+        log.info("{} 를 통해 회원이 가입하였습니다. ", provider);
 
         return convertMemberToMemberResponseDto(savedMember);
     }
