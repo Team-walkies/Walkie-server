@@ -25,8 +25,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AuthService {
 
-//    private final KakaoService kakaoService;
-//    private final AppleService appleService;
     private final MemberLoginService memberLoginService;
     private final JWTProvider jwtProvider;
     private final MemberRefreshTokenService memberRefreshTokenService;
@@ -89,19 +87,6 @@ public class AuthService {
                 requestDto.getNickname()
         );
 
-//        switch (requestDto.getProvider().toLowerCase()) {
-//            case "kakao":
-//                KakaoUserInfoResponseDto kakaoUserInfo = kakaoService.getUserInfo(requestDto.getLoginAccessToken());
-//                memberResponseDto = memberLoginService.createKakaoMember(kakaoUserInfo, requestDto.getNickname());
-//                break;
-//            case "apple":
-//                String appleUserId = appleService.getAppleUserIdFromToken(requestDto.getLoginAccessToken());
-//                memberResponseDto = memberLoginService.createAppleMember(appleUserId, requestDto.getNickname());
-//                break;
-//            default:
-//                throw new IllegalArgumentException("지원하지 않는 로그인 방식입니다.");
-//        }
-
         String accessToken = jwtProvider.buildAccessToken(memberResponseDto.getProviderId(), memberResponseDto.getId());
         String refreshToken = jwtProvider.buildRefreshToken(memberResponseDto.getProviderId(), memberResponseDto.getId());
 
@@ -121,28 +106,6 @@ public class AuthService {
 
         memberRefreshTokenService.saveOrUpdateToken(member, refreshToken, expiresAt);
     }
-
-    /*
-    private MemberResponseDto getExistingMemberIfExists(AuthCheckRequestDto requestDto) {
-        try {
-            switch (requestDto.getProvider().toLowerCase()) {
-                case "kakao":
-                    KakaoUserInfoResponseDto kakaoUserInfo = kakaoService.getUserInfo(requestDto.getLoginAccessToken());
-                    return memberLoginService.findKakaoMember(kakaoUserInfo);
-                case "apple":
-                    String appleUserId = appleService.getAppleUserIdFromToken(requestDto.getLoginAccessToken());
-                    return memberLoginService.findAppleMember(appleUserId);
-                default:
-                    throw new IllegalArgumentException("지원하지 않는 로그인 방식입니다.");
-            }
-        } catch (CustomException e) {
-            if (e.getErrorCode() == ErrorCode.USER_NOT_FOUND) {
-                return null;
-            }
-            throw e;
-        }
-    }
-     */
 
     // 리프레시 토큰 재발급
     public LoginResponseDto refreshAccessToken(RefreshTokenRequestDto requestDto) {
