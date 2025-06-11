@@ -1,13 +1,13 @@
 package site.walkies.walkie.domain.auth.service;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import site.walkies.walkie.domain.auth.service.dto.request.AuthCheckRequestDto;
 import site.walkies.walkie.domain.auth.service.dto.request.AuthSignupRequestDto;
 import site.walkies.walkie.domain.auth.service.dto.request.RefreshTokenRequestDto;
-import site.walkies.walkie.domain.auth.service.dto.response.KakaoUserInfoResponseDto;
 import site.walkies.walkie.domain.auth.service.dto.response.LoginResponseDto;
+import site.walkies.walkie.domain.auth.strategy.SocialLoginStrategy;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.service.MemberLoginService;
 import site.walkies.walkie.domain.member.service.dto.response.MemberResponseDto;
@@ -18,35 +18,52 @@ import site.walkies.walkie.global.web.exception.CustomException;
 import site.walkies.walkie.global.web.exception.ErrorCode;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class AuthService {
 
-    private final KakaoService kakaoService;
-    private final AppleService appleService;
     private final MemberLoginService memberLoginService;
     private final JWTProvider jwtProvider;
     private final MemberRefreshTokenService memberRefreshTokenService;
+    private final Map<String, SocialLoginStrategy> strategyMap;
 
+    // 전략 매핑을 위하여 `@RequiredArgsConstructor` 대신 생성자 주입 사용
+    public AuthService(
+            List<SocialLoginStrategy> strategies,
+            JWTProvider jwtProvider,
+            MemberRefreshTokenService memberRefreshTokenService,
+            MemberLoginService memberLoginService
+    ){
+        this.jwtProvider = jwtProvider;
+        this.memberRefreshTokenService = memberRefreshTokenService;
+        this.memberLoginService = memberLoginService;
+        this.strategyMap = strategies.stream().collect(Collectors.toMap(SocialLoginStrategy::getProviderName, s -> s));
+    }
+
+    // 사용자가 있다면 -> 로그인, 없다면 -> 회원가입 유도
     public LoginResponseDto checkUserExists(AuthCheckRequestDto requestDto) {
-        MemberResponseDto memberResponseDto = getExistingMemberIfExists(requestDto);
+        SocialLoginStrategy strategy = getStrategy(requestDto.getProvider());
 
-        if (memberResponseDto == null) {
-            // 회원이 없는 경우: 프론트에서 회원가입 유도
-            return LoginResponseDto.builder()
-                    .provider(requestDto.getProvider())
-                    .accessToken(null)
-                    .refreshToken(null)
-                    .build();
+        MemberResponseDto memberResponseDto;
+        try{
+            memberResponseDto = strategy.findMember(requestDto.getLoginAccessToken());
+        } catch (CustomException e) {
+            if(e.getErrorCode() == ErrorCode.USER_NOT_FOUND) {
+                // 회원이 없는 경우: 프론트에서 회원가입 유도
+                return LoginResponseDto.builder()
+                        .provider(requestDto.getProvider())
+                        .accessToken(null)
+                        .refreshToken(null)
+                        .build();
+            }
+            throw e;
         }
 
         // 토큰 발급
-        String accessToken = jwtProvider.buildAccessToken(
-                memberResponseDto.getProviderId(),
-                memberResponseDto.getId()
-        );
+        String accessToken = jwtProvider.buildAccessToken(memberResponseDto.getProviderId(), memberResponseDto.getId());
         String refreshToken = jwtProvider.buildRefreshToken(memberResponseDto.getProviderId(), memberResponseDto.getId());
 
         // refreshToken 저장
@@ -61,26 +78,16 @@ public class AuthService {
                 .build();
     }
 
+    // 사용자 회원가입
     public LoginResponseDto signupNewUser(AuthSignupRequestDto requestDto) {
-        MemberResponseDto memberResponseDto;
+        SocialLoginStrategy strategy = getStrategy(requestDto.getProvider());
 
-        switch (requestDto.getProvider().toLowerCase()) {
-            case "kakao":
-                KakaoUserInfoResponseDto kakaoUserInfo = kakaoService.getUserInfo(requestDto.getLoginAccessToken());
-                memberResponseDto = memberLoginService.createKakaoMember(kakaoUserInfo, requestDto.getNickname());
-                break;
-            case "apple":
-                String appleUserId = appleService.getAppleUserIdFromToken(requestDto.getLoginAccessToken());
-                memberResponseDto = memberLoginService.createAppleMember(appleUserId, requestDto.getNickname());
-                break;
-            default:
-                throw new IllegalArgumentException("지원하지 않는 로그인 방식입니다.");
-        }
-
-        String accessToken = jwtProvider.buildAccessToken(
-                memberResponseDto.getProviderId(),
-                memberResponseDto.getId()
+        MemberResponseDto memberResponseDto = strategy.signup(
+                requestDto.getLoginAccessToken(),
+                requestDto.getNickname()
         );
+
+        String accessToken = jwtProvider.buildAccessToken(memberResponseDto.getProviderId(), memberResponseDto.getId());
         String refreshToken = jwtProvider.buildRefreshToken(memberResponseDto.getProviderId(), memberResponseDto.getId());
 
         saveRefreshToken(memberResponseDto.getId(), refreshToken);
@@ -92,6 +99,7 @@ public class AuthService {
                 .build();
     }
 
+    // RefreshToken 저장
     private void saveRefreshToken(Long memberId, String refreshToken) {
         Member member = memberLoginService.findMemberById(memberId);
         LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(300); // 5분짜리 토큰
@@ -99,26 +107,7 @@ public class AuthService {
         memberRefreshTokenService.saveOrUpdateToken(member, refreshToken, expiresAt);
     }
 
-    private MemberResponseDto getExistingMemberIfExists(AuthCheckRequestDto requestDto) {
-        try {
-            switch (requestDto.getProvider().toLowerCase()) {
-                case "kakao":
-                    KakaoUserInfoResponseDto kakaoUserInfo = kakaoService.getUserInfo(requestDto.getLoginAccessToken());
-                    return memberLoginService.findKakaoMember(kakaoUserInfo);
-                case "apple":
-                    String appleUserId = appleService.getAppleUserIdFromToken(requestDto.getLoginAccessToken());
-                    return memberLoginService.findAppleMember(appleUserId);
-                default:
-                    throw new IllegalArgumentException("지원하지 않는 로그인 방식입니다.");
-            }
-        } catch (CustomException e) {
-            if (e.getErrorCode() == ErrorCode.USER_NOT_FOUND) {
-                return null;
-            }
-            throw e;
-        }
-    }
-
+    // 리프레시 토큰 재발급
     public LoginResponseDto refreshAccessToken(RefreshTokenRequestDto requestDto) {
         String refreshToken = requestDto.getRefreshToken();
 
@@ -169,6 +158,15 @@ public class AuthService {
                 .memberTier(member.getMemberTier())
                 .isPublic(member.getIsPublic())
                 .build();
+    }
+
+    // provider에 알맞은 전략 조회
+    private SocialLoginStrategy getStrategy(String provider) {
+        SocialLoginStrategy strategy = strategyMap.get(provider.toLowerCase());
+        if (strategy == null) {
+            throw new IllegalArgumentException("지원하지 않는 로그인 방식입니다: " + provider);
+        }
+        return strategy;
     }
 
 }
