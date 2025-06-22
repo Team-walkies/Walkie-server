@@ -1,4 +1,4 @@
-package site.walkies.walkie.web;
+package site.walkies.walkie.global.file;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.core.io.FileSystemResource;
