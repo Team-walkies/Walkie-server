@@ -20,6 +20,7 @@ import site.walkies.walkie.global.web.exception.ErrorCode;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -170,11 +171,23 @@ public class CharacterService {
                     .build();
             details.add(detail);
         }
+
+        // 추후 개선 필요 => 캐릭터 검색이 아닌 DB에 캐릭터 enum 저장 필요
+        CharacterProbability cp = Arrays.stream(CharacterProbability.values())
+                .filter(e -> e.getRank() == userCharacter.getRank()
+                        && e.getType() == userCharacter.getType()
+                        && e.getCharacterClass() == userCharacter.getCharacterClass())
+                .findFirst().orElseThrow(() -> new CustomException(ErrorCode.CHARACTER_TYPE_NOT_FOUND));;
+
+
         GetCharacterDetailResponse response = GetCharacterDetailResponse.builder()
                 .characterCount(count)
                 .rank(userCharacter.getRank())
                 .characterClass(userCharacter.getCharacterClass())
                 .type(userCharacter.getType())
+                .characterName(cp.getName())
+                .characterDescription(cp.getDetail())
+                .characterImageUrl("https://truthguard.site/api/v1/files/" + cp.getPicUrl() + ".png")
                 .obtainedDetails(details)
                 .build();
         return response;
