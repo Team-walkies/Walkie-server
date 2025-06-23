@@ -53,7 +53,8 @@ public class JwtFilter extends GenericFilterBean {
                 "/api/v1/swagger-ui.html",
                 "/api/v1/v3/api-docs",
                 "/api/v1/v3/api-docs/**",
-                "/swagger-ui/**"
+                "/swagger-ui/**",
+                "/api/v1/files/**"
         );
 
         // JWT 없이 접근 가능한 API는 필터를 건너뜀

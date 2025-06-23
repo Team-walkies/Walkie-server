@@ -25,6 +25,7 @@ public enum ErrorCode {
 
     // 캐릭터 관련 예외
     CHARACTER_NOT_FOUND("해당 id를 가진 캐릭터가 없습니다.", HttpStatus.NOT_FOUND),
+    CHARACTER_TYPE_NOT_FOUND("해당 종류의 캐릭터가 없습니다.", HttpStatus.NOT_FOUND),
     // 공지 관련 예외
 
     // 리뷰 관련 예외

@@ -16,6 +16,12 @@ public class GetCharacterDetailResponse {
     private Integer type;
     // 캐릭터 클래스
     private Integer characterClass;
+    // 캐릭터 이름
+    private String characterName;
+    // 캐릭터 설명
+    private String characterDescription;
+    // 캐릭터 사진 URL
+    private String characterImageUrl;
     // 획득 상세 정보
     private List<ObtainedDetail> obtainedDetails;
 }
