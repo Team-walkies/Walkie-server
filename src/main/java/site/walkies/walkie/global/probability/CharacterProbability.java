@@ -30,7 +30,7 @@ public enum CharacterProbability {
             "우린 함께 걸을 운명인가 봐.","DINO", 0,1,0,60),
     RED_DINO("빨간 다이노", "화가 난다, 화가 나!\n" +
             "온몸이 울그락불그락 빨개졌어!","RED_DINO", 0,1,1,70),
-    GREEN_DINO("초록 다이노","민트 좋아해?\n" +
+    GREEN_DINO("민트 다이노","민트 좋아해?\n" +
             "내 옆에 있으면 상쾌해질 거야.","GREEN_DINO", 0,1,2,80),
     PURPLE_DINO("보라 다이노","추위를 많이 타서 온몸이 창백해졌어…\n" +
             "옷이라도 입혀줘.","PURPLE_DINO", 0,1,3,90),
