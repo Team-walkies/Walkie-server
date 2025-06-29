@@ -26,7 +26,7 @@ public class DailyEggEventService {
     private final DailyEggEventRepository eventRepository;
     private final EggService eggService;
 
-    private static final LocalDate EVENT_START = LocalDate.of(2025, Month.JUNE, 29);
+    private static final LocalDate EVENT_START = LocalDate.of(2025, Month.JULY, 7);
     private static final LocalDate EVENT_END = LocalDate.of(2025, Month.JULY, 31);
 
     @Transactional
