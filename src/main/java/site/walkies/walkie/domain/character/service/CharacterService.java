@@ -187,7 +187,7 @@ public class CharacterService {
                 .type(userCharacter.getType())
                 .characterName(cp.getName())
                 .characterDescription(cp.getDetail())
-                .characterImageUrl("https://truthguard.site/api/v1/files/" + cp.getPicUrl() + ".png")
+                .characterImageUrl("https://truthguard.site/api/v1/file/" + cp.getPicUrl() + ".png")
                 .obtainedDetails(details)
                 .build();
         return response;
