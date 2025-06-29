@@ -22,6 +22,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ExceptionResponse> handleCustomException(CustomException ex){
         log.error("CustomException 발생: ", ex);
+
+        // 디스코드 전송
+        String errorLog = "**Custom Exception이 발생했습니다.**\n"
+                + "- 메시지: " + ex.getMessage() + "\n"
+                + "- 클래스: " + ex.getClass().getName();
+
+        discordNotifier.sendErrorMessage(errorLog);
+
         ExceptionResponse response = ExceptionResponse.builder()
                 .status(ex.getErrorCode().getHttpStatus().value())
                 .message(ex.getMessage())
@@ -36,7 +44,7 @@ public class GlobalExceptionHandler {
         log.error("Exception 발생: ", ex);
 
         // 디스코드 전송
-        String errorLog = "**서버 오류 발생!**\n"
+        String errorLog = "**서버 오류가 발생했습니다.**\n"
                 + "- 메시지: " + ex.getMessage() + "\n"
                 + "- 클래스: " + ex.getClass().getName();
 

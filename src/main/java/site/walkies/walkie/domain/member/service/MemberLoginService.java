@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import site.walkies.walkie.domain.auth.service.dto.response.KakaoUserInfoResponseDto;
 import site.walkies.walkie.domain.character.service.CharacterService;
+import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.egg.service.EggService;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.domain.member.entity.Member;
@@ -98,7 +99,8 @@ public class MemberLoginService {
 
         Member savedMember = memberRepository.save(newMember);
         newMember.changeLevelingUserCharacter(characterService.createDefaultCharacter(newMember.getId(), LocalDate.now()));
-        newMember.changeLevelingEgg(eggService.processEgg("탄생의 바다", LocalDate.now(), savedMember, EggsProbability.NORMAL_EGG, Math.random() * 100, Math.random() * 100, 2000));
+        Egg newLevelingEgg = eggService.processEgg("탄생의 바다", LocalDate.now(), savedMember, EggsProbability.NORMAL_EGG, Math.random() * 100, Math.random() * 100, 2000);
+        newMember.changeLevelingEgg(newLevelingEgg);
 
         // 디스코드 전송
         String errorLog = "**축!! 회원가입!!**\n"
