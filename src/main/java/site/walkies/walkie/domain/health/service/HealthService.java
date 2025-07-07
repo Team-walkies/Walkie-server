@@ -8,6 +8,8 @@ import site.walkies.walkie.domain.health.enums.Calorie;
 import site.walkies.walkie.domain.health.repository.HealthCurrentRepository;
 import site.walkies.walkie.domain.health.repository.HealthHistoryRepository;
 import site.walkies.walkie.domain.health.service.dto.response.HealthDetailResponseDto;
+import site.walkies.walkie.domain.health.service.dto.response.HealthMoveResponseDto;
+import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.global.web.exception.CustomException;
 import site.walkies.walkie.global.web.exception.ErrorCode;
 
@@ -18,6 +20,7 @@ import java.time.LocalDate;
 public class HealthService {
     private final HealthCurrentRepository healthCurrentRepository;
     private final HealthHistoryRepository healthHistoryRepository;
+    private final MemberRepository memberRepository;
 
     // 상세 조회 method
     public HealthDetailResponseDto getHealthDetail(long memberId, LocalDate searchDate) {
@@ -79,6 +82,28 @@ public class HealthService {
                 .caloriesName(targetCal.getFoodName())
                 .caloriesDescription(targetCal.getFoodDescription())
                 .caloriesUrl("https://truthguard.site/api/v1/file/" + targetCal.getImageUrl() + ".png")
+                .build();
+    }
+
+    // 헬스케어 저장 method
+    public HealthMoveResponseDto updateHealthDetail(long memberId, int targetSteps, int nowSteps, double nowDistance, double calories) {
+        // 현재 헬스케어 정보 조회
+        HealthCurrent healthCurrent = healthCurrentRepository.findByMemberId(memberId).orElse(null);
+        // 없는 경우 생성
+        if(healthCurrent == null) {
+            healthCurrent = HealthCurrent.create(memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND)),targetSteps, nowSteps,nowDistance,calories);
+        }
+        // 있는 경우 업데이트
+        else {
+            healthCurrent.updateMove(nowSteps,nowDistance,calories);
+        }
+        // 저장
+        healthCurrentRepository.save(healthCurrent);
+        return HealthMoveResponseDto.builder()
+                .targetSteps(targetSteps)
+                .nowSteps(nowSteps)
+                .nowDistance(nowDistance)
+                .nowCalories(calories)
                 .build();
     }
 

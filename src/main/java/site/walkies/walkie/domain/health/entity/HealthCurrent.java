@@ -49,4 +49,14 @@ public class HealthCurrent {
     public void updateTargetSteps(Integer targetSteps) {
         this.targetSteps = targetSteps;
     }
+
+    public static HealthCurrent create(Member member, Integer targetSteps, Integer nowSteps, Double nowDistance, Double nowCalories) {
+        return new HealthCurrent(
+                member,
+                targetSteps,
+                nowSteps,
+                nowDistance,
+                nowCalories
+        );
+    }
 }
