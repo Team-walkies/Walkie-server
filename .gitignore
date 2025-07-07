@@ -38,3 +38,4 @@ out/
 
 ### key ###
 /src/main/resources/application-key.properties
+/src/main/resources/firebase/firebase-service-key.json
