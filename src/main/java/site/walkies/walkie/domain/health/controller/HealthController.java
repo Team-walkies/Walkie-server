@@ -9,10 +9,12 @@ import site.walkies.walkie.domain.health.service.HealthService;
 import site.walkies.walkie.domain.health.service.dto.request.HealthMoveUpdateRequestDto;
 import site.walkies.walkie.domain.health.service.dto.response.HealthDetailResponseDto;
 import site.walkies.walkie.domain.health.service.dto.response.HealthMoveResponseDto;
+import site.walkies.walkie.domain.health.service.dto.response.HealthResponseDto;
 import site.walkies.walkie.global.auth.dto.MemberPrincipal;
 import site.walkies.walkie.global.web.dto.response.SuccessResponse;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,10 +34,21 @@ public class HealthController {
     }
 
     @Operation(
+            summary = "기간 내 헬스케어 정보 전달",
+            description = "선택한 기간의 헬스케어 정보를 조회합니다. 쿼리 파라미터로 startDate, endDate를 넘겨줘야합니다."
+    )
+    @GetMapping("")
+    public SuccessResponse<List<HealthResponseDto>> getHealthList(@RequestParam(value = "startDate") LocalDate startDate,@RequestParam(value = "endDate") LocalDate endDate,  @AuthenticationPrincipal MemberPrincipal principal) {
+        return SuccessResponse.ok(
+                healthService.getHealthList(principal.getMemberId(),startDate,endDate)
+        );
+    }
+
+    @Operation(
             summary = "오늘 헬스케어 정보 업데이트",
             description = "헬스케어 정보를 업데이트 합니다. 목표 걸음수, 현재 걸음수, 현재 거리, 현재 칼로리를 업데이트 가능합니다."
     )
-    @PostMapping("/")
+    @PostMapping("")
     public SuccessResponse<HealthMoveResponseDto> updateHealthDetail(@AuthenticationPrincipal MemberPrincipal principal, @RequestBody HealthMoveUpdateRequestDto requestDto) {
         return SuccessResponse.ok(
                 healthService.updateHealthDetail(principal.getMemberId(), requestDto.getTargetSteps(), requestDto.getNowSteps(), requestDto.getNowDistance(), requestDto.getNowCalories())

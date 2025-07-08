@@ -9,11 +9,14 @@ import site.walkies.walkie.domain.health.repository.HealthCurrentRepository;
 import site.walkies.walkie.domain.health.repository.HealthHistoryRepository;
 import site.walkies.walkie.domain.health.service.dto.response.HealthDetailResponseDto;
 import site.walkies.walkie.domain.health.service.dto.response.HealthMoveResponseDto;
+import site.walkies.walkie.domain.health.service.dto.response.HealthResponseDto;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.global.web.exception.CustomException;
 import site.walkies.walkie.global.web.exception.ErrorCode;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -105,6 +108,54 @@ public class HealthService {
                 .nowDistance(nowDistance)
                 .nowCalories(calories)
                 .build();
+    }
+
+    // 헬스케어 List 조회 method
+    public List<HealthResponseDto> getHealthList(long memberId, LocalDate startDate, LocalDate endDate) {
+        List<HealthResponseDto> healthResponseDtoList = new ArrayList<>();
+        for(LocalDate tempDate = startDate;!tempDate.isAfter(endDate);tempDate = tempDate.plusDays(1) ) {
+            // 오늘인 경우
+            if(tempDate.isEqual(LocalDate.now())) {
+                HealthCurrent healthCurrent = healthCurrentRepository.findByMemberId(memberId).orElse(null);
+                // 기록이 없는 경우
+                if(healthCurrent == null) {
+                    healthResponseDtoList.add(HealthResponseDto.builder()
+                            .responseDate(tempDate)
+                            .targetSteps(6000)
+                            .nowSteps(0)
+                            .build());
+                }
+                // 기록이 있는 경우
+                else {
+                    healthResponseDtoList.add(HealthResponseDto.builder()
+                            .responseDate(tempDate)
+                            .targetSteps(healthCurrent.getTargetSteps())
+                            .nowSteps(healthCurrent.getNowSteps())
+                            .build());
+                }
+            }
+            // 오늘이 아닌 경우
+            else {
+                HealthHistory healthHistory = healthHistoryRepository.findByMemberIdAndRecordDate(memberId, tempDate).orElse(null);
+                // 기록이 없는 경우
+                if (healthHistory == null) {
+                    healthResponseDtoList.add(HealthResponseDto.builder()
+                            .responseDate(tempDate)
+                            .targetSteps(6000)
+                            .nowSteps(0)
+                            .build());
+                }
+                // 기록이 있는 경우
+                else {
+                    healthResponseDtoList.add(HealthResponseDto.builder()
+                            .responseDate(tempDate)
+                            .targetSteps(healthHistory.getTargetSteps())
+                            .nowSteps(healthHistory.getDaySteps())
+                            .build());
+                }
+            }
+        }
+        return healthResponseDtoList;
     }
 
 }
