@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import site.walkies.walkie.domain.event.service.dto.DailyEggEventResponse;
 import site.walkies.walkie.domain.health.service.HealthService;
 import site.walkies.walkie.domain.health.service.dto.request.HealthMoveUpdateRequestDto;
+import site.walkies.walkie.domain.health.service.dto.response.HealthContinueDayResponseDto;
 import site.walkies.walkie.domain.health.service.dto.response.HealthDetailResponseDto;
 import site.walkies.walkie.domain.health.service.dto.response.HealthMoveResponseDto;
 import site.walkies.walkie.domain.health.service.dto.response.HealthResponseDto;
@@ -45,6 +46,17 @@ public class HealthController {
     }
 
     @Operation(
+            summary = "어제까지의 헬스케어 연속 달성 일수 전달",
+            description = "어제까지의 헬스케어 연속 달성 일수를 제공합니다. ex) 2일전, 1일전 목표 달성 => 2 제공"
+    )
+    @GetMapping("/continueDays")
+    public SuccessResponse<HealthContinueDayResponseDto> getContinueHealthDays(@AuthenticationPrincipal MemberPrincipal principal) {
+        return SuccessResponse.ok(
+                healthService.getHealthContinueDay(principal.getMemberId())
+        );
+    }
+
+    @Operation(
             summary = "오늘 헬스케어 정보 업데이트",
             description = "헬스케어 정보를 업데이트 합니다. 목표 걸음수, 현재 걸음수, 현재 거리, 현재 칼로리를 업데이트 가능합니다."
     )
@@ -53,5 +65,15 @@ public class HealthController {
         return SuccessResponse.ok(
                 healthService.updateHealthDetail(principal.getMemberId(), requestDto.getTargetSteps(), requestDto.getNowSteps(), requestDto.getNowDistance(), requestDto.getNowCalories())
         );
+    }
+
+    @Operation(
+            summary = "오늘 헬스케어 정보 과거 기록 DB로 이동",
+            description = "12시가 지난 시점에 다른 api 호출 전에 반드시 1번 호출이 필요합니다. (새벽 2시에 이전 작업을 위한 배치는 따로 동작을 합니다.)"
+    )
+    @PutMapping("/yesterdayData")
+    public SuccessResponse<?> updateDB(@AuthenticationPrincipal MemberPrincipal principal) {
+        healthService.updateHealthDB(principal.getMemberId());
+        return SuccessResponse.ok();
     }
 }

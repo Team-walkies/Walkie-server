@@ -16,8 +16,8 @@ public class HealthHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "member_id", nullable = false, unique = true)
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @Column(name = "record_date")
@@ -46,5 +46,17 @@ public class HealthHistory {
         this.dayDistance = dayDistance;
         this.dayCalories = dayCalories;
         this.continuousDays = continuousDays;
+    }
+
+    public static HealthHistory create(Member member, LocalDate recordDate, Integer targetSteps, Integer daySteps, Double dayDistance, Double dayCalories, Integer continuousDays) {
+        return new HealthHistory(
+                member,
+                recordDate,
+                targetSteps,
+                daySteps,
+                dayDistance,
+                dayCalories,
+                continuousDays
+        );
     }
 }

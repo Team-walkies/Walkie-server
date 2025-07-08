@@ -7,6 +7,7 @@ import site.walkies.walkie.domain.health.entity.HealthHistory;
 import site.walkies.walkie.domain.health.enums.Calorie;
 import site.walkies.walkie.domain.health.repository.HealthCurrentRepository;
 import site.walkies.walkie.domain.health.repository.HealthHistoryRepository;
+import site.walkies.walkie.domain.health.service.dto.response.HealthContinueDayResponseDto;
 import site.walkies.walkie.domain.health.service.dto.response.HealthDetailResponseDto;
 import site.walkies.walkie.domain.health.service.dto.response.HealthMoveResponseDto;
 import site.walkies.walkie.domain.health.service.dto.response.HealthResponseDto;
@@ -156,6 +157,57 @@ public class HealthService {
             }
         }
         return healthResponseDtoList;
+    }
+    
+    // 연소일 수 조회 method
+    public HealthContinueDayResponseDto getHealthContinueDay(long memberId) {
+        HealthHistory healthHistory = healthHistoryRepository.findByMemberIdAndRecordDate(memberId, LocalDate.now().minusDays(1)).orElse(null);
+        // 전날 기록이 없는 경우
+        if (healthHistory == null) {
+            return HealthContinueDayResponseDto.builder()
+                    .continuousDays(0)
+                    .build();
+        }
+        // 전날 기록이 있는경우
+        else {
+            return HealthContinueDayResponseDto.builder()
+                    .continuousDays(healthHistory.getContinuousDays())
+                    .build();
+        }
+    }
+
+    public void updateHealthDB (long memberId) {
+        HealthCurrent healthCurrent = healthCurrentRepository.findByMemberId(memberId).orElse(null);
+        // 어제 날짜
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+
+        HealthHistory oneDaysAgoHistory = healthHistoryRepository.findByMemberIdAndRecordDate(memberId, yesterday).orElse(null);
+        // 오늘의 데이터가 초기화 되지 않고 어제 데이터가 안들어가있는 경우
+        if(healthCurrent != null && oneDaysAgoHistory == null) {
+            // 연속일 수 계산
+            int continueDay = 0;
+            HealthHistory twoDaysAgoHistory = healthHistoryRepository.findByMemberIdAndRecordDate(memberId,yesterday.minusDays(1)).orElse(null);
+            if(healthCurrent.getTargetSteps() <= healthCurrent.getNowSteps()) {
+                if(twoDaysAgoHistory == null) {
+                    continueDay = 1;
+                } else {
+                    continueDay = twoDaysAgoHistory.getContinuousDays() + 1;
+                }
+            }
+
+
+            oneDaysAgoHistory = HealthHistory.create(healthCurrent.getMember(),
+                    yesterday,
+                    healthCurrent.getTargetSteps(),
+                    healthCurrent.getNowSteps(),
+                    healthCurrent.getNowDistance(),
+                    healthCurrent.getNowCalories(),
+                    continueDay
+                    );
+
+            healthHistoryRepository.save(oneDaysAgoHistory);
+            healthCurrentRepository.delete(healthCurrent);
+        }
     }
 
 }
