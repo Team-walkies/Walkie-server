@@ -60,7 +60,7 @@ public class HealthController {
             summary = "오늘 헬스케어 정보 업데이트",
             description = "헬스케어 정보를 업데이트 합니다. 목표 걸음수, 현재 걸음수, 현재 거리, 현재 칼로리를 업데이트 가능합니다."
     )
-    @PostMapping("")
+    @PutMapping("")
     public SuccessResponse<HealthMoveResponseDto> updateHealthDetail(@AuthenticationPrincipal MemberPrincipal principal, @RequestBody HealthMoveUpdateRequestDto requestDto) {
         return SuccessResponse.ok(
                 healthService.updateHealthDetail(principal.getMemberId(), requestDto.getTargetSteps(), requestDto.getNowSteps(), requestDto.getNowDistance(), requestDto.getNowCalories())
