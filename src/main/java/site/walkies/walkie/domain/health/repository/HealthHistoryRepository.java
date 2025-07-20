@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface HealthHistoryRepository extends JpaRepository<HealthHistory, Long> {
     Optional<HealthHistory> findByMemberIdAndRecordDate(Long memberId, LocalDate recordDate);
+    Optional<HealthHistory> findTopByMemberIdAndRecordDateBeforeOrderByRecordDateDesc(Long memberId, LocalDate recordDate);
 }

@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface HealthCurrentRepository extends JpaRepository<HealthCurrent, Long> {
 //    Optional<HealthCurrent> findByMemberId(Long memberId);
     Optional<HealthCurrent> findByMemberIdAndNowDay(Long memberId, LocalDate nowDay);
+    Optional<HealthCurrent> findTopByMemberIdAndNowDayBeforeOrderByNowDayDesc(Long memberId, LocalDate nowDay);
 }
