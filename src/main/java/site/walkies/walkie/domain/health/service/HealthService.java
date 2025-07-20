@@ -48,7 +48,7 @@ public class HealthService {
         }
 
         // 둘 다 null 인 경우 기본 값 노출
-        return healthDetailResponseDtoBuilder(6000, 0, 0.0,0.0);
+        return healthDetailResponseDtoBuilder(getCurrentTargetSteps(memberId,searchDate), 0, 0.0,0.0);
     }
 
     // 칼로리 enum 검색 method
@@ -132,7 +132,7 @@ public class HealthService {
             // 둘 다 없는 경우 기본값 세팅
             healthResponseDtoList.add(HealthResponseDto.builder()
                     .responseDate(tempDate)
-                    .targetSteps(6000)
+                    .targetSteps(getCurrentTargetSteps(memberId,tempDate))
                     .nowSteps(0)
                     .build());
         }
@@ -212,4 +212,17 @@ public class HealthService {
         }
     }
 
+    // 최근 target step 구하기
+    private int getCurrentTargetSteps(long memberId, LocalDate nowDate) {
+        HealthCurrent healthCurrent = healthCurrentRepository.findTopByMemberIdAndNowDayBeforeOrderByNowDayDesc(memberId,nowDate).orElse(null);
+        if(healthCurrent != null) {
+            return healthCurrent.getTargetSteps();
+        }
+
+        HealthHistory healthHistory = healthHistoryRepository.findTopByMemberIdAndRecordDateBeforeOrderByRecordDateDesc(memberId,nowDate).orElse(null);
+        if(healthHistory != null) {
+            return healthHistory.getTargetSteps();
+        }
+        return 6000;
+    }
 }
