@@ -16,8 +16,8 @@ public class HealthCurrent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "member_id", nullable = false, unique = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @Column(name = "target_steps")
@@ -32,12 +32,16 @@ public class HealthCurrent {
     @Column(name = "now_calories")
     private Double nowCalories;
 
-    public HealthCurrent(Member member, Integer targetSteps, Integer nowSteps, Double nowDistance, Double nowCalories) {
+    @Column(name = "now_day")
+    private LocalDate nowDay;
+
+    public HealthCurrent(Member member, Integer targetSteps, Integer nowSteps, Double nowDistance, Double nowCalories, LocalDate nowDay) {
         this.member = member;
         this.targetSteps = targetSteps;
         this.nowSteps = nowSteps;
         this.nowDistance = nowDistance;
         this.nowCalories = nowCalories;
+        this.nowDay = nowDay;
     }
 
     public void updateMove(Integer nowSteps, Double nowDistance, Double nowCalories) {
@@ -50,13 +54,14 @@ public class HealthCurrent {
         this.targetSteps = targetSteps;
     }
 
-    public static HealthCurrent create(Member member, Integer targetSteps, Integer nowSteps, Double nowDistance, Double nowCalories) {
+    public static HealthCurrent create(Member member, Integer targetSteps, Integer nowSteps, Double nowDistance, Double nowCalories, LocalDate nowDay) {
         return new HealthCurrent(
                 member,
                 targetSteps,
                 nowSteps,
                 nowDistance,
-                nowCalories
+                nowCalories,
+                nowDay
         );
     }
 }

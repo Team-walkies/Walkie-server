@@ -28,37 +28,27 @@ public class HealthService {
 
     // 상세 조회 method
     public HealthDetailResponseDto getHealthDetail(long memberId, LocalDate searchDate) {
-        // 상세 조회가 오늘 보다 전인 경우 : history DB
-        if (searchDate.isBefore(LocalDate.now())) {
-            // 상세 조회 검색
-            HealthHistory healthHistory = healthHistoryRepository.findByMemberIdAndRecordDate(memberId, searchDate).orElse(null);
-            // 조회 데이터가 없는 경우
-            if (healthHistory == null) {
-                // 기본 값 노출
-                return healthDetailResponseDtoBuilder(6000, 0, 0.0,0.0);
-            } else {
-                return healthDetailResponseDtoBuilder(healthHistory.getTargetSteps(), healthHistory.getDaySteps(), healthHistory.getDayDistance(), healthHistory.getDayCalories());
-            }
-        }
-
-        // 상세 조회가 오늘인 경우 : cuurent DB
-        else if (searchDate.isEqual(LocalDate.now())) {
-            // 상세 조회 검색
-            HealthCurrent healthCurrent = healthCurrentRepository.findByMemberId(memberId).orElse(null);
-
-            // 상세 조회시 오늘 저장된 데이터가 아직 없는 경우
-            if (healthCurrent == null) {
-                // 기본 값 노출
-                return healthDetailResponseDtoBuilder(6000, 0, 0.0,0.0);
-            } else {
-                return healthDetailResponseDtoBuilder(healthCurrent.getTargetSteps(), healthCurrent.getNowSteps(), healthCurrent.getNowDistance(), healthCurrent.getNowCalories());
-            }
-        }
-
-        // exception 발생
-        else {
+        // 오늘 이후의 날짜인 경우 exception 발생
+        if(searchDate.isAfter(LocalDate.now())) {
             throw new CustomException(ErrorCode.DATE_OVER_ERROR);
         }
+
+        // 상세 조회 검색 (current DB)
+        HealthCurrent healthCurrent = healthCurrentRepository.findByMemberIdAndNowDay(memberId,searchDate).orElse(null);
+
+        if(healthCurrent != null) {
+            return healthDetailResponseDtoBuilder(healthCurrent.getTargetSteps(), healthCurrent.getNowSteps(), healthCurrent.getNowDistance(), healthCurrent.getNowCalories());
+        }
+
+        // 상세 조회 검색 (history DB)
+        HealthHistory healthHistory = healthHistoryRepository.findByMemberIdAndRecordDate(memberId, searchDate).orElse(null);
+
+        if(healthHistory != null) {
+            return healthDetailResponseDtoBuilder(healthHistory.getTargetSteps(), healthHistory.getDaySteps(), healthHistory.getDayDistance(), healthHistory.getDayCalories());
+        }
+
+        // 둘 다 null 인 경우 기본 값 노출
+        return healthDetailResponseDtoBuilder(6000, 0, 0.0,0.0);
     }
 
     // 칼로리 enum 검색 method
@@ -90,12 +80,12 @@ public class HealthService {
     }
 
     // 헬스케어 저장 method
-    public HealthMoveResponseDto updateHealthDetail(long memberId, int targetSteps, int nowSteps, double nowDistance, double calories) {
+    public HealthMoveResponseDto updateHealthDetail(long memberId, int targetSteps, int nowSteps, double nowDistance, double calories, LocalDate nowDay) {
         // 현재 헬스케어 정보 조회
-        HealthCurrent healthCurrent = healthCurrentRepository.findByMemberId(memberId).orElse(null);
+        HealthCurrent healthCurrent = healthCurrentRepository.findByMemberIdAndNowDay(memberId,nowDay).orElse(null);
         // 없는 경우 생성
         if(healthCurrent == null) {
-            healthCurrent = HealthCurrent.create(memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND)),targetSteps, nowSteps,nowDistance,calories);
+            healthCurrent = HealthCurrent.create(memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND)),targetSteps, nowSteps,nowDistance,calories,nowDay);
         }
         // 있는 경우 업데이트
         else {
@@ -115,59 +105,71 @@ public class HealthService {
     public List<HealthResponseDto> getHealthList(long memberId, LocalDate startDate, LocalDate endDate) {
         List<HealthResponseDto> healthResponseDtoList = new ArrayList<>();
         for(LocalDate tempDate = startDate;!tempDate.isAfter(endDate);tempDate = tempDate.plusDays(1) ) {
-            // 오늘인 경우
-            if(tempDate.isEqual(LocalDate.now())) {
-                HealthCurrent healthCurrent = healthCurrentRepository.findByMemberId(memberId).orElse(null);
-                // 기록이 없는 경우
-                if(healthCurrent == null) {
-                    healthResponseDtoList.add(HealthResponseDto.builder()
-                            .responseDate(tempDate)
-                            .targetSteps(6000)
-                            .nowSteps(0)
-                            .build());
-                }
-                // 기록이 있는 경우
-                else {
-                    healthResponseDtoList.add(HealthResponseDto.builder()
-                            .responseDate(tempDate)
-                            .targetSteps(healthCurrent.getTargetSteps())
-                            .nowSteps(healthCurrent.getNowSteps())
-                            .build());
-                }
+            // current에서 조회
+            HealthCurrent healthCurrent = healthCurrentRepository.findByMemberIdAndNowDay(memberId,tempDate).orElse(null);
+
+            if(healthCurrent != null) {
+                healthResponseDtoList.add(HealthResponseDto.builder()
+                        .responseDate(tempDate)
+                        .targetSteps(healthCurrent.getTargetSteps())
+                        .nowSteps(healthCurrent.getNowSteps())
+                        .build());
+                continue;
             }
-            // 오늘이 아닌 경우
-            else {
-                HealthHistory healthHistory = healthHistoryRepository.findByMemberIdAndRecordDate(memberId, tempDate).orElse(null);
-                // 기록이 없는 경우
-                if (healthHistory == null) {
-                    healthResponseDtoList.add(HealthResponseDto.builder()
-                            .responseDate(tempDate)
-                            .targetSteps(6000)
-                            .nowSteps(0)
-                            .build());
-                }
-                // 기록이 있는 경우
-                else {
-                    healthResponseDtoList.add(HealthResponseDto.builder()
-                            .responseDate(tempDate)
-                            .targetSteps(healthHistory.getTargetSteps())
-                            .nowSteps(healthHistory.getDaySteps())
-                            .build());
-                }
+
+            // history에서 조회
+            HealthHistory healthHistory = healthHistoryRepository.findByMemberIdAndRecordDate(memberId, tempDate).orElse(null);
+
+            if(healthHistory != null) {
+                healthResponseDtoList.add(HealthResponseDto.builder()
+                        .responseDate(tempDate)
+                        .targetSteps(healthHistory.getTargetSteps())
+                        .nowSteps(healthHistory.getDaySteps())
+                        .build());
+                continue;
             }
+
+            // 둘 다 없는 경우 기본값 세팅
+            healthResponseDtoList.add(HealthResponseDto.builder()
+                    .responseDate(tempDate)
+                    .targetSteps(6000)
+                    .nowSteps(0)
+                    .build());
         }
         return healthResponseDtoList;
     }
     
     // 연소일 수 조회 method
     public HealthContinueDayResponseDto getHealthContinueDay(long memberId) {
+
+
         HealthHistory healthHistory = healthHistoryRepository.findByMemberIdAndRecordDate(memberId, LocalDate.now().minusDays(1)).orElse(null);
+
         // 전날 기록이 없는 경우
         if (healthHistory == null) {
+            HealthCurrent healthCurrent = healthCurrentRepository.findByMemberIdAndNowDay(memberId, LocalDate.now().minusDays(1)).orElse(null);
+            if(healthCurrent != null) {
+                if(healthCurrent.getTargetSteps() <= healthCurrent.getNowSteps()) {
+                    // 연속일 수 계산
+                    int continueDay = 0;
+                    HealthHistory twoDaysAgoHistory = healthHistoryRepository.findByMemberIdAndRecordDate(memberId,LocalDate.now().minusDays(2)).orElse(null);
+                    if(healthCurrent.getTargetSteps() <= healthCurrent.getNowSteps()) {
+                        if(twoDaysAgoHistory == null) {
+                            continueDay = 1;
+                        } else {
+                            continueDay = twoDaysAgoHistory.getContinuousDays() + 1;
+                        }
+                    }
+                    return HealthContinueDayResponseDto.builder()
+                            .continuousDays(continueDay)
+                            .build();
+                }
+            }
             return HealthContinueDayResponseDto.builder()
                     .continuousDays(0)
                     .build();
         }
+
         // 전날 기록이 있는경우
         else {
             return HealthContinueDayResponseDto.builder()
@@ -177,10 +179,10 @@ public class HealthService {
     }
 
     public void updateHealthDB (long memberId) {
-        HealthCurrent healthCurrent = healthCurrentRepository.findByMemberId(memberId).orElse(null);
         // 어제 날짜
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
+        HealthCurrent healthCurrent = healthCurrentRepository.findByMemberIdAndNowDay(memberId,yesterday).orElse(null);
         HealthHistory oneDaysAgoHistory = healthHistoryRepository.findByMemberIdAndRecordDate(memberId, yesterday).orElse(null);
         // 오늘의 데이터가 초기화 되지 않고 어제 데이터가 안들어가있는 경우
         if(healthCurrent != null && oneDaysAgoHistory == null) {

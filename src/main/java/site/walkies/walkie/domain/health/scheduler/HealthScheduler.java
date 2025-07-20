@@ -9,7 +9,10 @@ import site.walkies.walkie.domain.health.entity.HealthCurrent;
 import site.walkies.walkie.domain.health.repository.HealthCurrentRepository;
 import site.walkies.walkie.domain.health.service.HealthService;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,8 +26,13 @@ public class HealthScheduler {
     public void fallBackArchiveUnrolledMembers() {
         List<HealthCurrent> healthCurrents = healthCurrentRepository.findAll();
 
+        Set<Long> healthCurrentMember = new HashSet<>();
         for (HealthCurrent healthCurrent : healthCurrents) {
-            healthService.updateHealthDB(healthCurrent.getMember().getId());
+            healthCurrentMember.add(healthCurrent.getMember().getId());
+        }
+
+        for(Long id : healthCurrentMember) {
+            healthService.updateHealthDB(id);
         }
     }
 }
