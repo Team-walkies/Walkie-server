@@ -214,12 +214,12 @@ public class HealthService {
 
     // 최근 target step 구하기
     private int getCurrentTargetSteps(long memberId, LocalDate nowDate) {
-        HealthCurrent healthCurrent = healthCurrentRepository.findTopByMemberIdAndNowDayBeforeOrderByNowDayDesc(memberId,nowDate).orElse(null);
+        HealthCurrent healthCurrent = healthCurrentRepository.findLatestBeforeDate(memberId,nowDate).orElse(null);
         if(healthCurrent != null) {
             return healthCurrent.getTargetSteps();
         }
 
-        HealthHistory healthHistory = healthHistoryRepository.findTopByMemberIdAndRecordDateBeforeOrderByRecordDateDesc(memberId,nowDate).orElse(null);
+        HealthHistory healthHistory = healthHistoryRepository.findLatestBeforeDate(memberId,nowDate).orElse(null);
         if(healthHistory != null) {
             return healthHistory.getTargetSteps();
         }
