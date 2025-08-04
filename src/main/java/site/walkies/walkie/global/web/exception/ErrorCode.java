@@ -35,6 +35,9 @@ public enum ErrorCode {
     PARSING_ERROR("json 형식을 확인해주세요. 파싱에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     REVIEW_NOT_USER("해당 리뷰의 작성자가 아니므로, 변경 불가능합니다.", HttpStatus.NOT_ACCEPTABLE),
 
+    // FCM 관련 예외
+    FCM_SEND_FAILED("FCM 메시지 전송에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+
     // 스팟 관련 예외
     // 아래는 예시입니다. Enum이므로 마지막 예외에는 세미콜론 (;), 그 외에는 콤마(,)를 붙여줘야 합니다.
     SPOT_NOT_FOUND("해당 id를 가진 스팟이 없습니다.", HttpStatus.NOT_FOUND);
