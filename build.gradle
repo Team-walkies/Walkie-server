@@ -54,7 +54,7 @@ dependencies {
 	implementation 'io.github.bonigarcia:webdrivermanager:5.4.0'
 	implementation 'org.jsoup:jsoup:1.20.1'
 
-	// build.gradle
+	// firebase-admin
 	implementation 'com.google.firebase:firebase-admin:9.5.0'
 }
 
