@@ -53,6 +53,9 @@ dependencies {
 	implementation 'org.seleniumhq.selenium:selenium-java:4.31.0'
 	implementation 'io.github.bonigarcia:webdrivermanager:5.4.0'
 	implementation 'org.jsoup:jsoup:1.20.1'
+
+	// firebase-admin
+	implementation 'com.google.firebase:firebase-admin:9.5.0'
 }
 
 tasks.named('test') {
