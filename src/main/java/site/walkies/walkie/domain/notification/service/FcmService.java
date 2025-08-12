@@ -21,6 +21,8 @@ public class FcmService {
 
     @Transactional(readOnly = true)
     public void sendNotification(FcmSendRequestDto requestDto) {
+        if(requestDto.getToken() == null || requestDto.getToken().isEmpty())
+            throw new CustomException(ErrorCode.FCM_TOKEN_VALUE_REQUIRED);
         Message message = Message.builder()
                 .setToken(requestDto.getToken())
                 .setNotification(Notification.builder()

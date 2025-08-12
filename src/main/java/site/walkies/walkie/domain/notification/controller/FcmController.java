@@ -3,7 +3,9 @@ package site.walkies.walkie.domain.notification.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import site.walkies.walkie.domain.notification.service.FcmService;
 import site.walkies.walkie.domain.notification.service.dto.request.FcmSendRequestDto;
@@ -26,8 +28,8 @@ public class FcmController {
             @ApiResponse(responseCode = "200", description = "FCM 테스트 메시지 전송 완료"),
             @ApiResponse(responseCode = "500", description = "FCM 메시지 전송에 실패했습니다.")
     })
-    @PostMapping("/test")
-    public SuccessResponse<String> sendTestNotification(@RequestBody FcmSendRequestDto requestDto) {
+    @PostMapping(value="/test", consumes= MediaType.APPLICATION_JSON_VALUE)
+    public SuccessResponse<String> sendTestNotification(@Valid @RequestBody FcmSendRequestDto requestDto) {
         fcmService.sendNotification(requestDto);
         return SuccessResponse.ok("FCM 테스트 메시지 전송 완료");
     }
