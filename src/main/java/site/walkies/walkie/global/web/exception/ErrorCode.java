@@ -36,6 +36,7 @@ public enum ErrorCode {
     REVIEW_NOT_USER("해당 리뷰의 작성자가 아니므로, 변경 불가능합니다.", HttpStatus.NOT_ACCEPTABLE),
 
     // FCM 관련 예외
+    FCM_TOKEN_VALUE_REQUIRED("FCM 토큰을 필수로 넣어야 합니다.", HttpStatus.UNAUTHORIZED),
     FCM_SEND_FAILED("FCM 메시지 전송에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // 스팟 관련 예외
