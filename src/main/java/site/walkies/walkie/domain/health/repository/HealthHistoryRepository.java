@@ -11,14 +11,15 @@ import java.util.Optional;
 public interface HealthHistoryRepository extends JpaRepository<HealthHistory, Long> {
     Optional<HealthHistory> findByMemberIdAndRecordDate(Long memberId, LocalDate recordDate);
 
-    @Query("""
-        SELECT hh
-        FROM HealthHistory hh
-        WHERE hh.member.id = :memberId
-          AND hh.recordDate < :before
-        ORDER BY hh.recordDate DESC
-       limit 1
-    """)
-    Optional<HealthHistory> findLatestBeforeDate(@Param("memberId") Long memberId,
-                                                 @Param("before") LocalDate before);
+    //    @Query("""
+//        SELECT hh
+//        FROM HealthHistory hh
+//        WHERE hh.member.id = :memberId
+//          AND hh.recordDate < :before
+//        ORDER BY hh.recordDate DESC
+//       limit 1
+//    """)
+    // limit 1 문제로 인한 변경
+    Optional<HealthHistory> findFirstByMemberIdAndRecordDateBeforeOrderByRecordDateDesc(@Param("memberId") Long memberId,
+                                                                                        @Param("before") LocalDate before);
 }
