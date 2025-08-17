@@ -18,6 +18,7 @@ import site.walkies.walkie.global.web.exception.ErrorCode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -178,48 +179,72 @@ public class HealthService {
         }
     }
 
+    // 모든 날짜를 업데이트 하도록 변경
     public void updateHealthDB (long memberId) {
-        // 어제 날짜
-        LocalDate yesterday = LocalDate.now().minusDays(1);
+        // 해당 회원의 current 전체를 날짜 오름차순으로 가져옴
+        List<HealthCurrent> currents =
+                healthCurrentRepository.findAllByMemberIdOrderByNowDayAsc(memberId);
 
-        HealthCurrent healthCurrent = healthCurrentRepository.findByMemberIdAndNowDay(memberId,yesterday).orElse(null);
-        HealthHistory oneDaysAgoHistory = healthHistoryRepository.findByMemberIdAndRecordDate(memberId, yesterday).orElse(null);
-        // 오늘의 데이터가 초기화 되지 않고 어제 데이터가 안들어가있는 경우
-        if(healthCurrent != null && oneDaysAgoHistory == null) {
-            // 연속일 수 계산
+        if (currents.isEmpty()) return;
+
+        // 오래된 날짜부터 처리 (연속일 계산이 끊기지 않도록)
+        for (HealthCurrent hc : currents) {
+            LocalDate date = hc.getNowDay();
+
+            // 연속일 계산: 목표 달성 시에만 +1
             int continueDay = 0;
-            HealthHistory twoDaysAgoHistory = healthHistoryRepository.findByMemberIdAndRecordDate(memberId,yesterday.minusDays(1)).orElse(null);
-            if(healthCurrent.getTargetSteps() <= healthCurrent.getNowSteps()) {
-                if(twoDaysAgoHistory == null) {
-                    continueDay = 1;
-                } else {
-                    continueDay = twoDaysAgoHistory.getContinuousDays() + 1;
-                }
+            boolean achieved = hc.getTargetSteps() != null
+                    && hc.getNowSteps() != null
+                    && hc.getNowSteps() >= hc.getTargetSteps();
+
+            if (achieved) {
+                HealthHistory prev = healthHistoryRepository
+                        .findByMemberIdAndRecordDate(memberId, date.minusDays(1))
+                        .orElse(null);
+                continueDay = (prev == null) ? 1 : prev.getContinuousDays() + 1;
             }
 
+            // 같은 날짜의 history가 있으면 UPDATE, 없으면 CREATE
+            Optional<HealthHistory> historyOpt =
+                    healthHistoryRepository.findByMemberIdAndRecordDate(memberId, date);
 
-            oneDaysAgoHistory = HealthHistory.create(healthCurrent.getMember(),
-                    yesterday,
-                    healthCurrent.getTargetSteps(),
-                    healthCurrent.getNowSteps(),
-                    healthCurrent.getNowDistance(),
-                    healthCurrent.getNowCalories(),
-                    continueDay
-                    );
+            if (historyOpt.isPresent()) {
+                // 업데이트
+                HealthHistory history = historyOpt.get();
+                history.update(
+                        hc.getTargetSteps(),
+                        hc.getNowSteps(),
+                        hc.getNowDistance(),
+                        hc.getNowCalories(),
+                        continueDay
+                );
+            } else {
+                // 새로 생성
+                HealthHistory history = HealthHistory.create(
+                        hc.getMember(),
+                        date,
+                        hc.getTargetSteps(),
+                        hc.getNowSteps(),
+                        hc.getNowDistance(),
+                        hc.getNowCalories(),
+                        continueDay
+                );
+                healthHistoryRepository.save(history);
+            }
 
-            healthHistoryRepository.save(oneDaysAgoHistory);
-            healthCurrentRepository.delete(healthCurrent);
+            // 이관 후 삭제
+            healthCurrentRepository.delete(hc);
         }
     }
 
     // 최근 target step 구하기
     private int getCurrentTargetSteps(long memberId, LocalDate nowDate) {
-        HealthCurrent healthCurrent = healthCurrentRepository.findLatestBeforeDate(memberId,nowDate).orElse(null);
+        HealthCurrent healthCurrent = healthCurrentRepository.findFirstByMemberIdAndNowDayBeforeOrderByNowDayDesc(memberId,nowDate).orElse(null);
         if(healthCurrent != null) {
             return healthCurrent.getTargetSteps();
         }
 
-        HealthHistory healthHistory = healthHistoryRepository.findLatestBeforeDate(memberId,nowDate).orElse(null);
+        HealthHistory healthHistory = healthHistoryRepository.findFirstByMemberIdAndRecordDateBeforeOrderByRecordDateDesc(memberId,nowDate).orElse(null);
         if(healthHistory != null) {
             return healthHistory.getTargetSteps();
         }
