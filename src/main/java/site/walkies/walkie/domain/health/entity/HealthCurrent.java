@@ -10,7 +10,11 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "health_current")
+// 유니크 도입을 통해서 DB에 동일 데이터 2개 쌓이지 못 하도록 변경
+@Table(
+        name = "health_current",
+        uniqueConstraints = @UniqueConstraint(name="uk_member_day", columnNames={"member_id","now_day"})
+)
 public class HealthCurrent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
