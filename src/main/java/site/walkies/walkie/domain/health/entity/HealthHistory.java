@@ -10,7 +10,13 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "health_history")
+@Table(
+        name = "health_history",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_health_history_member_record_date",
+                columnNames = {"member_id", "record_date"}
+        )
+)
 public class HealthHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,5 +64,15 @@ public class HealthHistory {
                 dayCalories,
                 continuousDays
         );
+    }
+
+    public void update(Integer targetSteps, Integer daySteps,
+                          Double dayDistance, Double dayCalories,
+                          Integer continuousDays) {
+        this.targetSteps = targetSteps;
+        this.daySteps = daySteps;
+        this.dayDistance = dayDistance;
+        this.dayCalories = dayCalories;
+        this.continuousDays = continuousDays;
     }
 }
