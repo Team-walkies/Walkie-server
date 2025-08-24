@@ -7,15 +7,13 @@ import site.walkies.walkie.domain.health.entity.HealthHistory;
 import site.walkies.walkie.domain.health.enums.Calorie;
 import site.walkies.walkie.domain.health.repository.HealthCurrentRepository;
 import site.walkies.walkie.domain.health.repository.HealthHistoryRepository;
-import site.walkies.walkie.domain.health.service.dto.response.HealthContinueDayResponseDto;
-import site.walkies.walkie.domain.health.service.dto.response.HealthDetailResponseDto;
-import site.walkies.walkie.domain.health.service.dto.response.HealthMoveResponseDto;
-import site.walkies.walkie.domain.health.service.dto.response.HealthResponseDto;
+import site.walkies.walkie.domain.health.service.dto.response.*;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.global.web.exception.CustomException;
 import site.walkies.walkie.global.web.exception.ErrorCode;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -249,5 +247,25 @@ public class HealthService {
             return healthHistory.getTargetSteps();
         }
         return 6000;
+    }
+
+    // 최근 헬스케어 데이터 날짜 구하기
+    public HealthLastDataDayResponseDto getCurrentHealthDay(long memberId) {
+        HealthCurrent healthCurrent = healthCurrentRepository.findFirstByMemberIdAndNowDayBeforeOrderByNowDayDesc(memberId,LocalDate.now().plusDays(1)).orElse(null);
+        if(healthCurrent != null) {
+            return HealthLastDataDayResponseDto.builder()
+                    .lastDataDay(healthCurrent.getNowDay())
+                    .build();
+        }
+
+        HealthHistory healthHistory = healthHistoryRepository.findFirstByMemberIdAndRecordDateBeforeOrderByRecordDateDesc(memberId,LocalDate.now().plusDays(1)).orElse(null);
+        if(healthHistory != null) {
+            return HealthLastDataDayResponseDto.builder()
+                    .lastDataDay(healthHistory.getRecordDate())
+                    .build();
+        }
+        return HealthLastDataDayResponseDto.builder()
+                .lastDataDay(LocalDate.of(2025, 7, 31))
+                .build();
     }
 }
