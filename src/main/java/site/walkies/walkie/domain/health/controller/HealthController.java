@@ -7,10 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import site.walkies.walkie.domain.event.service.dto.DailyEggEventResponse;
 import site.walkies.walkie.domain.health.service.HealthService;
 import site.walkies.walkie.domain.health.service.dto.request.HealthMoveUpdateRequestDto;
-import site.walkies.walkie.domain.health.service.dto.response.HealthContinueDayResponseDto;
-import site.walkies.walkie.domain.health.service.dto.response.HealthDetailResponseDto;
-import site.walkies.walkie.domain.health.service.dto.response.HealthMoveResponseDto;
-import site.walkies.walkie.domain.health.service.dto.response.HealthResponseDto;
+import site.walkies.walkie.domain.health.service.dto.response.*;
 import site.walkies.walkie.global.auth.dto.MemberPrincipal;
 import site.walkies.walkie.global.web.dto.response.SuccessResponse;
 
@@ -64,6 +61,17 @@ public class HealthController {
     public SuccessResponse<HealthMoveResponseDto> updateHealthDetail(@AuthenticationPrincipal MemberPrincipal principal, @RequestBody HealthMoveUpdateRequestDto requestDto) {
         return SuccessResponse.ok(
                 healthService.updateHealthDetail(principal.getMemberId(), requestDto.getTargetSteps(), requestDto.getNowSteps(), requestDto.getNowDistance(), requestDto.getNowCalories(), requestDto.getNowDay())
+        );
+    }
+
+    @Operation(
+            summary = "가장 최근에 저장된 데이터 날짜 조회",
+            description = "가장 최근에 저장된 데이터의 날짜를 출력해줍니다.(없는 경우 2025-07-31)"
+    )
+    @GetMapping("/lastDataDays")
+    public SuccessResponse<HealthLastDataDayResponseDto> getHealthLastDataDay(@AuthenticationPrincipal MemberPrincipal principal) {
+        return SuccessResponse.ok(
+                healthService.getCurrentHealthDay(principal.getMemberId())
         );
     }
 
