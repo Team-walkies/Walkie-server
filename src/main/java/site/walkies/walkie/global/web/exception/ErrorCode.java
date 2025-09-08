@@ -19,6 +19,7 @@ public enum ErrorCode {
 
     // 알 관련 예외
     EGG_NOT_FOUND("해당 id를 가진 알이 없습니다.", HttpStatus.NOT_FOUND),
+    EGG_ALREADY_GET("오늘은 이미 알을 지급 받았습니다.", HttpStatus.TOO_MANY_REQUESTS),
 
     // TMAP 관련 예외
     TMAP_SERVER_ERROR("TMAP API 조회에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
