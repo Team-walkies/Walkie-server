@@ -7,7 +7,9 @@ import site.walkies.walkie.domain.character.entity.UserCharacter;
 import site.walkies.walkie.domain.character.repository.UserCharacterRepository;
 import site.walkies.walkie.domain.character.service.CharacterService;
 import site.walkies.walkie.domain.egg.entity.Egg;
+import site.walkies.walkie.domain.egg.entity.HealthEgg;
 import site.walkies.walkie.domain.egg.repository.EggRepository;
+import site.walkies.walkie.domain.egg.repository.HealthEggRepository;
 import site.walkies.walkie.domain.egg.service.dto.response.*;
 import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
@@ -29,6 +31,7 @@ public class EggService {
     private final EggRepository eggRepository;
     private final MemberRepository memberRepository;
     private final UserCharacterRepository characterRepository;
+    private final HealthEggRepository healthEggRepository;
 
     private final CharacterService characterService;
     private final TmapAPIService tmapAPIService;
@@ -70,6 +73,25 @@ public class EggService {
 
         // 현재 날짜 저장
         LocalDate obtainedDate = LocalDate.now();
+
+        // 오늘 알을 받았는지 확인
+        HealthEgg healthEgg = healthEggRepository.findByMemberId(member.getId()).orElse(null);
+        // 저장된 날짜가 없는 경우
+        if (healthEgg == null) {
+            // 오늘 날짜 저장
+            HealthEgg crateHealthEgg = new HealthEgg(member,obtainedDate);
+            healthEggRepository.save(crateHealthEgg);
+        } else {
+            // 저장된 날짜가 오늘 이전인 경우
+            if(healthEgg.getLastReceivedDate().isBefore(obtainedDate)) {
+                // 오늘 날짜 저장
+                healthEgg.updateLastReceivedDate(obtainedDate);
+                healthEggRepository.save(healthEgg);
+            } else {
+                // 오류 발생
+                throw new CustomException(ErrorCode.EGG_ALREADY_GET);
+            }
+        }
 
         // 1. 랜덤값 생성
         // 알 랭크 랜덤값

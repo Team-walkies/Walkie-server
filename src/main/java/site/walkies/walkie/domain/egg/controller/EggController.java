@@ -67,8 +67,8 @@ public class EggController {
     }
 
     @Operation(
-            summary = "알 생성",
-            description = "사용자가 위치 정보를 보내면 알을 생성합니다."
+            summary = "헬스케어 목표 달성용 알 생성",
+            description = "사용자가 위치 정보를 보내면 알을 생성합니다. (하루에 한번만 알을 지급 받을 수 있습니다.)"
     )
     @PostMapping("")
     public SuccessResponse<?> createEgg(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody CreateEggRequest createEggRequest) {
