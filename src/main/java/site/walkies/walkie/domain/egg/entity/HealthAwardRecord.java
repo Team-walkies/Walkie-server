@@ -8,10 +8,10 @@ import site.walkies.walkie.domain.member.entity.Member;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "health_egg")
+@Table(name = "health_award_record")
 @Getter
 @NoArgsConstructor
-public class HealthEgg {
+public class HealthAwardRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,7 +23,7 @@ public class HealthEgg {
     @Column(name = "last_received_date")
     private LocalDate lastReceivedDate;
 
-    public HealthEgg(Member member, LocalDate lastReceivedDate) {
+    public HealthAwardRecord(Member member, LocalDate lastReceivedDate) {
         this.member = member;
         this.lastReceivedDate = lastReceivedDate;
     }
