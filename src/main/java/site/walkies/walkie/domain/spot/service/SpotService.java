@@ -23,6 +23,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -53,6 +55,19 @@ public class SpotService {
     public SpotResponseDto getSpotInfo(Long spotId, Long memberId) {
         Spot spot = spotRepository.findById(spotId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SPOT_NOT_FOUND));
+
+        // TourAPI(searchKeyword2) 호출
+        try {
+            String searchKeyword = spot.getLocationName();  // ex) "장소명"
+            String tourApiResp = callTourApiSearchKeyword(searchKeyword);
+            log.info("[TourAPI/searchKeyword2] spotId={}, keyword='{}', respSample={}",
+                    spotId, searchKeyword,
+                    tourApiResp != null
+                            ? tourApiResp.substring(0, Math.min(400, tourApiResp.length())) + "..."
+                            : "null");
+        } catch (Exception e) {
+            log.warn("[TourAPI/searchKeyword2] 호출 실패: {}", e.getMessage());
+        }
 
         // 사진 URL 리스트 조회
         List<String> photoUrls = spotPhotoRepository.findBySpotId(spotId).stream()
@@ -172,5 +187,22 @@ public class SpotService {
 
         RestTemplate rt = buildRestTemplate();
         return rt.getForObject(url, String.class);
+    }
+
+    private String callTourApiSearchKeyword(String keywordRaw) {
+        // keyword는 우리가 직접 UTF-8 인코딩
+        String encodedKeyword = URLEncoder.encode(keywordRaw, StandardCharsets.UTF_8);
+
+        String url = UriComponentsBuilder
+                .fromHttpUrl(tourApiBaseUrl + "/searchKeyword2")
+                .queryParam("MobileOS", tourApiMobileOs)
+                .queryParam("MobileApp", tourApiMobileApp)
+                .queryParam("_type", "json")
+                .queryParam("keyword", encodedKeyword)     // 미리 인코딩한 값을 그대로 전달
+                .queryParam("serviceKey", tourApiServiceKey) // 이미 인코딩된 키를 보존
+                .build(true)  // true: 인자로 넣은 값이 이미 인코딩되었다고 간주(재인코딩 방지)
+                .toUriString();
+
+        return buildRestTemplate().getForObject(url, String.class);
     }
 }
