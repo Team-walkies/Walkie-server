@@ -67,12 +67,22 @@ public class EggController {
     }
 
     @Operation(
-            summary = "헬스케어 목표 달성용 알 생성",
-            description = "사용자가 위치 정보를 보내면 알을 생성합니다. (하루에 한번만 알을 지급 받을 수 있습니다.)"
+            summary = "알 생성 API",
+            description = "사용자가 위치 정보를 보내면 알을 생성합니다. (제한이 없습니다.)"
     )
     @PostMapping("")
     public SuccessResponse<?> createEgg(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody CreateEggRequest createEggRequest) {
         EggResponse response = eggService.createEgg(memberPrincipal.getMemberId(),createEggRequest.getLatitude(), createEggRequest.getLongitude());
+        return SuccessResponse.ok(response);
+    }
+
+    @Operation(
+            summary = "헬스케어 목표 달성용 알 생성",
+            description = "사용자가 위치 정보를 보내면 알을 생성합니다. (하루에 한번만 알을 지급 받을 수 있습니다.)"
+    )
+    @PostMapping("/awards")
+    public SuccessResponse<?> createHealthCareAwardsEgg(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody CreateEggRequest createEggRequest) {
+        EggResponse response = eggService.createHealthCareAwardsEgg(memberPrincipal.getMemberId(),createEggRequest.getLatitude(), createEggRequest.getLongitude());
         return SuccessResponse.ok(response);
     }
 }
