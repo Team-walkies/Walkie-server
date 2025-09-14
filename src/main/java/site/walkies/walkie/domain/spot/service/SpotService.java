@@ -17,6 +17,14 @@ import site.walkies.walkie.domain.spot.service.dto.response.SpotResponseDto;
 import site.walkies.walkie.global.web.exception.CustomException;
 import site.walkies.walkie.global.web.exception.ErrorCode;
 
+// 관광공사
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -32,9 +40,34 @@ public class SpotService {
     private final ReviewRepository reviewRepository;
     private final H3Core h3Core;
 
+    @Value("${tourapi.service-key}")
+    private String tourApiServiceKey;
+
+    @Value("${tourapi.base-url}")
+    private String tourApiBaseUrl;
+
+    @Value("${tourapi.mobile-os:WEB}")
+    private String tourApiMobileOs;
+
+    @Value("${tourapi.mobile-app:walkie}")
+    private String tourApiMobileApp;
+
     public SpotResponseDto getSpotInfo(Long spotId, Long memberId) {
         Spot spot = spotRepository.findById(spotId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SPOT_NOT_FOUND));
+
+        // TourAPI(searchKeyword2) 호출
+        try {
+            String searchKeyword = spot.getLocationName();  // ex) "장소명"
+            String tourApiResp = callTourApiSearchKeyword(searchKeyword);
+            log.info("[TourAPI/searchKeyword2] spotId={}, keyword='{}', respSample={}",
+                    spotId, searchKeyword,
+                    tourApiResp != null
+                            ? tourApiResp.substring(0, Math.min(400, tourApiResp.length())) + "..."
+                            : "null");
+        } catch (Exception e) {
+            log.warn("[TourAPI/searchKeyword2] 호출 실패: {}", e.getMessage());
+        }
 
         // 사진 URL 리스트 조회
         List<String> photoUrls = spotPhotoRepository.findBySpotId(spotId).stream()
@@ -70,6 +103,16 @@ public class SpotService {
     }
 
     public List<SpotNearbyResponseDto> getNearbySpots(SpotNearbyRequestDto request, Long memberId) {
+        //TourAPI 호출
+        try {
+            String tourApiResp = callTourApiLocationBased(request.getLongitude(), request.getLatitude(), 5000);
+            log.info("[TourAPI/nearby] lat={}, lng={}, radius=5000, respSample={}",
+                    request.getLatitude(), request.getLongitude(),
+                    tourApiResp != null ? tourApiResp.substring(0, Math.min(400, tourApiResp.length())) + "..." : "null");
+        } catch (Exception e) {
+            log.warn("[TourAPI/nearby] 호출 실패: {}", e.getMessage());
+        }
+
         int resolution = 9;
         int k = 30;
 
@@ -120,5 +163,46 @@ public class SpotService {
         long daysPassed = ChronoUnit.DAYS.between(lastDate, LocalDate.now());
 
         return (daysPassed >= 3) ? 0 : (int)(3 - daysPassed);
+    }
+
+    // 관광공사 API 호출
+    private RestTemplate buildRestTemplate() {
+        HttpComponentsClientHttpRequestFactory f = new HttpComponentsClientHttpRequestFactory();
+        f.setConnectTimeout(2000); // 2s
+        f.setReadTimeout(3000);    // 3s
+        return new RestTemplate(f);
+    }
+
+    private String callTourApiLocationBased(double mapX, double mapY, int radiusMeters) {
+        String url = UriComponentsBuilder.fromHttpUrl(tourApiBaseUrl + "/locationBasedList2")
+                .queryParam("MobileOS", tourApiMobileOs)
+                .queryParam("MobileApp", tourApiMobileApp)
+                .queryParam("_type", "json")
+                .queryParam("mapX", mapX)        // 경도
+                .queryParam("mapY", mapY)        // 위도
+                .queryParam("radius", radiusMeters)
+                .queryParam("serviceKey", tourApiServiceKey)
+                .build(true) // 이미 인코딩된 serviceKey를 그대로 쓰기 위해
+                .toUriString();
+
+        RestTemplate rt = buildRestTemplate();
+        return rt.getForObject(url, String.class);
+    }
+
+    private String callTourApiSearchKeyword(String keywordRaw) {
+        // keyword는 우리가 직접 UTF-8 인코딩
+        String encodedKeyword = URLEncoder.encode(keywordRaw, StandardCharsets.UTF_8);
+
+        String url = UriComponentsBuilder
+                .fromHttpUrl(tourApiBaseUrl + "/searchKeyword2")
+                .queryParam("MobileOS", tourApiMobileOs)
+                .queryParam("MobileApp", tourApiMobileApp)
+                .queryParam("_type", "json")
+                .queryParam("keyword", encodedKeyword)     // 미리 인코딩한 값을 그대로 전달
+                .queryParam("serviceKey", tourApiServiceKey) // 이미 인코딩된 키를 보존
+                .build(true)  // true: 인자로 넣은 값이 이미 인코딩되었다고 간주(재인코딩 방지)
+                .toUriString();
+
+        return buildRestTemplate().getForObject(url, String.class);
     }
 }
