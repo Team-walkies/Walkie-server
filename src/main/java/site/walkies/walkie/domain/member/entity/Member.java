@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import site.walkies.walkie.domain.character.entity.UserCharacter;
 import site.walkies.walkie.domain.egg.entity.Egg;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -49,6 +50,9 @@ public class Member {
     @JoinColumn(name = "leveling_character_id")
     private UserCharacter levelingUserCharacter;
 
+    @Column(name = "joined_at")
+    private LocalDate joinedAt;
+
     @Column(name = "delete_cd")
     private Boolean deleteCd;
 
@@ -56,7 +60,7 @@ public class Member {
     private LocalDateTime deleteRequestedAt;
 
     @Builder
-    public Member(Long id, String providerId, String provider, String nickname, Integer exploredSpot, Integer recordedSpot, Boolean isPublic, String memberTier, Egg levelingEgg, UserCharacter levelingUserCharacter, Boolean deleteCd) {
+    public Member(Long id, String providerId, String provider, String nickname, Integer exploredSpot, Integer recordedSpot, Boolean isPublic, String memberTier, Egg levelingEgg, UserCharacter levelingUserCharacter, LocalDate joinedAt, Boolean deleteCd) {
         this.id = id;
         this.providerId = providerId;
         this.provider = provider;
@@ -66,6 +70,7 @@ public class Member {
         this.isPublic = isPublic;
         this.memberTier = memberTier;
         this.levelingEgg = levelingEgg;
+        this.joinedAt = joinedAt;
         this.levelingUserCharacter = levelingUserCharacter;
         this.deleteCd = deleteCd;
     }
