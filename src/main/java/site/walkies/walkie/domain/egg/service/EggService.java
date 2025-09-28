@@ -347,8 +347,8 @@ public class EggService {
 
         // 보상을 받으려는 날 알을 받았는지 확인
         HealthAwardRecord healthAwardRecord = healthAwardRecordRepository.findByMemberIdAndReceivedDate(member.getId(),targetDay).orElse(null);
-        // 해당 날짜에 알을 받은적이 없고 가입일 이후인 경우 (회원가입일 조건 추가하기)
-        if (healthAwardRecord == null) {
+        // 해당 날짜에 알을 받은적이 없고 가입일 이후인 경우
+        if (healthAwardRecord == null && !member.getJoinedAt().isAfter(targetDay)) {
             // 해당 날짜에 보상 저장
             HealthAwardRecord crateHealthAwardRecord = new HealthAwardRecord(member,targetDay);
             healthAwardRecordRepository.save(crateHealthAwardRecord);

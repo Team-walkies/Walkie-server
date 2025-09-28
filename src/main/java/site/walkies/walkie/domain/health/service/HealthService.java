@@ -10,6 +10,7 @@ import site.walkies.walkie.domain.health.enums.Calorie;
 import site.walkies.walkie.domain.health.repository.HealthCurrentRepository;
 import site.walkies.walkie.domain.health.repository.HealthHistoryRepository;
 import site.walkies.walkie.domain.health.service.dto.response.*;
+import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.global.web.exception.CustomException;
 import site.walkies.walkie.global.web.exception.ErrorCode;
@@ -290,8 +291,9 @@ public class HealthService {
         if(nowSteps >= targetSteps) {
             // 보상을 받았는지 조회
             HealthAwardRecord healthAwardRecord = healthAwardRecordRepository.findByMemberIdAndReceivedDate(memberId, searchDate).orElse(null);
-            // 받지 않은 경우 + 회원가입일 보다 이후인 경우(로직 추가 필요)
-            if(healthAwardRecord == null) {
+            // 받지 않은 경우 + 회원가입일 보다 이후인 경우
+            Member member = memberRepository.findById(memberId).orElse(null);
+            if(healthAwardRecord == null && !member.getJoinedAt().isAfter(searchDate)) {
                 return true;
             }
         }
