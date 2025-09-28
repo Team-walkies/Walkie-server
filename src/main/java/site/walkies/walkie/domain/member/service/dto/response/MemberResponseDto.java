@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @NoArgsConstructor
 @Getter
 public class MemberResponseDto {
@@ -17,9 +19,10 @@ public class MemberResponseDto {
     private String memberTier;
     private Long eggId;
     private Long userCharacterId;
+    private LocalDate joinedAt;
 
     @Builder
-    public MemberResponseDto(Long id, String providerId, String provider, String nickname, Integer exploredSpot, Integer recordedSpot, Boolean isPublic, String memberTier, Long eggId, Long userCharacterId) {
+    public MemberResponseDto(Long id, String providerId, String provider, String nickname, Integer exploredSpot, Integer recordedSpot, Boolean isPublic, String memberTier, Long eggId, Long userCharacterId, LocalDate joinedAt) {
         this.id = id;
         this.providerId = providerId;
         this.provider = provider;
@@ -30,5 +33,6 @@ public class MemberResponseDto {
         this.memberTier = memberTier;
         this.eggId = eggId;
         this.userCharacterId = userCharacterId;
+        this.joinedAt = joinedAt;
     }
 }
