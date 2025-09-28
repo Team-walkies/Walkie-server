@@ -331,7 +331,7 @@ public class EggService {
     // 헬스케어 목표 달성용 egg 생성 method
     // input : userId, obtainedPosition(얻은 위치), obtainedDate(얻은 날짜)
     // output : Egg
-    public EggResponse createHealthCareAwardsEgg(long userId, double latitude, double longitude) {
+    public EggResponse createHealthCareAwardsEgg(long userId, double latitude, double longitude, LocalDate targetDay) {
         Member member = memberRepository.findById(userId).orElse(null);
         if (member == null) {
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
@@ -345,26 +345,17 @@ public class EggService {
             obtainedPosition = tmapAPIService.convertGeoToString(latitude, longitude);
         }
 
-        // 현재 날짜 저장
-        LocalDate obtainedDate = LocalDate.now();
-
-        // 오늘 알을 받았는지 확인
-        HealthAwardRecord healthAwardRecord = healthAwardRecordRepository.findByMemberId(member.getId()).orElse(null);
-        // 저장된 날짜가 없는 경우
+        // 보상을 받으려는 날 알을 받았는지 확인
+        HealthAwardRecord healthAwardRecord = healthAwardRecordRepository.findByMemberIdAndReceivedDate(member.getId(),targetDay).orElse(null);
+        // 해당 날짜에 알을 받은적이 없고 가입일 이후인 경우 (회원가입일 조건 추가하기)
         if (healthAwardRecord == null) {
-            // 오늘 날짜 저장
-            HealthAwardRecord crateHealthAwardRecord = new HealthAwardRecord(member,obtainedDate);
+            // 해당 날짜에 보상 저장
+            HealthAwardRecord crateHealthAwardRecord = new HealthAwardRecord(member,targetDay);
             healthAwardRecordRepository.save(crateHealthAwardRecord);
         } else {
-            // 저장된 날짜가 오늘 이전인 경우
-            if(healthAwardRecord.getLastReceivedDate().isBefore(obtainedDate)) {
-                // 오늘 날짜 저장
-                healthAwardRecord.updateLastReceivedDate(obtainedDate);
-                healthAwardRecordRepository.save(healthAwardRecord);
-            } else {
-                // 오류 발생
-                throw new CustomException(ErrorCode.EGG_ALREADY_GET);
-            }
+            // 해당 날짜에 보상을 받은 경우
+            // 오류 발생
+            throw new CustomException(ErrorCode.EGG_ALREADY_GET);
         }
 
         // 1. 랜덤값 생성
@@ -376,6 +367,8 @@ public class EggService {
         double characterClassRandom = Math.random() * 100;
 
         Egg egg = new Egg();
+
+        LocalDate obtainedDate = LocalDate.now();
 
         // 2. Egg 타입별 분기 처리 (각 알의 확률 값에 따라)
         if (eggRandom <= EggsProbability.NORMAL_EGG.getProbability()) {

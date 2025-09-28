@@ -82,7 +82,7 @@ public class EggController {
     )
     @PostMapping("/awards")
     public SuccessResponse<?> createHealthCareAwardsEgg(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody CreateEggRequest createEggRequest) {
-        EggResponse response = eggService.createHealthCareAwardsEgg(memberPrincipal.getMemberId(),createEggRequest.getLatitude(), createEggRequest.getLongitude());
+        EggResponse response = eggService.createHealthCareAwardsEgg(memberPrincipal.getMemberId(),createEggRequest.getLatitude(), createEggRequest.getLongitude(), createEggRequest.getGetHealthEggDate());
         return SuccessResponse.ok(response);
     }
 }
