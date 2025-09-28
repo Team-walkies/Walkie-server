@@ -94,6 +94,7 @@ public class MemberLoginService {
                 .memberTier("초보워키")
                 .levelingEgg(null)
                 .levelingUserCharacter(null)
+                .joinedAt(LocalDate.now())
                 .deleteCd(false)
                 .build();
 

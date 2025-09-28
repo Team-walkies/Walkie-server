@@ -164,6 +164,7 @@ public class MemberService {
                 .userCharacterId(member.getLevelingUserCharacter() != null ? member.getLevelingUserCharacter().getId() : null)
                 .recordedSpot(member.getRecordedSpot())
                 .exploredSpot(member.getExploredSpot())
+                .joinedAt(member.getJoinedAt())
                 .build();
     }
 
