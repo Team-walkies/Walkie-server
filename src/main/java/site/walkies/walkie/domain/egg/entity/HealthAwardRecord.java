@@ -16,19 +16,15 @@ public class HealthAwardRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "member_id", nullable = false, unique = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Column(name = "last_received_date")
-    private LocalDate lastReceivedDate;
+    @Column(name = "received_date")
+    private LocalDate receivedDate;
 
-    public HealthAwardRecord(Member member, LocalDate lastReceivedDate) {
+    public HealthAwardRecord(Member member, LocalDate receivedDate) {
         this.member = member;
-        this.lastReceivedDate = lastReceivedDate;
-    }
-
-    public void updateLastReceivedDate(LocalDate date) {
-        this.lastReceivedDate = date;
+        this.receivedDate = receivedDate;
     }
 }
