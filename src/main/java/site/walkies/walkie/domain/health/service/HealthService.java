@@ -2,12 +2,15 @@ package site.walkies.walkie.domain.health.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import site.walkies.walkie.domain.egg.entity.HealthAwardRecord;
+import site.walkies.walkie.domain.egg.repository.HealthAwardRecordRepository;
 import site.walkies.walkie.domain.health.entity.HealthCurrent;
 import site.walkies.walkie.domain.health.entity.HealthHistory;
 import site.walkies.walkie.domain.health.enums.Calorie;
 import site.walkies.walkie.domain.health.repository.HealthCurrentRepository;
 import site.walkies.walkie.domain.health.repository.HealthHistoryRepository;
 import site.walkies.walkie.domain.health.service.dto.response.*;
+import site.walkies.walkie.domain.member.entity.Member;
 import site.walkies.walkie.domain.member.repository.MemberRepository;
 import site.walkies.walkie.global.web.exception.CustomException;
 import site.walkies.walkie.global.web.exception.ErrorCode;
@@ -23,6 +26,7 @@ import java.util.Optional;
 public class HealthService {
     private final HealthCurrentRepository healthCurrentRepository;
     private final HealthHistoryRepository healthHistoryRepository;
+    private final HealthAwardRecordRepository healthAwardRecordRepository;
     private final MemberRepository memberRepository;
 
     // 상세 조회 method
@@ -35,19 +39,23 @@ public class HealthService {
         // 상세 조회 검색 (current DB)
         HealthCurrent healthCurrent = healthCurrentRepository.findByMemberIdAndNowDay(memberId,searchDate).orElse(null);
 
+        boolean award = false;
+
         if(healthCurrent != null) {
-            return healthDetailResponseDtoBuilder(healthCurrent.getTargetSteps(), healthCurrent.getNowSteps(), healthCurrent.getNowDistance(), healthCurrent.getNowCalories());
+            award = awardReceivedCheck(healthCurrent.getNowSteps(), healthCurrent.getTargetSteps(), memberId, searchDate);
+            return healthDetailResponseDtoBuilder(healthCurrent.getTargetSteps(), healthCurrent.getNowSteps(), healthCurrent.getNowDistance(), healthCurrent.getNowCalories(),award);
         }
 
         // 상세 조회 검색 (history DB)
         HealthHistory healthHistory = healthHistoryRepository.findByMemberIdAndRecordDate(memberId, searchDate).orElse(null);
 
         if(healthHistory != null) {
-            return healthDetailResponseDtoBuilder(healthHistory.getTargetSteps(), healthHistory.getDaySteps(), healthHistory.getDayDistance(), healthHistory.getDayCalories());
+            award = awardReceivedCheck(healthHistory.getDaySteps(), healthHistory.getTargetSteps(), memberId, searchDate);
+            return healthDetailResponseDtoBuilder(healthHistory.getTargetSteps(), healthHistory.getDaySteps(), healthHistory.getDayDistance(), healthHistory.getDayCalories(),award);
         }
 
         // 둘 다 null 인 경우 기본 값 노출
-        return healthDetailResponseDtoBuilder(getCurrentTargetSteps(memberId,searchDate), 0, 0.0,0.0);
+        return healthDetailResponseDtoBuilder(getCurrentTargetSteps(memberId,searchDate), 0, 0.0,0.0, award);
     }
 
     // 칼로리 enum 검색 method
@@ -64,7 +72,7 @@ public class HealthService {
     }
 
     // response 생성 method
-    private HealthDetailResponseDto healthDetailResponseDtoBuilder(int targetSteps, int steps, double distance, double calories) {
+    private HealthDetailResponseDto healthDetailResponseDtoBuilder(int targetSteps, int steps, double distance, double calories,boolean award) {
         Calorie targetCal = calculateCalories(calories);
 
         return HealthDetailResponseDto.builder()
@@ -75,6 +83,7 @@ public class HealthService {
                 .caloriesName(targetCal.getFoodName())
                 .caloriesDescription(targetCal.getFoodDescription())
                 .caloriesUrl("https://truthguard.site/api/v1/file/" + targetCal.getImageUrl() + ".png")
+                .award(award)
                 .build();
     }
 
@@ -107,11 +116,15 @@ public class HealthService {
             // current에서 조회
             HealthCurrent healthCurrent = healthCurrentRepository.findByMemberIdAndNowDay(memberId,tempDate).orElse(null);
 
+            boolean award = false;
+
             if(healthCurrent != null) {
+                award = awardReceivedCheck(healthCurrent.getNowSteps(), healthCurrent.getTargetSteps(), memberId, tempDate);
                 healthResponseDtoList.add(HealthResponseDto.builder()
                         .responseDate(tempDate)
                         .targetSteps(healthCurrent.getTargetSteps())
                         .nowSteps(healthCurrent.getNowSteps())
+                        .award(award)
                         .build());
                 continue;
             }
@@ -120,10 +133,12 @@ public class HealthService {
             HealthHistory healthHistory = healthHistoryRepository.findByMemberIdAndRecordDate(memberId, tempDate).orElse(null);
 
             if(healthHistory != null) {
+                award = awardReceivedCheck(healthHistory.getDaySteps(), healthHistory.getTargetSteps(), memberId, tempDate);
                 healthResponseDtoList.add(HealthResponseDto.builder()
                         .responseDate(tempDate)
                         .targetSteps(healthHistory.getTargetSteps())
                         .nowSteps(healthHistory.getDaySteps())
+                        .award(award)
                         .build());
                 continue;
             }
@@ -133,6 +148,7 @@ public class HealthService {
                     .responseDate(tempDate)
                     .targetSteps(getCurrentTargetSteps(memberId,tempDate))
                     .nowSteps(0)
+                    .award(award)
                     .build());
         }
         return healthResponseDtoList;
@@ -267,5 +283,20 @@ public class HealthService {
         return HealthLastDataDayResponseDto.builder()
                 .lastDataDay(LocalDate.of(2025, 7, 31))
                 .build();
+    }
+
+    // 보상을 받았는지 판단하는 함수
+    private boolean awardReceivedCheck(int nowSteps, int targetSteps,long memberId, LocalDate searchDate) {
+        // 목표를 달성한 경우
+        if(nowSteps >= targetSteps) {
+            // 보상을 받았는지 조회
+            HealthAwardRecord healthAwardRecord = healthAwardRecordRepository.findByMemberIdAndReceivedDate(memberId, searchDate).orElse(null);
+            // 받지 않은 경우 + 회원가입일 보다 이후인 경우
+            Member member = memberRepository.findById(memberId).orElse(null);
+            if(healthAwardRecord == null && !member.getJoinedAt().isAfter(searchDate)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

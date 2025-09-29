@@ -14,4 +14,5 @@ public class HealthDetailResponseDto {
     private String caloriesName;
     private String caloriesDescription;
     private String caloriesUrl;
+    private Boolean award;
 }

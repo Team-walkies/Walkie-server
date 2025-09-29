@@ -13,4 +13,5 @@ public class HealthResponseDto {
     private LocalDate responseDate;
     private Integer targetSteps;
     private Integer nowSteps;
+    private Boolean award;
 }
