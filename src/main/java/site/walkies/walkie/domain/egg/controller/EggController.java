@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import site.walkies.walkie.domain.egg.entity.Egg;
 import site.walkies.walkie.domain.egg.service.EggService;
 import site.walkies.walkie.domain.egg.service.dto.request.CreateEggRequest;
+import site.walkies.walkie.domain.egg.service.dto.request.CreateRewardEggRequest;
 import site.walkies.walkie.domain.egg.service.dto.response.*;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggCountResponse;
 import site.walkies.walkie.domain.egg.service.dto.response.GetEggDetailResponse;
@@ -81,8 +82,8 @@ public class EggController {
             description = "사용자가 위치 정보를 보내면 알을 생성합니다. (하루에 한번만 알을 지급 받을 수 있습니다.)"
     )
     @PostMapping("/awards")
-    public SuccessResponse<?> createHealthCareAwardsEgg(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody CreateEggRequest createEggRequest) {
-        EggResponse response = eggService.createHealthCareAwardsEgg(memberPrincipal.getMemberId(),createEggRequest.getLatitude(), createEggRequest.getLongitude(), createEggRequest.getHealthcareEggAcquiredAt());
+    public SuccessResponse<?> createHealthCareAwardsEgg(@AuthenticationPrincipal MemberPrincipal memberPrincipal, @RequestBody CreateRewardEggRequest createRewardEggRequest) {
+        EggResponse response = eggService.createHealthCareAwardsEgg(memberPrincipal.getMemberId(),createRewardEggRequest.getLatitude(), createRewardEggRequest.getLongitude(), createRewardEggRequest.getHealthcareEggAcquiredAt());
         return SuccessResponse.ok(response);
     }
 }
