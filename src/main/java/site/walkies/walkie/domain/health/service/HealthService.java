@@ -1,6 +1,7 @@
 package site.walkies.walkie.domain.health.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import site.walkies.walkie.domain.egg.entity.HealthAwardRecord;
 import site.walkies.walkie.domain.egg.repository.HealthAwardRecordRepository;
@@ -89,18 +90,32 @@ public class HealthService {
 
     // 헬스케어 저장 method
     public HealthMoveResponseDto updateHealthDetail(long memberId, int targetSteps, int nowSteps, double nowDistance, double calories, LocalDate nowDay) {
-        // 현재 헬스케어 정보 조회
-        HealthCurrent healthCurrent = healthCurrentRepository.findByMemberIdAndNowDay(memberId,nowDay).orElse(null);
-        // 없는 경우 생성
-        if(healthCurrent == null) {
-            healthCurrent = HealthCurrent.create(memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND)),targetSteps, nowSteps,nowDistance,calories,nowDay);
-        }
-        // 있는 경우 업데이트
-        else {
+        try {
+            // 현재 헬스케어 정보 조회
+            HealthCurrent healthCurrent = healthCurrentRepository.findByMemberIdAndNowDay(memberId,nowDay).orElse(null);
+            // 없는 경우 생성
+            if(healthCurrent == null) {
+                healthCurrent = HealthCurrent.create(memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND)),targetSteps, nowSteps,nowDistance,calories,nowDay);
+            }
+            // 있는 경우 업데이트
+            else {
+                healthCurrent.updateMove(nowSteps,nowDistance,calories);
+            }
+            // 저장
+            healthCurrentRepository.save(healthCurrent);
+        } catch (CustomException e) {
+            // custom 오류인 경우 pass
+            throw e;
+        } catch (DataIntegrityViolationException e) {
+            // duplicated로 오류가 발생한 경우 => 재조회 후 update 수행
+            
+            // 현재 헬스케어 정보 조회
+            HealthCurrent healthCurrent = healthCurrentRepository.findByMemberIdAndNowDay(memberId,nowDay).orElse(null);
             healthCurrent.updateMove(nowSteps,nowDistance,calories);
+            // 저장
+            healthCurrentRepository.save(healthCurrent);
         }
-        // 저장
-        healthCurrentRepository.save(healthCurrent);
+
         return HealthMoveResponseDto.builder()
                 .targetSteps(targetSteps)
                 .nowSteps(nowSteps)
