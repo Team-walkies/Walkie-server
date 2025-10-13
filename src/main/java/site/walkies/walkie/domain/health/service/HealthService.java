@@ -1,6 +1,7 @@
 package site.walkies.walkie.domain.health.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import site.walkies.walkie.domain.egg.entity.HealthAwardRecord;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class HealthService {
@@ -108,6 +110,7 @@ public class HealthService {
             throw e;
         } catch (DataIntegrityViolationException e) {
             // duplicated로 오류가 발생한 경우 => 재조회 후 update 수행
+            log.warn("[WARN] duplicated 오류 발생! {}", e.getMessage());
             
             // 현재 헬스케어 정보 조회
             HealthCurrent healthCurrent = healthCurrentRepository.findByMemberIdAndNowDay(memberId,nowDay).orElse(null);
