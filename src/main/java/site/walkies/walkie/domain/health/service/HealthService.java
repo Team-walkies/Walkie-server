@@ -85,7 +85,7 @@ public class HealthService {
                 .nowCalories(calories)
                 .caloriesName(targetCal.getFoodName())
                 .caloriesDescription(targetCal.getFoodDescription())
-                .caloriesUrl("https://truthguard.site/api/v1/file/" + targetCal.getImageUrl() + ".png")
+                .caloriesUrl("https://walkie.site/api/v1/file/" + targetCal.getImageUrl() + ".png")
                 .award(award)
                 .build();
     }
