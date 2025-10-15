@@ -9,6 +9,7 @@ import site.walkies.walkie.domain.egg.repository.HealthAwardRecordRepository;
 import site.walkies.walkie.domain.health.entity.HealthCurrent;
 import site.walkies.walkie.domain.health.entity.HealthHistory;
 import site.walkies.walkie.domain.health.enums.Calorie;
+import site.walkies.walkie.domain.health.enums.RewardPayoutStatus;
 import site.walkies.walkie.domain.health.repository.HealthCurrentRepository;
 import site.walkies.walkie.domain.health.repository.HealthHistoryRepository;
 import site.walkies.walkie.domain.health.service.dto.response.*;
@@ -42,7 +43,8 @@ public class HealthService {
         // 상세 조회 검색 (current DB)
         HealthCurrent healthCurrent = healthCurrentRepository.findByMemberIdAndNowDay(memberId,searchDate).orElse(null);
 
-        boolean award = false;
+        // 기록이 없는 경우 => 목표 달성 X + 안받은 것과 동일 => PENDING
+        RewardPayoutStatus award = RewardPayoutStatus.PENDING;
 
         if(healthCurrent != null) {
             award = awardReceivedCheck(healthCurrent.getNowSteps(), healthCurrent.getTargetSteps(), memberId, searchDate);
@@ -75,7 +77,7 @@ public class HealthService {
     }
 
     // response 생성 method
-    private HealthDetailResponseDto healthDetailResponseDtoBuilder(int targetSteps, int steps, double distance, double calories,boolean award) {
+    private HealthDetailResponseDto healthDetailResponseDtoBuilder(int targetSteps, int steps, double distance, double calories, RewardPayoutStatus award) {
         Calorie targetCal = calculateCalories(calories);
 
         return HealthDetailResponseDto.builder()
@@ -134,7 +136,8 @@ public class HealthService {
             // current에서 조회
             HealthCurrent healthCurrent = healthCurrentRepository.findByMemberIdAndNowDay(memberId,tempDate).orElse(null);
 
-            boolean award = false;
+            // 기록이 없는 경우 => 목표 달성 X + 안받은 것과 동일 => PENDING
+            RewardPayoutStatus award = RewardPayoutStatus.PENDING;
 
             if(healthCurrent != null) {
                 award = awardReceivedCheck(healthCurrent.getNowSteps(), healthCurrent.getTargetSteps(), memberId, tempDate);
@@ -304,17 +307,22 @@ public class HealthService {
     }
 
     // 보상을 받았는지 판단하는 함수
-    private boolean awardReceivedCheck(int nowSteps, int targetSteps,long memberId, LocalDate searchDate) {
-        // 목표를 달성한 경우
-        if(nowSteps >= targetSteps) {
-            // 보상을 받았는지 조회
-            HealthAwardRecord healthAwardRecord = healthAwardRecordRepository.findByMemberIdAndReceivedDate(memberId, searchDate).orElse(null);
-            // 받지 않은 경우 + 회원가입일 보다 이후인 경우
-            Member member = memberRepository.findById(memberId).orElse(null);
-            if(healthAwardRecord == null && !member.getJoinedAt().isAfter(searchDate)) {
-                return true;
+    private RewardPayoutStatus awardReceivedCheck(int nowSteps, int targetSteps,long memberId, LocalDate searchDate) {
+        // 보상을 받았는지 조회
+        HealthAwardRecord healthAwardRecord = healthAwardRecordRepository.findByMemberIdAndReceivedDate(memberId, searchDate).orElse(null);
+        // 받지 않은 경우 + 회원가입일 보다 이후인 경우
+        Member member = memberRepository.findById(memberId).orElse(null);
+        if(healthAwardRecord == null && !member.getJoinedAt().isAfter(searchDate)) {
+            // 오늘 날짜가 아니고, 목표를 달성한 경우
+            if(!searchDate.isEqual(LocalDate.now()) && nowSteps >= targetSteps) {
+                // 목표 달성 + 아직 안받은 경우
+                return RewardPayoutStatus.AVAILABLE;
+            } else {
+                // 목표 달성 X + 아직 안받은 경우 (오늘날짜인 경우 목표 달성 여부와 상관 없이 안받았으면 PENDING)
+                return RewardPayoutStatus.PENDING;
             }
         }
-        return false;
+        // 목표 달성 여부와 상관 없이 받은 경우
+        return RewardPayoutStatus.RECEIVED;
     }
 }
