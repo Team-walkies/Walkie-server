@@ -2,6 +2,7 @@ package site.walkies.walkie.domain.health.service.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
+import site.walkies.walkie.domain.health.enums.RewardPayoutStatus;
 import site.walkies.walkie.domain.member.entity.Member;
 
 @Getter
@@ -14,5 +15,5 @@ public class HealthDetailResponseDto {
     private String caloriesName;
     private String caloriesDescription;
     private String caloriesUrl;
-    private Boolean award;
+    private RewardPayoutStatus award;
 }
