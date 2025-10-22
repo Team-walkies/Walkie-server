@@ -59,6 +59,11 @@ public class HealthService {
             return healthDetailResponseDtoBuilder(healthHistory.getTargetSteps(), healthHistory.getDaySteps(), healthHistory.getDayDistance(), healthHistory.getDayCalories(),award);
         }
 
+        // 다만 오늘인 경우 => 기록이 없기 때문에 예외적으로 보상 받았는지만 추가적으로 확인
+        if(searchDate.isEqual(LocalDate.now())) {
+            award = awardReceivedCheck(0, getCurrentTargetSteps(memberId,searchDate), memberId, searchDate);
+        }
+
         // 둘 다 null 인 경우 기본 값 노출
         return healthDetailResponseDtoBuilder(getCurrentTargetSteps(memberId,searchDate), 0, 0.0,0.0, award);
     }
@@ -162,6 +167,11 @@ public class HealthService {
                         .award(award)
                         .build());
                 continue;
+            }
+
+            // 다만 오늘인 경우 => 기록이 없기 때문에 예외적으로 보상 받았는지만 추가적으로 확인
+            if(tempDate.isEqual(LocalDate.now())) {
+                award = awardReceivedCheck(0, getCurrentTargetSteps(memberId,tempDate), memberId, tempDate);
             }
 
             // 둘 다 없는 경우 기본값 세팅
