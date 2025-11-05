@@ -326,7 +326,7 @@ public class HealthService {
             // 오늘 날짜가 아니고, 목표를 달성한 경우
             if(!searchDate.isEqual(LocalDate.now()) && nowSteps >= targetSteps) {
                 // 목표 달성 + 아직 안받은 경우
-                return RewardPayoutStatus.AVAILABLE;
+                return RewardPayoutStatus.MISSED;
             } else {
                 // 목표 달성 X + 아직 안받은 경우 (오늘날짜인 경우 목표 달성 여부와 상관 없이 안받았으면 PENDING)
                 return RewardPayoutStatus.PENDING;
