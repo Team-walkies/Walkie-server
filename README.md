@@ -49,6 +49,8 @@ Walkie-server는 위치 기반 산책 게이미피케이션 서비스 **Walkie**
 
 ## 시스템 아키텍처 (Architecture)
 
+![Frame 1618872750](https://github.com/user-attachments/assets/e613989a-ccc5-47f9-8435-8863cd9f0232)
+
 Walkie 서비스는 클라이언트, 백엔드 서버, 데이터 저장소, 외부 서비스로 구성된 구조를 가지며,
 서버 파트는 아래와 같은 아키텍쳐를 관리합니다.
 
