@@ -14,6 +14,9 @@ public class DiscordNotifier {
     @Value("${DISCORD_HOOK_REGIST}")
     private String registHook;
 
+    @Value("${DISCORD_HOOK_OPINION}")
+    private String opinionHook;
+
     private final WebClient.Builder webClient;
 
 
@@ -39,6 +42,11 @@ public class DiscordNotifier {
     // 회원가입 웹훅
     public void sendRegistMessage(String content) {
         sendMessage(content, registHook);
+    }
+
+    // 의견전달 웹훅
+    public void sendOpinionMessage(String content) {
+        sendMessage(content, opinionHook);
     }
 
     private record DiscordMessage(String content) {}
