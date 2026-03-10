@@ -9,6 +9,8 @@ import site.walkies.walkie.domain.event.service.DailyEggEventService;
 import site.walkies.walkie.domain.event.service.dto.DailyEggEventResponse;
 import site.walkies.walkie.global.auth.dto.MemberPrincipal;
 import site.walkies.walkie.global.web.dto.response.SuccessResponse;
+import site.walkies.walkie.global.web.exception.CustomException;
+import site.walkies.walkie.global.web.exception.ErrorCode;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,8 +21,9 @@ public class EventController {
 
     @GetMapping("/daily-egg")
     public SuccessResponse<DailyEggEventResponse> getDailyEgg(@AuthenticationPrincipal MemberPrincipal principal) {
-        return SuccessResponse.ok(
-            dailyEggEventService.provideDailyEgg(principal.getMemberId())
-        );
+        // return SuccessResponse.ok(
+        //     dailyEggEventService.provideDailyEgg(principal.getMemberId())
+        // );
+        throw new CustomException(ErrorCode.EVENT_PERIOD_ENDED);
     }
 }
