@@ -1,3 +1,4 @@
+<img width="3240" height="1080" alt="썸네일 비율" src="https://github.com/user-attachments/assets/e56eeb93-11b9-44e3-b154-5fbbbe1db5b9" />
 # Walkie-server
 
 <div align="center">
