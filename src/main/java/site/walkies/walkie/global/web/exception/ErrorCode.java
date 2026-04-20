@@ -41,11 +41,13 @@ public enum ErrorCode {
     FCM_SEND_FAILED("FCM 메시지 전송에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // 스팟 관련 예외
-    // 아래는 예시입니다. Enum이므로 마지막 예외에는 세미콜론 (;), 그 외에는 콤마(,)를 붙여줘야 합니다.
     SPOT_NOT_FOUND("해당 id를 가진 스팟이 없습니다.", HttpStatus.NOT_FOUND),
 
     // 헬스케어 관련 예외
-    DATE_OVER_ERROR("오늘 이후의 날짜는 검색이 불가능 합니다.", HttpStatus.INTERNAL_SERVER_ERROR),;
+    DATE_OVER_ERROR("오늘 이후의 날짜는 검색이 불가능 합니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+
+    // 이벤트 관련 예외
+    EVENT_PERIOD_ENDED("해당 이벤트 기간이 지났습니다!", HttpStatus.BAD_REQUEST);
 
     private final String message;
     private final HttpStatus httpStatus;

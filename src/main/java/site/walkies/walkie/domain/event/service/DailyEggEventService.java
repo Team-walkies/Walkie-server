@@ -37,7 +37,8 @@ public class DailyEggEventService {
         remainingDays = Math.max(remainingDays, 0); // 음수 방지 (8월 이후는 0)
 
         if (today.isBefore(EVENT_START) || today.isAfter(EVENT_END)) {
-            return new DailyEggEventResponse(false, remainingDays);
+            // 이벤트 기간이 아닐 경우 CustomException을 던지도록 수정
+            throw new CustomException(ErrorCode.EVENT_PERIOD_ENDED);
         }
 
         Member member = memberRepository.findById(memberId)
